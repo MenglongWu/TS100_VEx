@@ -30,9 +30,11 @@
 
 uint32_t WriteFlash(uint32_t addr,uint32_t *data,uint32_t len);
 uint32_t ReadFlash(uint32_t addr,uint32_t *data,uint32_t len);
+// uint32_t WriteFlash0(uint32_t addr, uint32_t off,uint32_t *data,uint32_t len);
 uint32_t CoverFlash(uint32_t addr,uint32_t addr2,uint32_t *data,uint32_t len);
 void UnProtectFlash();
 void ProtectFlash();
+uint32_t WriteFlash0(uint32_t addr, uint32_t off,uint32_t *data,uint32_t len);
 #endif
 
 
