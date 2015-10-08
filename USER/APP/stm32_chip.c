@@ -178,7 +178,7 @@ int CheckLicence(unsigned long licence[4])
 	sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", *(id+0), *(id+1), *(id+2), *(id+3));
 	
 
-	// sprintf(strout, "%8.8x ", rand);
+	// sprintf(stro2ut, "%8.8x ", rand);
 	gl_text(0,20,strout,-1);
 	
 
@@ -206,8 +206,8 @@ int CheckLicence(unsigned long licence[4])
 		gl_text(0,50,"okokokook",-1);
 		return 1;
 	}
+
 	gl_text(0,50,"noooooooooo",-1);
 	return 0;
 }
-
 

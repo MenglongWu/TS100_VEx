@@ -2518,6 +2518,7 @@ int main(void)
 	ProtectFlash();
 	printf("Draw UI\n");
 	LCD_DrawMain();
+	
 	powerDownDelayCnt=0;
 	g_batter_delay = 10001;	
 
