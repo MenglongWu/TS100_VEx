@@ -598,31 +598,31 @@ LCD_WriteReg	.\USER\GLCD\GLCD.c	/^void LCD_WriteReg(uint16_t cmd)$/;"	f
 LCD_WriteRegData	.\USER\GLCD\GLCD.c	/^void LCD_WriteRegData(uint16_t cmd,uint16_t data)$/;"	f
 LEVEL_0	.\USER\APP\main.c	2223;"	d	file:
 LEVEL_0	.\USER\GLCD\2GLCD.c	1317;"	d	file:
-LEVEL_0	.\USER\GLCD\TS100_Draw.c	39;"	d	file:
+LEVEL_0	.\USER\GLCD\TS100_Draw.c	40;"	d	file:
 LEVEL_1	.\USER\APP\main.c	2222;"	d	file:
 LEVEL_1	.\USER\GLCD\2GLCD.c	1316;"	d	file:
-LEVEL_1	.\USER\GLCD\TS100_Draw.c	38;"	d	file:
+LEVEL_1	.\USER\GLCD\TS100_Draw.c	39;"	d	file:
 LEVEL_2	.\USER\APP\main.c	2221;"	d	file:
 LEVEL_2	.\USER\GLCD\2GLCD.c	1315;"	d	file:
-LEVEL_2	.\USER\GLCD\TS100_Draw.c	37;"	d	file:
+LEVEL_2	.\USER\GLCD\TS100_Draw.c	38;"	d	file:
 LEVEL_3	.\USER\APP\main.c	2220;"	d	file:
 LEVEL_3	.\USER\GLCD\2GLCD.c	1314;"	d	file:
-LEVEL_3	.\USER\GLCD\TS100_Draw.c	36;"	d	file:
+LEVEL_3	.\USER\GLCD\TS100_Draw.c	37;"	d	file:
 LEVEL_4	.\USER\APP\main.c	2219;"	d	file:
 LEVEL_4	.\USER\GLCD\2GLCD.c	1313;"	d	file:
-LEVEL_4	.\USER\GLCD\TS100_Draw.c	35;"	d	file:
+LEVEL_4	.\USER\GLCD\TS100_Draw.c	36;"	d	file:
 LEVEL_CHARGE	.\USER\APP\main.c	2218;"	d	file:
 LEVEL_CHARGE	.\USER\GLCD\2GLCD.c	1312;"	d	file:
-LEVEL_CHARGE	.\USER\GLCD\TS100_Draw.c	34;"	d	file:
+LEVEL_CHARGE	.\USER\GLCD\TS100_Draw.c	35;"	d	file:
 LEVEL_FULL	.\USER\APP\main.c	2217;"	d	file:
 LEVEL_FULL	.\USER\GLCD\2GLCD.c	1311;"	d	file:
-LEVEL_FULL	.\USER\GLCD\TS100_Draw.c	33;"	d	file:
+LEVEL_FULL	.\USER\GLCD\TS100_Draw.c	34;"	d	file:
 LEVEL_POWER	.\USER\APP\main.c	2216;"	d	file:
 LEVEL_POWER	.\USER\GLCD\2GLCD.c	1310;"	d	file:
-LEVEL_POWER	.\USER\GLCD\TS100_Draw.c	32;"	d	file:
+LEVEL_POWER	.\USER\GLCD\TS100_Draw.c	33;"	d	file:
 LEVEL_SHUTDOWN	.\USER\APP\main.c	2224;"	d	file:
 LEVEL_SHUTDOWN	.\USER\GLCD\2GLCD.c	1318;"	d	file:
-LEVEL_SHUTDOWN	.\USER\GLCD\TS100_Draw.c	40;"	d	file:
+LEVEL_SHUTDOWN	.\USER\GLCD\TS100_Draw.c	41;"	d	file:
 LIMIT_DATE	.\USER\APP\stm32_chip.c	9;"	d	file:
 LOBYTE	.\LCD\gl_type.h	64;"	d
 LOG_CACHE	.\USER\APP\stm32_chip.c	8;"	d	file:
@@ -860,6 +860,7 @@ TurnOnPower	.\USER\APP\main.c	/^void TurnOnPower()$/;"	f
 UINT	.\LCD\gl_type.h	/^typedef unsigned int        UINT;$/;"	t
 UI_DebugMain	.\USER\GLCD\TS100_Draw.c	/^void UI_DebugMain()$/;"	f
 UI_LicenceConfig	.\USER\GLCD\TS100_Draw.c	/^void UI_LicenceConfig()$/;"	f
+UI_LicenceDlg	.\USER\GLCD\licenceDlg.c	/^void UI_LicenceDlg()$/;"	f
 UI_ProMode	.\USER\APP\main.c	/^void UI_ProMode()$/;"	f
 UI_ProPower	.\USER\APP\main.c	/^void UI_ProPower()$/;"	f
 UI_ProRedLight_ShutdownTimer	.\USER\APP\main.c	/^void UI_ProRedLight_ShutdownTimer()$/;"	f
@@ -1241,6 +1242,7 @@ _GL_KEY_H_	.\USER\APP\gl_key.h	2;"	d
 _GL_TYPE_H_	.\LCD\gl_type.h	2;"	d
 _GL_UI_CONFIG_H_	.\LCD\gl_ui_config.h	22;"	d
 _GL_UI_H_	.\LCD\gl_ui.h	2;"	d
+_GL_WIDGET_H_	.\LCD\gl_widget.h	2;"	d
 _KEY_H_	.\USER\APP\key.h	2;"	d
 _POINTL	.\LCD\gl_type.h	/^typedef struct _POINTL      \/* ptl  *\/$/;"	s
 _PROJECT_H_	.\USER\APP\project.h	2;"	d
@@ -1301,6 +1303,7 @@ c10_0_01	.\USER\APP\main.c	/^volatile const float c10_0_01[10]   = {1.000000 ,1.
 c10_0_1	.\USER\APP\main.c	/^volatile const float c10_0_1[10]    = {1.000000 ,1.258925 ,1.584893 ,1.995262 ,2.511886 ,3.162278 ,3.981072 ,5.011872 ,6.309573 ,7.943282};$/;"	v
 c10_10_0	.\USER\APP\main.c	/^volatile const float c10_10_0[10]   = {1,        10,      100,1000,10000,100000,1000000,10000000,100000000,1000000000};$/;"	v
 calc_licence	.\USER\APP\stm32_chip.c	/^static void calc_licence(unsigned long *lic)$/;"	f	file:
+caption	.\LCD\gl_widget.h	/^	int8_t caption;$/;"	m	struct:gl_widget
 ch1_adc_1k	.\USER\APP\prj_type.h	/^	uint16_t ch1_adc_1k;\/\/\/<$/;"	m	struct:fast_switch
 ch1_adc_270	.\USER\APP\prj_type.h	/^	uint16_t ch1_adc_270;\/\/\/<$/;"	m	struct:fast_switch
 ch1_adc_2k	.\USER\APP\prj_type.h	/^	uint16_t ch1_adc_2k;\/\/\/<$/;"	m	struct:fast_switch
@@ -1439,6 +1442,7 @@ gl_key_exti	.\USER\APP\gl_key.c	/^void gl_key_exti(uint8_t line)$/;"	f
 gl_key_init	.\USER\APP\gl_key.c	/^void gl_key_init()$/;"	f
 gl_key_scan	.\USER\APP\gl_key.c	/^void gl_key_scan()$/;"	f
 gl_picture	.\LCD\gl_ui.c	/^void gl_picture(uint8_t *buf,uint16_t px,uint16_t py,uint16_t w,uint16_t h)$/;"	f
+gl_pt	.\LCD\gl_widget.h	/^struct gl_pt$/;"	s
 gl_rect	.\LCD\gl_ui.c	/^void gl_rect($/;"	f
 gl_setarea	.\LCD\gl_ui.c	/^void gl_setarea(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)$/;"	f
 gl_setpoint	.\LCD\gl_ui.c	/^void gl_setpoint(unsigned short x, unsigned short y,uint32_t  color)$/;"	f
@@ -1452,9 +1456,11 @@ gl_ui_setfontcolor	.\LCD\gl_ui.c	/^uint32_t gl_ui_setfontcolor(uint32_t  color)$
 gl_ui_setlib	.\LCD\gl_ui.c	/^unsigned char gl_ui_setlib(unsigned char *lib[128],uint16_t w,uint16_t h,uint8_t *step)$/;"	f
 gl_ui_setpencolor	.\LCD\gl_ui.c	/^uint32_t gl_ui_setpencolor(uint32_t  color)$/;"	f
 gl_vertical_line	.\LCD\gl_ui.c	/^void gl_vertical_line(uint16_t x,uint16_t y1,uint16_t y2)$/;"	f
+gl_widget	.\LCD\gl_widget.h	/^struct gl_widget$/;"	s
 h	.\LCD\gl_ui.h	/^	uint16_t h;$/;"	m	struct:gl_ui_arraylib
 hackflag	.\USER\APP\main.c	/^uint32_t hackflag = 0;					\/\/\/<是否输入密码标志$/;"	v
 hackval	.\USER\APP\main.c	/^uint32_t hackval = 0;					\/\/\/<进入后台输入的密码$/;"	v
+id	.\LCD\gl_widget.h	/^	uint32_t id;$/;"	m	struct:gl_widget
 id0	.\USER\APP\stm32_chip.c	/^	unsigned long id0;$/;"	m	struct:chiip_id	file:
 id1	.\USER\APP\stm32_chip.c	/^	unsigned long id1;$/;"	m	struct:chiip_id	file:
 id2	.\USER\APP\stm32_chip.c	/^	unsigned long id2;$/;"	m	struct:chiip_id	file:
@@ -1518,10 +1524,14 @@ vol	.\USER\APP\prj_type.h	/^	uint16_t vol;$/;"	m	struct:ctrl_param
 w	.\LCD\gl_ui.h	/^	uint16_t w;$/;"	m	struct:gl_ui_arraylib
 x	.\LCD\gl_type.h	/^    LONG  x;$/;"	m	struct:_POINTL
 x	.\LCD\gl_type.h	/^    LONG  x;$/;"	m	struct:tagPOINT
+x	.\LCD\gl_widget.h	/^	uint16_t x;$/;"	m	struct:gl_pt
+x	.\LCD\gl_widget.h	/^	uint16_t x;$/;"	m	struct:gl_widget
 x	.\USER\APP\prj_type.h	/^	int16_t x;$/;"	m	struct:point
 x	.\USER\TouchPanel\TouchPanel.h	/^   uint16_t x;$/;"	m	struct:POINT
 y	.\LCD\gl_type.h	/^    LONG  y;$/;"	m	struct:_POINTL
 y	.\LCD\gl_type.h	/^    LONG  y;$/;"	m	struct:tagPOINT
+y	.\LCD\gl_widget.h	/^	uint16_t y;$/;"	m	struct:gl_pt
+y	.\LCD\gl_widget.h	/^	uint16_t y;$/;"	m	struct:gl_widget
 y	.\USER\APP\prj_type.h	/^	int16_t y;$/;"	m	struct:point
 y	.\USER\TouchPanel\TouchPanel.h	/^   uint16_t y;$/;"	m	struct:POINT
 zm_0_9_st9_8_12	.\LCD\zimo_st9.C	/^const unsigned char  zm_0_9_st9_8_12[120]=$/;"	v

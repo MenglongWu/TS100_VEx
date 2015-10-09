@@ -56,7 +56,7 @@ int main(void);
 void DebugLookAD(void);
 void UI_ProductionAdjust(void);
 void UI_ProductConfig(void);
-void DrawFocus(int16_t x,int16_t y,uint32_t color);
+
 void IsHacker(void);
 int ProTick1963IsLive(void);
 void ProGet1963State(void);
@@ -75,7 +75,7 @@ void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_
 
 
 //uint32_t InputPanel(int8_t *str,uint32_t len);
-uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);
+// uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);
 
 
 //启动版本信息

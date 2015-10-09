@@ -1,6 +1,8 @@
-ST3.sublime-workspace
+./ST3.sublime-workspace
 ./.tags_sorted_by_file
 ./.tags
 MDK-ARM/Project_STM3210E-EVAL.dep
 MDK-ARM/Output/*
+MDK-ARM/JLinkLog.txt
+MDK-ARM/Project_STM3210E-EVAL.dep
 *.o

@@ -18,6 +18,7 @@
 #include "lib\\base.h"
 //#include <PictureData.h>
 #include "..\\GLCD\\PictureData.h"
+#include "USER/GLCD/TS100_Draw.h"
 #include "flash.h"
 void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY, uint8_t * pic);
 
@@ -541,7 +542,7 @@ void UI_DebugMain()
 		25,38,   67,38,   105,38, 158,25,
 								  158,38};
 	int8_t *caption[] = {"ADC","DAC","dBm","Adjust","Mode","Laser","Auto","Produce","Exit"};
-	
+
 	int8_t enableAuto = 0;
 	int16_t oldpen,oldbrush,oldbk,oldfont;	
 	int32_t index = 0,oldindex = 0,i;
@@ -1126,7 +1127,39 @@ _End:;
 	gl_ui_setbkcolor(oldbk);
 }
 
+/*
+* Function: 绘制界面焦点
+* Parameters:
+x,y坐标，color：RGB16(R,G,B)颜色
+*/
+void DrawFocus(int16_t x,int16_t y,uint32_t color)
+{
+	uint32_t brush,pen;
+	static uint16_t last_x = -1, last_y;
 
+	if (last_x == -1) {
+		goto _DrawNew;
+	}
+	if (x == -1) {
+		last_x = -1;
+		last_y = -1;
+		return ;
+	}
+	brush = gl_ui_setbrushcolor(COL_White);
+	pen = gl_ui_setpencolor(COL_White);
+	gl_fill_rect(last_x-3,last_y,3,12);
+	
+
+_DrawNew:;
+	gl_ui_setbrushcolor(color);
+	gl_ui_setpencolor(color);
+	gl_fill_rect(x-3,y,3,12);
+	gl_ui_setbrushcolor(brush);
+	gl_ui_setpencolor(pen);
+	
+	last_x = x;
+	last_y = y;
+}
 void UI_LicenceConfig()
 {
 	
