@@ -3,6 +3,8 @@
 	- Add : 添加 gl_widget.h 添加 struct gl_widget ，逐步实现一种类似UCGUI的 “字符” 界面
 	- Add : NewFocus 获取下一个坐标
 	- Edit : DrawFocus 修改成记录上次坐标位置，当输入坐标为 (-1,-1) 时复位记录值
+	- Add : 添加 struct gl_msg，系统输入事件放在 wparm 里，用户输入事件放到 lparam 里
+	- TODO : 将 struct gl_msg,struct gl_widget,gl_dlgxx 整合形成 struct gl_win
 	
 */
 
