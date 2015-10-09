@@ -258,6 +258,15 @@ w	LCD\gl_ui.h	/^	uint16_t w;$/;"	m	struct:gl_ui_arraylib
 GL_SETPOINT	LCD\gl_ui_config.h	38;"	d
 GL_UI_OLD_DEV	LCD\gl_ui_config.h	35;"	d
 _GL_UI_CONFIG_H_	LCD\gl_ui_config.h	22;"	d
+_GL_WIDGET_H_	LCD\gl_widget.h	2;"	d
+caption	LCD\gl_widget.h	/^	int8_t caption;$/;"	m	struct:gl_widget
+gl_pt	LCD\gl_widget.h	/^struct gl_pt$/;"	s
+gl_widget	LCD\gl_widget.h	/^struct gl_widget$/;"	s
+id	LCD\gl_widget.h	/^	uint32_t id;$/;"	m	struct:gl_widget
+x	LCD\gl_widget.h	/^	uint16_t x;$/;"	m	struct:gl_pt
+x	LCD\gl_widget.h	/^	uint16_t x;$/;"	m	struct:gl_widget
+y	LCD\gl_widget.h	/^	uint16_t y;$/;"	m	struct:gl_pt
+y	LCD\gl_widget.h	/^	uint16_t y;$/;"	m	struct:gl_widget
 ZM_BYTE_ST20	LCD\zimo_st20.c	773;"	d	file:
 p_zm_ascii_st20	LCD\zimo_st20.c	/^unsigned char *p_zm_ascii_st20[128] = $/;"	v
 p_zm_step_st20	LCD\zimo_st20.c	/^unsigned char p_zm_step_st20[128] = $/;"	v
@@ -1459,15 +1468,15 @@ LCD_RedLight_Show	USER\GLCD\TS100_Draw.c	/^void LCD_RedLight_Show( uint16_t x0, 
 LCD_Timing_Display	USER\GLCD\TS100_Draw.c	/^void LCD_Timing_Display( uint16_t x0, uint16_t y0 ,uint16_t on_off )$/;"	f
 LCD_Wavelength_Selection	USER\GLCD\TS100_Draw.c	/^void LCD_Wavelength_Selection( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor )$/;"	f
 LCD_Wavelength_Selection_Ex	USER\GLCD\TS100_Draw.c	/^void LCD_Wavelength_Selection_Ex( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor )$/;"	f
-LEVEL_0	USER\GLCD\TS100_Draw.c	39;"	d	file:
-LEVEL_1	USER\GLCD\TS100_Draw.c	38;"	d	file:
-LEVEL_2	USER\GLCD\TS100_Draw.c	37;"	d	file:
-LEVEL_3	USER\GLCD\TS100_Draw.c	36;"	d	file:
-LEVEL_4	USER\GLCD\TS100_Draw.c	35;"	d	file:
-LEVEL_CHARGE	USER\GLCD\TS100_Draw.c	34;"	d	file:
-LEVEL_FULL	USER\GLCD\TS100_Draw.c	33;"	d	file:
-LEVEL_POWER	USER\GLCD\TS100_Draw.c	32;"	d	file:
-LEVEL_SHUTDOWN	USER\GLCD\TS100_Draw.c	40;"	d	file:
+LEVEL_0	USER\GLCD\TS100_Draw.c	40;"	d	file:
+LEVEL_1	USER\GLCD\TS100_Draw.c	39;"	d	file:
+LEVEL_2	USER\GLCD\TS100_Draw.c	38;"	d	file:
+LEVEL_3	USER\GLCD\TS100_Draw.c	37;"	d	file:
+LEVEL_4	USER\GLCD\TS100_Draw.c	36;"	d	file:
+LEVEL_CHARGE	USER\GLCD\TS100_Draw.c	35;"	d	file:
+LEVEL_FULL	USER\GLCD\TS100_Draw.c	34;"	d	file:
+LEVEL_POWER	USER\GLCD\TS100_Draw.c	33;"	d	file:
+LEVEL_SHUTDOWN	USER\GLCD\TS100_Draw.c	41;"	d	file:
 Show_Matrix_zimo	USER\GLCD\TS100_Draw.c	/^void Show_Matrix_zimo(uint16_t Xpos, uint16_t Ypos, uint8_t *Buffer, uint16_t Wide_char, uint16_t High, uint16_t charColor, uint16_t bkColor)$/;"	f
 UI_DebugMain	USER\GLCD\TS100_Draw.c	/^void UI_DebugMain()$/;"	f
 UI_LicenceConfig	USER\GLCD\TS100_Draw.c	/^void UI_LicenceConfig()$/;"	f
@@ -1536,6 +1545,7 @@ USE_16BIT_PMP	USER\GLCD\glcd.h	31;"	d
 White	USER\GLCD\glcd.h	70;"	d
 Yellow	USER\GLCD\glcd.h	81;"	d
 __GLCD_H	USER\GLCD\glcd.h	23;"	d
+UI_LicenceDlg	USER\GLCD\licenceDlg.c	/^void UI_LicenceDlg()$/;"	f
 CTRL_TICKINT_Reset	USER\SysTick\stm32f10x_systick.c	24;"	d	file:
 CTRL_TICKINT_Set	USER\SysTick\stm32f10x_systick.c	23;"	d	file:
 SysTick_CounterCmd	USER\SysTick\stm32f10x_systick.c	/^void SysTick_CounterCmd(u32 SysTick_Counter)$/;"	f

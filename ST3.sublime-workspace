@@ -55,6 +55,34 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "USER/GLCD/TS100_Draw.c",
+			"settings":
+			{
+				"buffer_size": 36162,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "#ifndef _PROJECT_H_\n#define _PROJECT_H_\n\n//屏蔽警告\n#pragma diag_suppress 167\n#pragma diag_suppress 174\n#pragma diag_suppress 1295//函数参数是空必须声明成void\n#pragma diag_suppress 68//强制转换有符号和无符号\n\n\n\n/*按键*/\n#define KEY_A GPIO_Pin_5\n#define KEY_B GPIO_Pin_3\n#define KEY_C GPIO_Pin_2\n#define KEY_X GPIO_Pin_1\n#define KEY_Y GPIO_Pin_7\n#define KEY_Z GPIO_Pin_6\n\n\nvoid USART_Configuration();\nvoid delayMs(uint16_t ms);\nvoid ADC_Configuration(void);\nuint16_t GetAD(uint8_t chx);\nvoid DAC_Configuration(void);\nvoid TIM2_Init(void);\nvoid TIM3_Init(uint16_t);\nvoid TIM4_Init(uint16_t);\nvoid TIM5_Init(uint16_t);\nvoid TIM6_Init(void);\nvoid NVIC_Configuration(void);\nvoid FLASH_Configuration(void);\nfloat DbmToScale(float dbm);\nvoid Ctrl_RedLight(u8 v);\nvoid Ctrl_Wavelength(u8 Wavelength_Selection_state);\nvoid Ctrl_Operating_Mode(u8 Operating_Mode);\nvoid Ctrl_Power(struct ctrl_param *v);\nvoid AutoCtrlPower(void);\nvoid Ctrl_Timing_Device(u8 Timer);\nvoid Function_IO_config(void);\nvoid RedLightIOConfig(void);\nvoid External_Interrupt_Config(void);\nvoid External_Interrupt_EXIT_Init(void);\nvoid External_Interrupt_InterruptConfig(void);\nvoid LCD_DrawMain(void);\nvoid TurnOnPower(void);\nvoid TurnOffPower(void);\nvoid UI_ProWavelength(void);\nvoid UI_ProPower(void);\nvoid UI_ProMode(void);\nvoid UI_ProRedLight_ShutdownTimer(void);\nvoid ProChargerMonitor(void);\nfloat GetBattery();\nvoid ProTimerShutdown(void);\nint main(void);\nvoid DebugLookAD(void);\nvoid UI_ProductionAdjust(void);\nvoid UI_ProductConfig(void);\nvoid DrawFocus(int16_t x,int16_t y,uint32_t color);\nvoid IsHacker(void);\nint ProTick1963IsLive(void);\nvoid ProGet1963State(void);\n\nvoid LCD_Batter_Show( uint16_t x0, uint16_t y0 ,uint16_t rank )	;		\nvoid LCD_RedLight_Show( uint16_t x0, uint16_t y0 ,uint8_t flag);\nvoid LCD_Wavelength_Selection( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor );\nvoid LCD_Wavelength_Selection_Ex( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor );\nvoid LCD_OperatMode_Selection( uint16_t x0, uint16_t y0 ,uint16_t mode ,uint16_t Color, uint16_t BkColor );\n\nvoid LCD_Timing_Display( uint16_t x0, uint16_t y0 ,uint16_t on_off );\nvoid Show_Matrix_zimo(uint16_t Xpos, uint16_t Ypos, uint8_t *Buffer, uint16_t Wide_char, uint16_t High, uint16_t charColor, uint16_t bkColor);\nvoid LCD_Power_Control_Selection_Ex( uint16_t x0, uint16_t y0 ,int16_t Current_Power ,uint16_t CharColor, uint16_t BkColor );\nvoid GUI_Text_Show_Number(uint16_t x, uint16_t y, uint8_t number, uint16_t Color, uint16_t bkColor );\nvoid LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY, uint8_t * pic);\n\n\n//uint32_t InputPanel(int8_t *str,uint32_t len);\n// uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);\n\n\n//启动版本信息\n#define TARGET_NAME		\"G-LINK TS100 VEX1.3.4\"    		//目标板名称\n#define RELEASE_DATE	\"Release Date 2015.08.20\"				//修改发布时间\n\n#endif\n\n",
+			"file": "USER/APP/project.h",
+			"file_size": 3006,
+			"file_write_time": 130888270062500000,
+			"settings":
+			{
+				"buffer_size": 2875,
+				"line_ending": "Windows",
+				"scratch": true
+			}
+		},
+		{
+			"file": "USER/GLCD/TS100_Draw.h",
+			"settings":
+			{
+				"buffer_size": 6562,
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -64,11 +92,19 @@
 	"command_palette":
 	{
 		"height": 360.0,
-		"last_filter": "conv",
+		"last_filter": "",
 		"selected_items":
 		[
 			[
 				"conv",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"c on",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"con v",
 				"ConvertToUTF8: Reload with Encoding"
 			],
 			[
@@ -162,16 +198,53 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929"
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/TouchPanel"
 	],
 	"file_history":
 	[
 		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/stm32_chip.c",
-		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/stm32f10x_it.c",
-		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/main.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/flash.c",
 		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/flash.h",
-		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/版本说明.txt",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/.gitignore",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/stm32_chip.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/main.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/SysTick/systick.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/SysTick/systick.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/SysTick/stm32f10x_systick.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/SysTick/stm32f10x_systick.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/TouchPanel/TouchPanel.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/TouchPanel/TouchPanel.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/2GLCD.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/AsciiLib.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/GLCD.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/PictureData.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/PictureData.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/SSD1963_CMD.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/TS100_Draw.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/AsciiLib.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/GLCD/2GLCD.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/prj_type.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/gl_ui.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/gl_key.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/gl_key.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/stm32f10x_conf.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/stm32f10x_it.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/stm32f10x_it.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/usart.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/usart.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/project.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/USER/APP/key.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/gl_type.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/gl_ui.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/gl_ui_config.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/zimo_st20.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/zimo_st20.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/zimo_st9.C",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/LCD/zimo_st9.h",
 		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/readme.txt",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_20150929/版本说明.txt",
 		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/GLCD/TS100_Draw.c",
 		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/APP/main.c",
 		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/APP/flash.c",
@@ -258,42 +331,7 @@
 		"/D/Project/ARM9/unos/vector/gboot.s",
 		"/D/Project/ARM9/unos/bootNor/AppMake.mk",
 		"/D/Project/ARM9/unos/2440hardcode/int/head.S",
-		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/mach-s3c2440/irq.c",
-		"/C/Documents and Settings/Administrator/桌面/sdf.s",
-		"/D/Project/ARM9/unos/2440hardcode/int/option.h",
-		"/D/Project/ARM9/unos/2440hardcode/int/download.bin",
-		"/C/Documents and Settings/Administrator/桌面/NorFlash.txt",
-		"/C/Documents and Settings/Administrator/桌面/23.asm",
-		"/D/Project/ARM9/unos/mini2440_irq/boot_irq/main.c",
-		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/boot/bootp/init.S",
-		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/boot/bootp/kernel.S",
-		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/boot/bootp/initrd.S",
-		"/C/Documents and Settings/Administrator/Application Data/Sublime Text 3/Packages/SublimeCodeIntel/libs/SilverCity/LanguageInfo.py",
-		"/D/Project/ARM9/unos/2440hardcode/int/int.dis",
-		"/D/Project/ARM9/unos/mini2440_irq/boot_irq/interrupt.S",
-		"/D/Project/ARM9/unos/2440hardcode/int/int_elf",
-		"/D/Project/ARM9/unos/mini2440_irq/boot_irq/start.S",
-		"/D/Project/ARM9/unos/TQ2440_Test/src/keyscan.c",
-		"/D/Project/ARM9/unos/2440hardcode/int/init.c.bak",
-		"/D/Project/ARM9/unos/2440hardcode/int/s3c24xx.h.bak",
-		"/D/Project/ARM9/unos/2440hardcode/int/Makefile.bak",
-		"/D/Project/ARM9/unos/2440hardcode/int/interrupt.c.bak",
-		"/D/Project/ARM9/unos/2440hardcode/lcd/include/stdio.h",
-		"/D/Project/ARM9/unos/2440hardcode/lcd/sc/lcd视频例子.SearchResults",
-		"/D/Project/ARM9/ldd3_examples/Makefile",
-		"/D/Project/ARM9/study/cdTQ/TQ2440_CD/Linux资源/Linux平台开发工具包/EABI-4.3.3_EmbedSky_20100610/opt/EmbedSky/4.3.3/arm-none-linux-gnueabi/include/c++/4.3.3/tr1_impl/hashtable",
-		"/D/Project/ARM9/unos/2440hardcode/readme.txt",
-		"/D/Project/ARM9/s3c2440usart/2440init.d",
-		"/D/Project/ARM9/study/cdTQ/TQ2440_CD/Windows平台开发工具包/ADS1.2/ADS1.2/HTML/stdug/general/2-4.htm",
-		"/D/Project/ARM9/ldd3_examples/tty/Makefile",
-		"/D/Project/ARM9/ldd3_examples/snull/Makefile",
-		"/D/Project/ARM9/ldd3_examples/skull/Makefile",
-		"/D/Project/ARM9/ldd3_examples/simple/Makefile",
-		"/D/Project/ARM9/ldd3_examples/shortprint/Makefile",
-		"/D/Project/ARM9/ldd3_examples/short/Makefile",
-		"/D/Project/ARM9/ldd3_examples/scullv/Makefile",
-		"/D/Project/ARM9/ldd3_examples/scullp/Makefile",
-		"/D/Project/ARM9/ldd3_examples/sculld/Makefile"
+		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/mach-s3c2440/irq.c"
 	],
 	"find":
 	{
@@ -312,6 +350,45 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"InputPanel",
+			"input",
+			"WriteTick",
+			"writeflash",
+			"WriteFlash0",
+			"ok",
+			"8.8",
+			"(unsigned long*)&uselog",
+			"WriteFlash0",
+			"WriteTick",
+			"WriteFlash0",
+			"uset",
+			"UseTick",
+			"LOG_CACHE",
+			"ReadProLicence",
+			"pro_licence",
+			"ReadProLicence",
+			"pro_licence",
+			"int ReadProLicence(struct pro_licence *puselog)",
+			"pro_licence",
+			"ReadProLicence",
+			"use_log",
+			"DbmToScale",
+			"timeout",
+			"g_licence_timeout",
+			"CalcLicence",
+			"ShowTick",
+			"UseTick",
+			"UseLog(",
+			"uselog",
+			"UseLog",
+			"WriteUseLog",
+			"ReadUseLog",
+			"struct use_log",
+			"LOG_CACHE",
+			"WriteRandHW",
+			"WriteUseLog",
+			"CoverFlash",
+			"i",
 			"UseTick",
 			"*(id",
 			"uselog.date",
@@ -400,46 +477,7 @@
 			"ddiv",
 			"_ddiv",
 			"__aeabi_ddiv",
-			". /",
-			"printf",
-			"	",
-			"rIISPSR",
-			"PCLK",
-			"UART_CLK",
-			"UART_BRD",
-			"Uart_Init",
-			"usart",
-			"enable_irq",
-			"HandleIRQ",
-			"IsrIRQ",
-			".gl",
-			"g_pageAddress",
-			"APP_ADDRESS",
-			"irq",
-			"_ISR_STARTADDRESS",
-			"HaltUndef",
-			"IsrWatchdog",
-			"WT_BASE",
-			"WTCON_Val",
-			"main",
-			"EmbedSky_conf",
-			"MAKE",
-			"EXPORT_SYMTAB",
-			"OSTaskCreate",
-			"Mem_PoolTbl",
-			"Mem_PoolHeap",
-			"	",
-			"fork(",
-			"DEVICE_NAME",
-			"mydevtimer",
-			"devicedev",
-			"timer",
-			"led",
-			"key",
-			"key0",
-			"key",
-			"mydevkey",
-			"timer0_init"
+			". /"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -470,8 +508,279 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "USER/GLCD/TS100_Draw.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 36162,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								28303,
+								28313
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
+							],
+							"origin_encoding": "UTF-8",
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 17683.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "USER/APP/project.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2875,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1482,
+								1482
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
+							],
+							"in_converting": true,
+							"origin_encoding": "GB2312",
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 997.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "USER/GLCD/TS100_Draw.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6562,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3776,
+								3778
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content"
+							],
+							"origin_encoding": "UTF-8",
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1473.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -532,8 +841,40 @@
 		"selected_items":
 		[
 			[
+				"draw.h",
+				"USER\\GLCD\\TS100_Draw.h"
+			],
+			[
+				"draw.c",
+				"USER\\GLCD\\TS100_Draw.c"
+			],
+			[
+				".",
+				".gitignore"
+			],
+			[
+				".g",
+				".gitignore"
+			],
+			[
 				"flash.h",
 				"USER\\APP\\flash.h"
+			],
+			[
+				"chip.h",
+				"USER\\APP\\stm32_chip.h"
+			],
+			[
+				".gi",
+				".gitignore"
+			],
+			[
+				"main.c",
+				"USER\\APP\\main.c"
+			],
+			[
+				"chip",
+				"USER\\APP\\stm32_chip.c"
 			],
 			[
 				"mainc",
@@ -544,16 +885,8 @@
 				"USER\\APP\\stm32f10x_it.c"
 			],
 			[
-				"chip",
-				"USER\\APP\\stm32_chip.c"
-			],
-			[
 				"",
 				"版本说明.txt"
-			],
-			[
-				"main.c",
-				"USER\\APP\\main.c"
 			],
 			[
 				"chip.c",
@@ -659,11 +992,20 @@
 	"selected_group": 0,
 	"settings":
 	{
+		"last_automatic_layout":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		]
 	},
 	"show_minimap": false,
 	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 182.0,
 	"status_bar_visible": true,
 	"template_settings":

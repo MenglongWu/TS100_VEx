@@ -455,6 +455,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\APP\stm32_chip.c</FilePath>
             </File>
+            <File>
+              <FileName>licenceDlg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1398,6 +1403,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\APP\stm32_chip.c</FilePath>
             </File>
+            <File>
+              <FileName>licenceDlg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2340,6 +2350,11 @@
               <FileName>stm32_chip.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\APP\stm32_chip.c</FilePath>
+            </File>
+            <File>
+              <FileName>licenceDlg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3324,6 +3339,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\APP\stm32_chip.c</FilePath>
             </File>
+            <File>
+              <FileName>licenceDlg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4306,6 +4326,11 @@
               <FileName>stm32_chip.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\APP\stm32_chip.c</FilePath>
+            </File>
+            <File>
+              <FileName>licenceDlg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
             </File>
           </Files>
         </Group>

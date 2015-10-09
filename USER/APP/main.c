@@ -84,7 +84,7 @@ V1.0    yujignxiong   2011.11.27
 #include "key.h"						//按键扫描，本工程里使用该套接口获取按键状态（按下、抬起、长按）
 #include "usart.h"						//串口
 #include "stm32_chip.h"
-
+#include "USER/GLCD/TS100_Draw.h"
 /*****************************************************************************
 我的定义
 *****************************************************************************/
@@ -2122,22 +2122,7 @@ void ProGet1963State()
 		dprintf("\n");
 	}
 }
-/*
-* Function: 绘制界面焦点
-* Parameters:
-x,y坐标，color：RGB16(R,G,B)颜色
-*/
-void DrawFocus(int16_t x,int16_t y,uint32_t color)
-{
-	uint32_t brush,pen;
 
-	brush = gl_ui_setbrushcolor(color);
-	pen = gl_ui_setpencolor(color);
-	//gl_fill_rect(x,y - 5,30,5);	
-	gl_fill_rect(x-3,y,3,12);
-	gl_ui_setbrushcolor(brush);
-	gl_ui_setpencolor(pen);
-}
 
 
 /**
@@ -2534,8 +2519,8 @@ int main(void)
 
 	//Get_ChipID();
 	// UseTick();
-	CheckLicence(lic);
-	
+	// CheckLicence(lic);
+	UI_LicenceDlg();
 	while(1)
 	{
 		ProGet1963State();
