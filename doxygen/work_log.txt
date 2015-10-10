@@ -1,4 +1,11 @@
 /*! \page workhis TS100 项目工作日志
+2015-10-10: Menglong Wu
+	- Add MD5 modules
+        encrypt id0-id1-id2-id3-month
+        md5     12345678 xxxxxxxx xxxxxxxx xxxxxxxx
+        licence[0] = md5[0], licence[1] = md5[1] ....
+        only checking licence[3]
+        
 2015-10-09: Menglong Wu
 	- Add : 添加 gl_widget.h 添加 struct gl_widget ，逐步实现一种类似UCGUI的 “字符” 界面
 	- Add : NewFocus 获取下一个坐标

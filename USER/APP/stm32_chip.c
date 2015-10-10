@@ -1,13 +1,13 @@
 #include "stm32f10x.h" 
 #include "lcd\\gl_ui.h"
 #include "flash.h"
+#include "md5.h"
 // #include "stm32_chip.h"
 
-int g_licence_timeout = 0;				///< 许可证是否超时
-// struct pro_licence 必须4字节对齐，方便Flash读写操作
+
 #define LOG_CACHE (4*6)
-#define LIMIT_DATE (24*31)
-#define INFINITUDE  (7310)
+
+#define DATE_PER_MONTH (31)
 struct pro_licence
 {
 	char key[4];					// 公钥
@@ -19,14 +19,23 @@ struct pro_licence
 	unsigned long unuse0;			// 防止数据访问溢出，无效数据
 };
 
-// 芯片机器码
-struct chiip_id
-{
-	unsigned long id0;
-	unsigned long id1;
-	unsigned long id2;
-	unsigned long id_rand;   ///<随机值，来源于第一次开机存放于struct pro_licence的rand_hw
-};
+static int UseTick(int bwrite);
+static void calc_licence(unsigned long *lic, unsigned long month);
+
+static int WriteProLicence(struct pro_licence *puselog);
+
+int g_licence_timeout = 0;				///< 许可证是否超时
+// struct pro_licence 必须4字节对齐，方便Flash读写操作
+
+
+// // 芯片机器码
+// struct chiip_id
+// {
+// 	unsigned long id0;
+// 	unsigned long id1;
+// 	unsigned long id2;
+// 	unsigned long id_rand;   ///<随机值，来源于第一次开机存放于struct pro_licence的rand_hw
+// };
 // 采用AD值做随机值
 extern volatile uint16_t ADCConvertedValue[2000];
 unsigned long Rand()
@@ -37,8 +46,10 @@ unsigned long Rand()
 			(ADCConvertedValue[7]);
 }
 
+// *****************************************************************************
+// 对外接口
 // id 长度为4Byte
-void Get_ChipID(unsigned long *id)
+void lc_GetChipID(unsigned long *id)
 {
 	struct pro_licence uselog;
 	char strout[256];
@@ -49,11 +60,109 @@ void Get_ChipID(unsigned long *id)
 	ReadProLicence(&uselog);
 	*(id+3) = uselog.rand_hw;
 }
+void lc_GetChipMonth(unsigned long *month)
+{
+	struct pro_licence uselog;
+	ReadProLicence(&uselog);
+	*month = uselog.date / DATE_PER_MONTH;
+
+	if (*month == 0) {
+		*month = 1;
+	}
+	else if (*month > 24) {
+		*month = 24;
+	}
+}
+
+void lc_GetChipleave(unsigned long *leave)
+{
+	*leave = UseTick(0);
+}
+
+
+#define MONTH_FOREVERY 71
+#define MONTH_RESET		72
+#define MOUNT_LIMIT		24
+
+#define INFINITUDE  (DATE_PER_MONTH * MONTH_FOREVERY)
+#define LIMIT_DATE  (DATE_PER_MONTH * MOUNT_LIMIT)
+void lc_CheckMonth(unsigned long *month)
+{
+	int i;
+	struct pro_licence uselog;
+
+	switch (*month) {
+	case MONTH_FOREVERY:
+		return ;
+	case MONTH_RESET:
+		// TODO reset page FLASH_PAGE_LICENCE
+		// WriteFlash
+		uselog.key[0] = -1;
+		uselog.key[1] = -1;
+		uselog.key[2] = -1;
+		uselog.key[3] = -1;
+		uselog.licence[0] = -1;
+		uselog.licence[1] = -1;
+		uselog.licence[2] = -1;
+		uselog.licence[3] = -1;
+		uselog.rand_hw = -1;
+		uselog.licence_times = -1;
+		uselog.date = -1;
+		for (i = 0; i < LOG_CACHE; i++) {
+			uselog.log[i] = -1;	
+		}
+		
+		uselog.unuse0 = -1;
+		WriteProLicence(&uselog);
+		return ;
+	}
+	if (*month > MOUNT_LIMIT) {
+		*month = MOUNT_LIMIT;
+	}
+}
+
+/**
+ * @brief	输入注册码
+ * @param	licence 注册码 4 word
+ * @param	month 注册时间
+ * @retval	1 注册成功
+ * @retval	1 注册失败
+ * @remarks	
+ * @see	
+ */
+
+int lc_InputLicence(unsigned long *licence, unsigned long *month)
+{
+	struct pro_licence uselog;
+	unsigned long licence_true[4];
+	char strout[111];
+	calc_licence(licence_true, *month);
+
+	// sprintf(strout,"%8.8u %8.8u %8.8u %8.8u \n", 
+	// 	licence_true[0],licence_true[1],licence_true[2],licence_true[3]);
+	// gl_text(0,100,strout, -1);
+	if (licence_true[3] == licence[0]) {
+		uselog.licence[0] = licence_true[0];
+		uselog.licence[1] = licence_true[1];
+		uselog.licence[2] = licence_true[2];
+		uselog.licence[3] = licence_true[3];
+		uselog.date = *month * DATE_PER_MONTH;
+		// WriteProLicence(&uselog);
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+// End 对外接口
+// *****************************************************************************
+
+
 
 
 // 1. 写入硬件序列号
 // 2. 写入授权Licence
-int WriteProLicence(struct pro_licence *puselog)
+static int WriteProLicence(struct pro_licence *puselog)
 {
 
 	WriteFlash(FLASH_PAGE_LICENCE,
@@ -211,37 +320,84 @@ int ShowTotal()
 
 
 
+
+// static void calc_licence1(unsigned long *lic, unsigned long month)
+// {
+// 	unsigned long id[4];
+// 	unsigned long licence[4];
+// 	unsigned long val;
+
+// 	lc_GetChipID(&id[0]);
+
+// 	id[0] = 0x43077332;
+// 	id[1] = 0x30364734;
+// 	id[2] = 0x05d5ff33;
+// 	id[3] = 0xc1d2;
+
+// 	val = id[0] ^ id[1] ^ id[2] ^ id[3] ^ month;
+// 	licence[0] = val ^ id[0];
+// 	val += licence[0];
+
+// 	licence[1] = val ^ id[1];
+// 	val += licence[1];
+
+// 	licence[2] = val ^ id[2];
+// 	val += licence[2];
+
+// 	licence[3] = val ^ id[3];
+// 	val += licence[3];
+
+// 	val += licence[0] + licence[1] + licence[2] + licence[3];
+// 	*(lic + 0) = licence[0];
+// 	*(lic + 1) = licence[1];
+// 	*(lic + 2) = licence[2];
+// 	*(lic + 3) = licence[3];
+// }
+
 /**
  * @brief	计算正确的序列号
  * @param	lic 输出序列号值，lic是 unsigned long [4]
  * @see	
  */
-
-static void calc_licence(unsigned long *lic)
+static void calc_licence(unsigned long *lic, unsigned long month)
 {
+	int i;
 	unsigned long id[4];
 	unsigned long licence[4];
 	unsigned long val;
+	unsigned char encrypt[64] ="admin";//21232f29 7a57a5a7 43894a0e 4a801fc3
+	unsigned char decrypt[16];
+	char strout[120];
+	MD5_CTX md5;
 
-	Get_ChipID(&id[0]);
-	val = id[0] ^ id[1] ^ id[3] ^ id[4];
-	licence[0] = val ^ id[0];
-	val += licence[0];
+	lc_GetChipID(&id[0]);
+	sprintf(encrypt, "%8.8x-%8.8x-%8.8x-%8.8x-%2.2d",
+		id[0],id[1],id[2],id[3],month);
+	gl_text(0,180, encrypt,-1);
 
-	licence[1] = val ^ id[1];
-	val += licence[1];
+	MD5Init(&md5);         		
+	MD5Update(&md5,encrypt,strlen((char *)encrypt));
+	MD5Final(&md5,decrypt);        
+	// printf("加密前:%s\n加密后:",encrypt);
+	// for(i=0;i<16;i++)
+	// {
+	// 	// printf("%02x",decrypt[i]);
+	// }
+	sprintf(strout, "%02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x",
+		decrypt[0],decrypt[1],decrypt[2],decrypt[3],decrypt[4],decrypt[5],
+		decrypt[6],decrypt[7],decrypt[8],decrypt[9],decrypt[10],decrypt[11],
+		decrypt[12],decrypt[13],decrypt[14],decrypt[15]);
 
-	licence[2] = val ^ id[2];
-	val += licence[2];
+	*(lic + 0) = decrypt[3] + (decrypt[2] << 8) + (decrypt[1] << 16) + (decrypt[0] << 24);
+	*(lic + 1) = decrypt[7] + (decrypt[6] << 8) + (decrypt[5] << 16) + (decrypt[4] << 24);
+	*(lic + 2) = decrypt[11] + (decrypt[10] << 8) + (decrypt[9] << 16) + (decrypt[8] << 24);
+	*(lic + 3) = decrypt[15] + (decrypt[14] << 8) + (decrypt[13] << 16) + (decrypt[12] << 24);
 
-	licence[3] = val ^ id[3];
-	val += licence[3];
-
-	val += licence[0] + licence[1] + licence[2] + licence[3];
-	*(lic + 0) = licence[0];
-	*(lic + 1) = licence[1];
-	*(lic + 2) = licence[2];
-	*(lic + 3) = licence[3];
+	gl_text(0,200, strout,-1);
+	
+	// getchar();
+	
+	return ;
 }
 
 // return 0 非法
@@ -256,7 +412,7 @@ static void calc_licence(unsigned long *lic)
  * @see	
  */
 
-int CheckLicence(unsigned long licence[4])
+int lc_CheckLicence(unsigned long licence[4])
 {
 	int i;
 	char *plog;
@@ -266,12 +422,13 @@ int CheckLicence(unsigned long licence[4])
 	char strout[256];
 	unsigned long val, licence_true[4];
 
-
+	
+	
 	// 读取RandHW
 	// 读取Licence
 	ReadProLicence(&uselog);
 	// 比较Licence
-	Get_ChipID(&id[0]);
+	lc_GetChipID(&id[0]);
 	sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", *(id+0), *(id+1), *(id+2), *(id+3));
 	gl_text(0,20,strout,-1);
 
@@ -284,9 +441,10 @@ int CheckLicence(unsigned long licence[4])
 	}
 	// 有licence则首先计算正确的licence
 	else {
-		calc_licence(licence_true);	
+		calc_licence(licence_true, uselog.date / DATE_PER_MONTH );	
 	}
-
+	sprintf(strout, "%8.8u %8.8u",licence_true[3], -1);
+	gl_text(0,30,strout,-1);
 	val = UseTick(0);
 	if (licence_true[3] == uselog.licence[3] && val > 0) {
 		sprintf(strout, "ok %d", val);
@@ -306,8 +464,7 @@ int CheckLicence(unsigned long licence[4])
 		return 0;
 	}
 
-	sprintf(strout, "%8.8u %8.8x",licence_true[3], FLASH_PAGE_LICENCE);
-	gl_text(0,30,strout,-1);
+
 	
 	sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", 
 			uselog.licence[0], 

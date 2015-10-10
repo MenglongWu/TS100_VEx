@@ -25,6 +25,7 @@ struct dlg
 	unsigned int licence2;
 	unsigned int licence;// 最终汇总到licence里，主要是为了考虑用户体验
 	unsigned int month;
+	unsigned int leave;
 };
 
 
@@ -32,15 +33,29 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 {
 	struct gl_widget *plist = widget_list;
 
+	pwin->licence1 = 0;
+	pwin->licence2 = 0;
+	pwin->month = 11;
+	pwin->sn[0] = 2;
+	pwin->sn[1] = 2;
+	pwin->sn[2] = 2;
+	pwin->sn[3] = 2;
+	pwin->leave = 3;
 	while(plist->id != 0) {
 		gl_text(plist->x, plist->y, plist->caption, -1);
 		plist++;
 	}
-	Get_ChipID(&pwin->sn[0]);
-	// gl_text(0,0,widget_list[3].caption,-1);
-	// sprintf(widget_list[3].caption, "jlw");
+	lc_GetChipID(&pwin->sn[0]);
 	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
-		pwin->sn[0],pwin->sn[1],pwin->sn[2],pwin->sn[3]);
+			pwin->sn[0],pwin->sn[1],pwin->sn[2],pwin->sn[3]);
+
+	lc_GetChipMonth(&pwin->month);
+	sprintf(widget_list[8].caption, "%2.2d",
+			pwin->month);
+
+	lc_GetChipleave(&pwin->leave);
+	sprintf(widget_list[9].caption, "Timeout %4.4d day",
+				pwin->leave);
 }
 
 void OnPaint(struct gl_widget *widget_list, struct dlg *val)
@@ -52,6 +67,7 @@ void OnPaint(struct gl_widget *widget_list, struct dlg *val)
 		gl_text(plist->x, plist->y, plist->caption, -1);
 		plist++;
 	}
+
 }
 void DrawText(struct gl_widget *widget_list, char *str)
 {
@@ -196,7 +212,7 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 		break;
 	case GUI_WM_PAINT:
 		OnPaint(widget_list, pwin);
-		DrawFocus(widget_list[msg->focus].x,widget_list[msg->focus].y, 0xffff00);
+		DrawFocus(widget_list[msg->focus].x,widget_list[msg->focus].y, 0xff00ff);
 		//msg = GUI_WM_PAINT;
 		// msg->msg_id = GUI_WM_PAINT;
 		break;
@@ -239,11 +255,24 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 			InputPanel(input, 3,&rlen);
 
 			pwin->month = atof_(input);
+			lc_CheckMonth(&pwin->month);
 			sprintf(widget_list[8].caption, "%2.2d", pwin->month);
 
 			PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
 			pwin->licence = pwin->licence1 * 1000000 + pwin->licence2;
 		}
+		else if (GUI_ID_OK == GetDlgID(widget_list) && 
+			(msg->wparam & 0xffff) == VK_Z) {
+			pwin->licence = pwin->licence1 * 1000000 + pwin->licence2;
+			if ( lc_InputLicence(&pwin->licence, &pwin->month )) {
+				sprintf(widget_list[1].caption, "ok");
+			}
+			else {
+				sprintf(widget_list[1].caption, "no");
+			}
+			// PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
+		}
+
 
 		sprintf(strout, "%d", pwin->licence);
 		gl_text(0,10,strout,-1);

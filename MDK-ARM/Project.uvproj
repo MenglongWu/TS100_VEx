@@ -460,6 +460,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
             </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\APP\md5.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1408,6 +1413,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
             </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\APP\md5.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2355,6 +2365,11 @@
               <FileName>licenceDlg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
+            </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\APP\md5.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3344,6 +3359,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
             </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\APP\md5.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4331,6 +4351,11 @@
               <FileName>licenceDlg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
+            </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\APP\md5.c</FilePath>
             </File>
           </Files>
         </Group>

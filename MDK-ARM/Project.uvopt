@@ -1216,8 +1216,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <TopLine>77</TopLine>
+      <CurrentLine>101</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\USER\APP\flash.c</PathWithFileName>
       <FilenameWithoutPath>flash.c</FilenameWithoutPath>
@@ -1326,10 +1326,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>3</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <TopLine>315</TopLine>
+      <CurrentLine>321</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\USER\APP\stm32_chip.c</PathWithFileName>
       <FilenameWithoutPath>stm32_chip.c</FilenameWithoutPath>
@@ -1347,6 +1347,20 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\USER\GLCD\licenceDlg.c</PathWithFileName>
       <FilenameWithoutPath>licenceDlg.c</FilenameWithoutPath>
+    </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>0</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <ColumnNumber>19</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>118</TopLine>
+      <CurrentLine>158</CurrentLine>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\USER\APP\md5.c</PathWithFileName>
+      <FilenameWithoutPath>md5.c</FilenameWithoutPath>
     </File>
   </Group>
 

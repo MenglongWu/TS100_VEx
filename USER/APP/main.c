@@ -2520,6 +2520,7 @@ int main(void)
 	//Get_ChipID();
 	// UseTick();
 	// CheckLicence(lic);
+	// lc_CheckLicence(lic);
 	UI_LicenceDlg();
 	while(1)
 	{
