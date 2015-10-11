@@ -8,6 +8,9 @@
 		- \subpage Bug-VEx1-4-0-2051011-3
 	- Bug-VEx1-4-0-2051011-4 BUG-N : 伪随机数为0，芯片ID最后一位为0
 		- \subpage Bug-VEx1-4-0-2051011-4
+	- Add 序列号与主模块组装初步完毕，暂时每月设置成9天
+	- TODO 开启FLASH写保护
+	- TODO 将核心部件打包成 lib 知识产权保护，不提供源码，核心包括 stm32_chip.c 以及 Ctrl_Power
 
 2015-10-10: Menglong Wu
 	- Add MD5 modules

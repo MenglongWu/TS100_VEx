@@ -4,10 +4,12 @@
 #include "md5.h"
 // #include "stm32_chip.h"
 
-
+#ifndef _DEBUG_LICENCE_
+#define gl_text
+#endif
 #define LOG_CACHE (4*200)
 
-#define DATE_PER_MONTH (3)
+#define DATE_PER_MONTH (9)
 struct pro_licence
 {
 	char key[4];					// 公钥

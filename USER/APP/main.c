@@ -2174,6 +2174,7 @@ case 3:
 		tmpredmode = g_red_mode;//保存红光当前状态，防止在校准界面弹出红光闪烁
 		g_red_mode = 0;			
 		Ctrl_RedLight(g_red_mode);//关闭红光
+		UI_LicenceDlg();
 		UI_DebugMain();
 		g_red_mode = tmpredmode;//恢复之前红光状态
 		LCD_DrawMain();

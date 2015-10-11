@@ -54,8 +54,7 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	
 
 	lc_GetChipleave(&pwin->leave);
-	pwin->leave = Rand();
-	sprintf(widget_list[9].caption, "Timeout %4.4x day",
+	sprintf(widget_list[9].caption, "Timeout %4.4d day",
 				pwin->leave);
 	switch (lc_IsLicence()) {
 	case 0:
@@ -81,7 +80,7 @@ void OnPaint(struct gl_widget *widget_list, struct dlg *val)
 {
 	struct gl_widget *plist = widget_list;
 
-	// gl_fill_rect(0,0,320,240);
+	gl_fill_rect(0,0,320,240);
 	while(plist->id != 0) {
 		gl_text(plist->x, plist->y, plist->caption, -1);
 		plist++;
@@ -135,8 +134,7 @@ int NewFocus(struct gl_widget *widget_list,int curIndex, int dir)
 		}
 	}
 _End:;
-	sprintf(strout ,"index = %d %d", i,len);
-	gl_text(0,3,strout, -1);
+
 	return i;
 }
 #define VK_NULL 0
@@ -151,7 +149,6 @@ int GetKeyEvent(struct gl_msg *msg)
 {
 	if (KeyPress(GPIOA, KEY_A) ) {
 		msg->wparam = VK_A | 0x00010000;
-		gl_text(0,30,"kk",-1);
 		return 1;
 	}
 	else if (KeyPress(GPIOA, KEY_B) ) {
@@ -182,7 +179,6 @@ int GetEvent(struct gl_widget *wdiget_list, struct gl_msg *msg)
 	if (msg->msg_idnext != GUI_WM_UNUSE) {
 		msg->msg_id = msg->msg_idnext;
 		msg->msg_idnext = GUI_WM_UNUSE;
-		gl_text(0,40,"dfsf",-1);
 		return 1;
 	}
 	// Enable Key event
@@ -236,8 +232,6 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 		// msg->msg_id = GUI_WM_PAINT;
 		break;
 	case GUI_WM_KEYDOWN:
-		sprintf(strout, "afss %c %c", msg->wparam & 0xffff, VK_A);
-		gl_text(0,20,strout,-1);
 		if( (msg->wparam & 0xffff) == VK_A) {
 			msg->focus = NewFocus(widget_list, /*12,*/ msg->focus,  GUI_PARE_FOCUS);
 			PostMsg(widget_list, msg, pwin,GUI_WM_FOCUS);
@@ -303,8 +297,8 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 		}
 
 
-		sprintf(strout, "%d", pwin->licence);
-		gl_text(0,10,strout,-1);
+		// sprintf(strout, "%d", pwin->licence);
+		// gl_text(0,10,strout,-1);
 		break;
 	case GUI_WM_FOCUS:
 		DrawFocus(widget_list[msg->focus].x,widget_list[msg->focus].y, 0xff00ff);
@@ -351,10 +345,6 @@ void UI_LicenceDlg()
 	int16_t oldpen,oldbrush,oldbk,oldfont;	
 	int focus = 0;
 	int i = 0;
-	char ff[] = "fasfs";
-	char *st = ff;
-	struct af kk;
-	kk.p = ff;
 
 
 
@@ -365,8 +355,8 @@ void UI_LicenceDlg()
 	(char*)widget_list[8].caption = str_month_val;
 	(char*)widget_list[9].caption = str_timeout;
 
-	gl_text(0,12,widget_list[1].caption,-1);
-	// while(1);
+	
+	
 	oldfont  = gl_ui_setfontcolor(COL_Black);
 	oldpen   = gl_ui_setpencolor(COL_Black);
 	oldbrush = gl_ui_setbrushcolor(COL_White);
@@ -385,9 +375,9 @@ void UI_LicenceDlg()
 	while(GUI_WM_QUIT != msg.msg_id) {
 		GetEvent(widget_list, &msg);
 		SendMsg(_cb_Window, widget_list,  &msg, &windlg);
-		sprintf(strout, "afss %d %8.8x %d %d %u", i, msg.wparam, msg.msg_id, msg.msg_idnext, windlg.licence);
-		i++;
-		gl_text(0,30,strout,-1);
+		// sprintf(strout, "afss %d %8.8x %d %d %u", i, msg.wparam, msg.msg_id, msg.msg_idnext, windlg.licence);
+		// i++;
+		// gl_text(0,30,strout,-1);
 	}
 _End:;
 	gl_ui_setfontcolor(oldfont);
