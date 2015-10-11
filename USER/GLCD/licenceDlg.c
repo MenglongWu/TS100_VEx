@@ -44,6 +44,17 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	pwin->leave = 3;
 	
 
+	lc_GetChipID(&pwin->sn[0]);
+	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
+			pwin->sn[0],pwin->sn[1],pwin->sn[2],pwin->sn[3]);
+
+	lc_GetChipMonth(&pwin->month);
+	sprintf(widget_list[8].caption, "%2.2d",
+			pwin->month);
+	
+	lc_GetChipleave(&pwin->leave);
+	sprintf(widget_list[9].caption, "Timeout %4.4d day",
+				pwin->leave);
 	switch (lc_CheckLicence(lic)) {
 	case 0:
 		sprintf(widget_list[1].caption, "no sn");
@@ -57,17 +68,9 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 
 	}
 
-	lc_GetChipID(&pwin->sn[0]);
-	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
-			pwin->sn[0],pwin->sn[1],pwin->sn[2],pwin->sn[3]);
 
-	lc_GetChipMonth(&pwin->month);
-	sprintf(widget_list[8].caption, "%2.2d",
-			pwin->month);
 
-	lc_GetChipleave(&pwin->leave);
-	sprintf(widget_list[9].caption, "Timeout %4.4d day",
-				pwin->leave);
+
 
 	while(plist->id != 0) {
 		gl_text(plist->x, plist->y, plist->caption, -1);
@@ -216,7 +219,7 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 	char strout[200];
 	int rlen;
 	char input[40];
-	int tval;
+	int ret;
 
 	switch (msg->msg_id) {
 	case GUI_WM_CREATE:
@@ -281,11 +284,17 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 		else if (GUI_ID_OK == GetDlgID(widget_list) && 
 			(msg->wparam & 0xffff) == VK_Z) {
 			pwin->licence = pwin->licence1 * 1000000 + pwin->licence2;
-			if ( lc_InputLicence(&pwin->licence, &pwin->month )) {
-				sprintf(widget_list[1].caption, "ok");
-			}
-			else {
-				sprintf(widget_list[1].caption, "no");
+			ret = lc_InputLicence(&pwin->licence, &pwin->month );
+			switch( ret ) {
+			case 0:
+				sprintf(widget_list[1].caption, "ok         ");
+				break;
+			case 1:
+				sprintf(widget_list[1].caption, "licence error");
+				break;
+			case 2:
+				sprintf(widget_list[1].caption, "have been licence");
+				break;
 			}
 			PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
 		}

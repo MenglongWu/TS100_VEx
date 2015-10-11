@@ -125,12 +125,28 @@ void lc_CheckMonth(unsigned long *month)
 	}
 }
 
+int IsLicence()
+{
+	struct pro_licence uselog;
+	unsigned long licence_true[4];
+
+	ReadProLicence(&uselog);
+	// 已经注册
+	if (licence_true[3] == uselog.licence[3]) {
+		return 1;
+	}
+	else  {
+		return 0;
+	}
+}
+
 /**
  * @brief	输入注册码
  * @param	licence 注册码 4 word
  * @param	month 注册时间
- * @retval	1 注册成功
+ * @retval	0 注册成功
  * @retval	1 注册失败
+ * @retval	2 已经注册
  * @remarks	
  * @see	
  */
@@ -141,11 +157,15 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 	unsigned long licence_true[4];
 	char strout[111];
 	int i;
-	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
 
-	// sprintf(strout,"%8.8u %8.8u %8.8u %8.8u \n", 
-	// 	licence_true[0],licence_true[1],licence_true[2],licence_true[3]);
-	// gl_text(0,100,strout, -1);
+
+	// 已经注册
+	if (IsLicence() ) {
+		return 2;
+	}
+
+	// 未注册
+	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
 	if (licence_true[3] == licence[0]) {
 		ReadProLicence(&uselog);
 		uselog.licence[0] = licence_true[0];
@@ -157,10 +177,10 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 			uselog.log[i] = -1;
 		}
 		WriteProLicence(&uselog);
-		return 1;
+		return 0;
 	}
 	else {
-		return 0;
+		return 1;
 	}
 }
 // End 对外接口
@@ -250,6 +270,9 @@ int UseTick(int bwrite)
 	int maxdata;
 
 	
+	if ( 0 == IsLicence() ) {
+		return 0;
+	}
 	ReadProLicence(&uselog);
 
 	if (INFINITUDE == uselog.date) {
@@ -475,6 +498,7 @@ int lc_CheckLicence(unsigned long licence2[4])
 	else if (licence_true[3] == uselog.licence[3] && val == 0) {
 		gl_text(0,50,"timeout",-1);
 		LicencePageReset();
+		ReadProLicence(&uselog);
 		g_licence_timeout = 1;
 		return 2;
 	}

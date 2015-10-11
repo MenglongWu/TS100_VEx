@@ -2,6 +2,8 @@
 2015-10-10: Menglong Wu
 	- Bug-VEx1-4-0-2051011-1 BUG-N:已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册
 		- \subpage Bug-VEx1-4-0-2051011-1
+	- Bug-VEx1-4-0-2051011-2 BUG-C:已经注册的设备反复注册，延长使用期限
+		- \subpage Bug-VEx1-4-0-2051011-2
 
 2015-10-10: Menglong Wu
 	- Add MD5 modules
