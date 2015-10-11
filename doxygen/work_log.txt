@@ -5,6 +5,8 @@
         md5     12345678 xxxxxxxx xxxxxxxx xxxxxxxx
         licence[0] = md5[0], licence[1] = md5[1] ....
         only checking licence[3]
+    - Bug : 当每月日子数从30修改成9后，不在UseTick计数
+    - Bug : LicencePageReset 调用后再调用lc_GetChipleave得到剩余时间为200
         
 2015-10-09: Menglong Wu
 	- Add : 添加 gl_widget.h 添加 struct gl_widget ，逐步实现一种类似UCGUI的 “字符” 界面

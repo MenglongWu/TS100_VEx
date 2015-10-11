@@ -2506,6 +2506,10 @@ int main(void)
 	FLASH_Configuration();
 	ProtectFlash();
 	printf("Draw UI\n");
+
+	// lc_CheckLicence(lic);
+	UI_LicenceDlg();
+	
 	LCD_DrawMain();
 	
 	powerDownDelayCnt=0;
@@ -2520,8 +2524,7 @@ int main(void)
 	//Get_ChipID();
 	// UseTick();
 	// CheckLicence(lic);
-	// lc_CheckLicence(lic);
-	UI_LicenceDlg();
+	
 	while(1)
 	{
 		ProGet1963State();

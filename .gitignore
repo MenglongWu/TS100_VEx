@@ -5,5 +5,6 @@
 .tags
 MDK-ARM/Project_STM3210E-EVAL.dep
 MDK-ARM/Output/*
+MDK-ARM
 MDK-ARM/JLinkLog.txt
 *.bak

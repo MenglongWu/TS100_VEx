@@ -32,6 +32,7 @@ struct dlg
 void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 {
 	struct gl_widget *plist = widget_list;
+	unsigned long lic[4];
 
 	pwin->licence1 = 0;
 	pwin->licence2 = 0;
@@ -45,6 +46,20 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 		gl_text(plist->x, plist->y, plist->caption, -1);
 		plist++;
 	}
+
+	switch (lc_CheckLicence(lic)) {
+	case 0:
+		sprintf(widget_list[1].caption, "no sn");
+		break;
+	case 1:
+		sprintf(widget_list[1].caption, "sn success");
+		break;
+	case 2:
+		sprintf(widget_list[1].caption, "timeout");
+		break;
+
+	}
+
 	lc_GetChipID(&pwin->sn[0]);
 	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
 			pwin->sn[0],pwin->sn[1],pwin->sn[2],pwin->sn[3]);
@@ -271,6 +286,10 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 				sprintf(widget_list[1].caption, "no");
 			}
 			// PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
+		}
+		else if (GUI_ID_CANCEL == GetDlgID(widget_list) && 
+			(msg->wparam & 0xffff) == VK_Z) {
+			PostMsg(widget_list, msg, pwin,GUI_WM_QUIT);
 		}
 
 

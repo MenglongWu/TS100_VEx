@@ -5,9 +5,9 @@
 // #include "stm32_chip.h"
 
 
-#define LOG_CACHE (4*6)
+#define LOG_CACHE (4*200)
 
-#define DATE_PER_MONTH (31)
+#define DATE_PER_MONTH (9)
 struct pro_licence
 {
 	char key[4];					// 公钥
@@ -80,7 +80,30 @@ void lc_GetChipleave(unsigned long *leave)
 }
 
 
-#define MONTH_FOREVERY 71
+void LicencePageReset()
+{
+	int i;
+	struct pro_licence uselog;
+
+	uselog.key[0] = -1;
+	uselog.key[1] = -1;
+	uselog.key[2] = -1;
+	uselog.key[3] = -1;
+	uselog.licence[0] = -1;
+	uselog.licence[1] = -1;
+	uselog.licence[2] = -1;
+	uselog.licence[3] = -1;
+	uselog.rand_hw = -1;
+	uselog.licence_times = -1;
+	uselog.date = -1;
+	for (i = 0; i < LOG_CACHE; i++) {
+		uselog.log[i] = -1;	
+	}
+	
+	uselog.unuse0 = -1;
+	WriteProLicence(&uselog);
+}
+#define MONTH_FOREVERY  90
 #define MONTH_RESET		72
 #define MOUNT_LIMIT		24
 
@@ -88,32 +111,13 @@ void lc_GetChipleave(unsigned long *leave)
 #define LIMIT_DATE  (DATE_PER_MONTH * MOUNT_LIMIT)
 void lc_CheckMonth(unsigned long *month)
 {
-	int i;
-	struct pro_licence uselog;
-
 	switch (*month) {
 	case MONTH_FOREVERY:
 		return ;
 	case MONTH_RESET:
 		// TODO reset page FLASH_PAGE_LICENCE
 		// WriteFlash
-		uselog.key[0] = -1;
-		uselog.key[1] = -1;
-		uselog.key[2] = -1;
-		uselog.key[3] = -1;
-		uselog.licence[0] = -1;
-		uselog.licence[1] = -1;
-		uselog.licence[2] = -1;
-		uselog.licence[3] = -1;
-		uselog.rand_hw = -1;
-		uselog.licence_times = -1;
-		uselog.date = -1;
-		for (i = 0; i < LOG_CACHE; i++) {
-			uselog.log[i] = -1;	
-		}
-		
-		uselog.unuse0 = -1;
-		WriteProLicence(&uselog);
+		LicencePageReset();
 		return ;
 	}
 	if (*month > MOUNT_LIMIT) {
@@ -136,18 +140,23 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 	struct pro_licence uselog;
 	unsigned long licence_true[4];
 	char strout[111];
+	int i;
 	calc_licence(licence_true, *month);
 
 	// sprintf(strout,"%8.8u %8.8u %8.8u %8.8u \n", 
 	// 	licence_true[0],licence_true[1],licence_true[2],licence_true[3]);
 	// gl_text(0,100,strout, -1);
 	if (licence_true[3] == licence[0]) {
+		ReadProLicence(&uselog);
 		uselog.licence[0] = licence_true[0];
 		uselog.licence[1] = licence_true[1];
 		uselog.licence[2] = licence_true[2];
 		uselog.licence[3] = licence_true[3];
-		uselog.date = *month * DATE_PER_MONTH;
-		// WriteProLicence(&uselog);
+		uselog.date = (*month)  * DATE_PER_MONTH;
+		for (i = 0; i < LOG_CACHE; i++) {
+			uselog.log[i] = -1;
+		}
+		WriteProLicence(&uselog);
 		return 1;
 	}
 	else {
@@ -238,6 +247,7 @@ int UseTick(int bwrite)
 	char strout[256];
 	unsigned long start, child;
 	int use = 0;
+	int maxdata;
 
 	
 	ReadProLicence(&uselog);
@@ -257,7 +267,21 @@ int UseTick(int bwrite)
 	}
 	plog = (unsigned long*)&uselog.log[0];
 	istimeout = 1;
-	for (i = 0; i < LOG_CACHE/4; i++) {
+	
+	// 无效值
+	// if (uselog.date == (unsigned long)(-1)) {
+	// 	return 3;
+	// }
+	// 在Log里遍历注册日期前的日子
+	if (LOG_CACHE / 4 < uselog.date) {
+		maxdata = LOG_CACHE / 4;
+	}
+	else {
+		maxdata = uselog.date;
+	}
+	// return uselog.date;
+
+	for (i = 0; i < maxdata; i++) {
 		// if ( *plog == *(plog + 1) && *plog != 0) {
 		// 	*plog = 0;
 		// 	istimeout = 0;
@@ -303,7 +327,7 @@ _Write:;
 			4);
 	}
 	
-	return LOG_CACHE - use;
+	return maxdata - use;
 }
 
 // 显示使用计数
@@ -412,7 +436,7 @@ static void calc_licence(unsigned long *lic, unsigned long month)
  * @see	
  */
 
-int lc_CheckLicence(unsigned long licence[4])
+int lc_CheckLicence(unsigned long licence2[4])
 {
 	int i;
 	char *plog;
@@ -455,6 +479,7 @@ int lc_CheckLicence(unsigned long licence[4])
 	}
 	else if (licence_true[3] == uselog.licence[3] && val == 0) {
 		gl_text(0,50,"timeout",-1);
+		LicencePageReset();
 		g_licence_timeout = 1;
 		return 2;
 	}
