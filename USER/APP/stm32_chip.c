@@ -141,7 +141,7 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 	unsigned long licence_true[4];
 	char strout[111];
 	int i;
-	calc_licence(licence_true, *month);
+	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
 
 	// sprintf(strout,"%8.8u %8.8u %8.8u %8.8u \n", 
 	// 	licence_true[0],licence_true[1],licence_true[2],licence_true[3]);
@@ -282,11 +282,6 @@ int UseTick(int bwrite)
 	// return uselog.date;
 
 	for (i = 0; i < maxdata; i++) {
-		// if ( *plog == *(plog + 1) && *plog != 0) {
-		// 	*plog = 0;
-		// 	istimeout = 0;
-		// 	break;
-		// }
 		switch(*plog) {
 		case 0xFFFFFFFF:
 			*plog = 0xffffff00;
@@ -465,7 +460,7 @@ int lc_CheckLicence(unsigned long licence2[4])
 	}
 	// 有licence则首先计算正确的licence
 	else {
-		calc_licence(licence_true, uselog.date / DATE_PER_MONTH );	
+		calc_licence(licence_true, uselog.date); //  / DATE_PER_MONTH );	
 	}
 	sprintf(strout, "%8.8u %8.8u",licence_true[3], -1);
 	gl_text(0,30,strout,-1);

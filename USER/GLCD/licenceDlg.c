@@ -42,10 +42,7 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	pwin->sn[2] = 2;
 	pwin->sn[3] = 2;
 	pwin->leave = 3;
-	while(plist->id != 0) {
-		gl_text(plist->x, plist->y, plist->caption, -1);
-		plist++;
-	}
+	
 
 	switch (lc_CheckLicence(lic)) {
 	case 0:
@@ -71,13 +68,18 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	lc_GetChipleave(&pwin->leave);
 	sprintf(widget_list[9].caption, "Timeout %4.4d day",
 				pwin->leave);
+
+	while(plist->id != 0) {
+		gl_text(plist->x, plist->y, plist->caption, -1);
+		plist++;
+	}
 }
 
 void OnPaint(struct gl_widget *widget_list, struct dlg *val)
 {
 	struct gl_widget *plist = widget_list;
 
-	gl_fill_rect(0,0,320,240);
+	// gl_fill_rect(0,0,320,240);
 	while(plist->id != 0) {
 		gl_text(plist->x, plist->y, plist->caption, -1);
 		plist++;
@@ -285,7 +287,7 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 			else {
 				sprintf(widget_list[1].caption, "no");
 			}
-			// PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
+			PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
 		}
 		else if (GUI_ID_CANCEL == GetDlgID(widget_list) && 
 			(msg->wparam & 0xffff) == VK_Z) {
@@ -368,6 +370,7 @@ void UI_LicenceDlg()
 	
 	msg.msg_id = GUI_WM_CREATE;
 	SendMsg(_cb_Window, widget_list,  &msg, &windlg);
+	
 	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
 		windlg.sn[0],windlg.sn[1],windlg.sn[2],windlg.sn[3]);
 	while(GUI_WM_QUIT != msg.msg_id) {
