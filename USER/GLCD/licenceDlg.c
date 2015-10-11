@@ -42,23 +42,7 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	pwin->sn[2] = 2;
 	pwin->sn[3] = 2;
 	pwin->leave = 3;
-	while(plist->id != 0) {
-		gl_text(plist->x, plist->y, plist->caption, -1);
-		plist++;
-	}
-
-	switch (lc_CheckLicence(lic)) {
-	case 0:
-		sprintf(widget_list[1].caption, "no sn");
-		break;
-	case 1:
-		sprintf(widget_list[1].caption, "sn success");
-		break;
-	case 2:
-		sprintf(widget_list[1].caption, "timeout");
-		break;
-
-	}
+	
 
 	lc_GetChipID(&pwin->sn[0]);
 	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
@@ -67,17 +51,37 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	lc_GetChipMonth(&pwin->month);
 	sprintf(widget_list[8].caption, "%2.2d",
 			pwin->month);
+	
 
 	lc_GetChipleave(&pwin->leave);
-	sprintf(widget_list[9].caption, "Timeout %4.4d day",
+	pwin->leave = Rand();
+	sprintf(widget_list[9].caption, "Timeout %4.4x day",
 				pwin->leave);
+	switch (lc_IsLicence()) {
+	case 0:
+		sprintf(widget_list[1].caption, "no sn");
+		break;
+	case 1:
+		sprintf(widget_list[1].caption, "sn success");
+		break;
+
+	}
+
+
+
+
+
+	while(plist->id != 0) {
+		gl_text(plist->x, plist->y, plist->caption, -1);
+		plist++;
+	}
 }
 
 void OnPaint(struct gl_widget *widget_list, struct dlg *val)
 {
 	struct gl_widget *plist = widget_list;
 
-	gl_fill_rect(0,0,320,240);
+	// gl_fill_rect(0,0,320,240);
 	while(plist->id != 0) {
 		gl_text(plist->x, plist->y, plist->caption, -1);
 		plist++;
@@ -214,7 +218,7 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 	char strout[200];
 	int rlen;
 	char input[40];
-	int tval;
+	int ret;
 
 	switch (msg->msg_id) {
 	case GUI_WM_CREATE:
@@ -279,13 +283,19 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 		else if (GUI_ID_OK == GetDlgID(widget_list) && 
 			(msg->wparam & 0xffff) == VK_Z) {
 			pwin->licence = pwin->licence1 * 1000000 + pwin->licence2;
-			if ( lc_InputLicence(&pwin->licence, &pwin->month )) {
-				sprintf(widget_list[1].caption, "ok");
+			ret = lc_InputLicence(&pwin->licence, &pwin->month );
+			switch( ret ) {
+			case 0:
+				sprintf(widget_list[1].caption, "-------OK--------");
+				break;
+			case 1:
+				sprintf(widget_list[1].caption, "Licence error    ");
+				break;
+			case 2:
+				sprintf(widget_list[1].caption, "Have been licence");
+				break;
 			}
-			else {
-				sprintf(widget_list[1].caption, "no");
-			}
-			// PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
+			PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
 		}
 		else if (GUI_ID_CANCEL == GetDlgID(widget_list) && 
 			(msg->wparam & 0xffff) == VK_Z) {
@@ -346,7 +356,8 @@ void UI_LicenceDlg()
 	struct af kk;
 	kk.p = ff;
 
-	
+
+
 	(char*)widget_list[1].caption = str_msg;
 	(char*)widget_list[3].caption = str_sn_val;
 	(char*)widget_list[5].caption = str_lic_val1;
@@ -368,6 +379,7 @@ void UI_LicenceDlg()
 	
 	msg.msg_id = GUI_WM_CREATE;
 	SendMsg(_cb_Window, widget_list,  &msg, &windlg);
+	
 	sprintf(widget_list[3].caption, "%8.8x %8.8x %8.8x %8.8x",
 		windlg.sn[0],windlg.sn[1],windlg.sn[2],windlg.sn[3]);
 	while(GUI_WM_QUIT != msg.msg_id) {

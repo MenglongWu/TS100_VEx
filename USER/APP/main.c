@@ -1228,7 +1228,10 @@ _OutPut:
 	if ( g_licence_timeout == 0) {
 		DAC_SoftwareTriggerCmd(DAC_Channel_1,DISABLE);  
 		DAC_SetChannel1Data(DAC_Align_12b_R, v->dac);
-		DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE);	
+		DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE);
+	}
+	else {
+		Ctrl_Wavelength(WL_OFF);
 	}
 	// sprintf(strout,"%d %d",v->adc, v->dac);
 	// gl_text(90,10,strout,-1);
@@ -2477,6 +2480,7 @@ int main(void)
 	delay_init();
 	/*****************按键中断初始化部分*********************** */
 	Function_IO_config(); 
+
 	//RedLightIOConfig();
 
 	//各个定时中断
@@ -2508,9 +2512,16 @@ int main(void)
 	printf("Draw UI\n");
 
 	// lc_CheckLicence(lic);
-	UI_LicenceDlg();
-	
+	//Ctrl_Wavelength(WL_OFF);
+	// 已经注册
+	if ( !lc_IsLicence()) {
+		lc_CheckLicence(lic);
+		Ctrl_Wavelength(WL_OFF);
+		UI_LicenceDlg();	
+	}
+	lc_CheckLicence(lic);	
 	LCD_DrawMain();
+
 	
 	powerDownDelayCnt=0;
 	g_batter_delay = 10001;	

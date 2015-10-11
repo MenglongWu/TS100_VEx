@@ -1,0 +1,153 @@
+
+/*! \page commit-20xx-xx-xx brief
+	intruction
+	\code {.cpp}
+	add code
+	\endcode
+*/
+
+
+/*! \page Bug-VEx1-4-0-2051011-4 Bug-VEx1-4-0-2051011-4-N : 伪随机数为0，芯片ID最后一位为0
+	在LICENCE Dialog前关闭AD输入信号，由于采用AD值作为随机数，当关闭AD输入信号后AD值全为0，所以导致芯片ID最后一位为0。
+
+	解决措施
+	UI_LicenceDlg 里调用的lc_CheckLicence不产生随机数，而是在之前调用 lc_CheckLicence 参数随机数，同时 Ctrl_Wavelength 关闭光功率。这样就能正确使用ADC
+	\code {.cpp}
+	diff --git a/USER/APP/main.c b/USER/APP/main.c
+	index 0ad57fe..ee50a6d 100644
+	--- a/USER/APP/main.c
+	+++ b/USER/APP/main.c
+	@@ -2508,9 +2512,16 @@ int main(void)
+	 	printf("Draw UI\n");
+	 
+	 	// lc_CheckLicence(lic);
+	-	UI_LicenceDlg();
+	-	
+	+	//Ctrl_Wavelength(WL_OFF);
+	+	// 已经注册
+	+	if ( !lc_IsLicence()) {
+	+		lc_CheckLicence(lic);
+	+		Ctrl_Wavelength(WL_OFF);
+	+		UI_LicenceDlg();	
+	+	}
+	+	lc_CheckLicence(lic);	
+	 	LCD_DrawMain();
+	+
+	\endcode
+*/
+
+
+/*! \page Bug-VEx1-4-0-2051011-3 Bug-VEx1-4-0-2051011-3-C : 未注册显示剩余时间不为0
+	正常情况下为注册应该显示剩余使用次数为0，在UseTick为对设备是否注册检查，
+	只有成功注册的设备才有计算使用次数的必要
+
+	\code {.cpp}
+	diff --git a/USER/APP/stm32_chip.c b/USER/APP/stm32_chip.c
+	index eae992c..5df1967 100644
+	--- a/USER/APP/stm32_chip.c
+	+++ b/USER/APP/stm32_chip.c
+	@@ -125,12 +125,28 @@ void lc_CheckMonth(unsigned long *month)
+	 	}
+	 }
+	 
+	+int IsLicence()
+	+{
+	+	struct pro_licence uselog;
+	+	unsigned long licence_true[4];
+	+
+	+	ReadProLicence(&uselog);
+	+	// 已经注册
+	+	if (licence_true[3] == uselog.licence[3]) {
+	+		return 1;
+	+	}
+	+	else  {
+	+		return 0;
+	+	}
+	+}
+	@@ -250,6 +270,9 @@ int UseTick(int bwrite)
+	 	int maxdata;
+	 
+	 	
+	+	if ( 0 == IsLicence() ) {
+	+		return 0;
+	+	}
+	\endcode	
+*/
+
+
+
+
+
+
+/*! \page Bug-VEx1-4-0-2051011-2 Bug-VEx1-4-0-2051011-2-C: 已经注册的设备反复注册，延长使用期限
+
+	注册成功后剩余使用次数正确倒计时，但在倒计时未结束前再次使用相同的注册码注册依旧能注册成功，并且倒计时复位。
+	应该限定“只有未注册的设备才能注册”
+
+	\code {.cpp}
+	diff --git a/USER/APP/stm32_chip.c b/USER/APP/stm32_chip.c
+	index a447579..5df1967 100644
+	--- a/USER/APP/stm32_chip.c
+	+++ b/USER/APP/stm32_chip.c
+	@@ -141,11 +157,15 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
+	 	unsigned long licence_true[4];
+	 	char strout[111];
+	 	int i;
+	-	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
+	 
+	-	// sprintf(strout,"%8.8u %8.8u %8.8u %8.8u \n", 
+	-	// 	licence_true[0],licence_true[1],licence_true[2],licence_true[3]);
+	-	// gl_text(0,100,strout, -1);
+	+
+	+	// 已经注册
+	+	if (IsLicence() ) {
+	+		return 2;
+	+	}
+	+
+	+	// 未注册
+	+	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
+	 	if (licence_true[3] == licence[0]) {
+	 		ReadProLicence(&uselog);
+	 		uselog.licence[0] = licence_true[0];
+	@@ -157,10 +177,10 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
+	 			uselog.log[i] = -1;
+	 		}
+	 		WriteProLicence(&uselog);
+	-		return 1;
+	+		return 0;
+	 	}
+	 	else {
+	-		return 0;
+	+		return 1;
+	 	}
+	 }
+	\endcode	
+/*
+
+
+
+
+
+/*! \page Bug-VEx1-4-0-2051011-1 Bug-VEx1-4-0-2051011-1-N : 已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册
+测试代码里将每月设置为9天，注册后每次开机成功计算剩余使用次数。在不擦除LICENCE Flash 页面情况下修改每月天数为15天再次测试，开机后显示注册码失效，不再对使用次数倒计时
+	
+	\code {.cpp}
+	diff --git a/USER/APP/stm32_chip.c b/USER/APP/stm32_chip.c
+	index eae992c..a447579 100644
+	--- a/USER/APP/stm32_chip.c
+	+++ b/USER/APP/stm32_chip.c
+	@@ -141,7 +141,7 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
+	 	unsigned long licence_true[4];
+	 	char strout[111];
+	 	int i;
+	-	calc_licence(licence_true, *month);
+	+	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
+	@@ -465,7 +460,7 @@ int lc_CheckLicence(unsigned long licence2[4])
+	 	}
+	 	// 有licence则首先计算正确的licence
+	 	else {
+	-		calc_licence(licence_true, uselog.date / DATE_PER_MONTH );	
+	+		calc_licence(licence_true, uselog.date); //  / DATE_PER_MONTH );	
+	\endcode	
+*/
+

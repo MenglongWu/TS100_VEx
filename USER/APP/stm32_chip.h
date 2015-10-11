@@ -11,4 +11,5 @@ void lc_GetChipleave(unsigned long *leave);
 void lc_CheckMonth(unsigned long *month);
 int lc_InputLicence(unsigned long *licence, unsigned long *month);
 int lc_CheckLicence(unsigned long licence[4]);
+int lc_IsLicence();
 #endif
