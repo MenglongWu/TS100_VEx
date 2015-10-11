@@ -52,18 +52,17 @@ void OnCreate(struct gl_widget *widget_list, struct dlg *pwin)
 	sprintf(widget_list[8].caption, "%2.2d",
 			pwin->month);
 	
+
 	lc_GetChipleave(&pwin->leave);
-	sprintf(widget_list[9].caption, "Timeout %4.4d day",
+	pwin->leave = Rand();
+	sprintf(widget_list[9].caption, "Timeout %4.4x day",
 				pwin->leave);
-	switch (lc_CheckLicence(lic)) {
+	switch (lc_IsLicence()) {
 	case 0:
 		sprintf(widget_list[1].caption, "no sn");
 		break;
 	case 1:
 		sprintf(widget_list[1].caption, "sn success");
-		break;
-	case 2:
-		sprintf(widget_list[1].caption, "timeout");
 		break;
 
 	}
@@ -287,13 +286,13 @@ static int _cb_Window(struct gl_widget *widget_list, struct gl_msg *msg, struct 
 			ret = lc_InputLicence(&pwin->licence, &pwin->month );
 			switch( ret ) {
 			case 0:
-				sprintf(widget_list[1].caption, "ok         ");
+				sprintf(widget_list[1].caption, "-------OK--------");
 				break;
 			case 1:
-				sprintf(widget_list[1].caption, "licence error");
+				sprintf(widget_list[1].caption, "Licence error    ");
 				break;
 			case 2:
-				sprintf(widget_list[1].caption, "have been licence");
+				sprintf(widget_list[1].caption, "Have been licence");
 				break;
 			}
 			PostMsg(widget_list, msg, pwin,GUI_WM_PAINT);
@@ -357,7 +356,8 @@ void UI_LicenceDlg()
 	struct af kk;
 	kk.p = ff;
 
-	
+
+
 	(char*)widget_list[1].caption = str_msg;
 	(char*)widget_list[3].caption = str_sn_val;
 	(char*)widget_list[5].caption = str_lic_val1;

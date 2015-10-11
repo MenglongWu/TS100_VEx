@@ -7,7 +7,7 @@
 
 #define LOG_CACHE (4*200)
 
-#define DATE_PER_MONTH (9)
+#define DATE_PER_MONTH (3)
 struct pro_licence
 {
 	char key[4];					// 公钥
@@ -40,10 +40,24 @@ int g_licence_timeout = 0;				///< 许可证是否超时
 extern volatile uint16_t ADCConvertedValue[2000];
 unsigned long Rand()
 {
-	return 	(ADCConvertedValue[1] << 2) + 
+	unsigned long arr[1024];
+	int ret,i;
+	for (i = 0; i < 1024;i++) {
+		ret += arr[i];
+	}
+	
+	// 内存随机值 + 电池ADC + 激光器ADC
+	ret =   ret + 	
+			(ADCConvertedValue[0] << 2) + 
+			(ADCConvertedValue[2] << 4) + 
+			(ADCConvertedValue[4] << 8) + 
+			(ADCConvertedValue[6])    ;//  + 
+
+	ret = 	(ADCConvertedValue[1] << 2) + 
 			(ADCConvertedValue[3] << 4) + 
 			(ADCConvertedValue[5] << 8) + 
-			(ADCConvertedValue[7]);
+			(ADCConvertedValue[7])      ;
+	return (ret & 0x0000ffff);
 }
 
 // *****************************************************************************
@@ -125,12 +139,13 @@ void lc_CheckMonth(unsigned long *month)
 	}
 }
 
-int IsLicence()
+int lc_IsLicence()
 {
 	struct pro_licence uselog;
 	unsigned long licence_true[4];
 
 	ReadProLicence(&uselog);
+	calc_licence(licence_true, uselog.date);
 	// 已经注册
 	if (licence_true[3] == uselog.licence[3]) {
 		return 1;
@@ -160,7 +175,7 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 
 
 	// 已经注册
-	if (IsLicence() ) {
+	if (lc_IsLicence() ) {
 		return 2;
 	}
 
@@ -228,6 +243,7 @@ int ReadProLicence(struct pro_licence *puselog)
 	// 检验是否存在硬件序列号，没有则生成
 	if (puselog->rand_hw == (unsigned long)(-1)) {
 		puselog->rand_hw = Rand();
+		// puselog->rand_hw = 0x1234;
 		// 强制将使用日志复位，防止 rand_hw 是 0xff，但日志并不是全0xff
 		plog = &puselog->log[0];
 		// for (i = 0; i < LOG_CACHE; i++) {
@@ -270,7 +286,7 @@ int UseTick(int bwrite)
 	int maxdata;
 
 	
-	if ( 0 == IsLicence() ) {
+	if ( 0 == lc_IsLicence() ) {
 		return 0;
 	}
 	ReadProLicence(&uselog);
@@ -463,39 +479,42 @@ int lc_CheckLicence(unsigned long licence2[4])
 	int istimeout = 0;
 	char strout[256];
 	unsigned long val, licence_true[4];
-
+	unsigned long islic;
 	
 	
 	// 读取RandHW
 	// 读取Licence
-	ReadProLicence(&uselog);
+	// ReadProLicence(&uselog);
 	// 比较Licence
-	lc_GetChipID(&id[0]);
-	sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", *(id+0), *(id+1), *(id+2), *(id+3));
-	gl_text(0,20,strout,-1);
+	// lc_GetChipID(&id[0]);
+	// sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", *(id+0), *(id+1), *(id+2), *(id+3));
+	// gl_text(0,20,strout,-1);
 
 
-	// 无licence则失败
-	val = !uselog.licence[0] + !uselog.licence[1] + !uselog.licence[2] + !uselog.licence[3];
-	val = 1;
-	if ( val == 0) {
-		return 0;
-	}
-	// 有licence则首先计算正确的licence
-	else {
-		calc_licence(licence_true, uselog.date); //  / DATE_PER_MONTH );	
-	}
+	// // 无licence则失败
+	// val = !uselog.licence[0] + !uselog.licence[1] + !uselog.licence[2] + !uselog.licence[3];
+	// val = 1;
+	// if ( val == 0) {
+	// 	return 0;
+	// }
+	// // 有licence则首先计算正确的licence
+	// else {
+	// 	calc_licence(licence_true, uselog.date); //  / DATE_PER_MONTH );	
+	// }
 	sprintf(strout, "%8.8u %8.8u",licence_true[3], -1);
 	gl_text(0,30,strout,-1);
+	islic = lc_IsLicence();
 	val = UseTick(0);
-	if (licence_true[3] == uselog.licence[3] && val > 0) {
+	// if (licence_true[3] == uselog.licence[3] && val > 0) {
+	if (islic && val > 0) {
 		sprintf(strout, "ok %d", val);
 		gl_text(0,50,strout,-1);
 		g_licence_timeout = 0;
 		UseTick(1);
 		return 1;
 	}
-	else if (licence_true[3] == uselog.licence[3] && val == 0) {
+	// else if (licence_true[3] == uselog.licence[3] && val == 0) {
+	else if (islic && val == 0) {
 		gl_text(0,50,"timeout",-1);
 		LicencePageReset();
 		ReadProLicence(&uselog);
@@ -507,27 +526,5 @@ int lc_CheckLicence(unsigned long licence2[4])
 		g_licence_timeout = 1;
 		return 0;
 	}
-
-
-	
-	sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", 
-			uselog.licence[0], 
-			uselog.licence[1], 
-			uselog.licence[2], 
-			uselog.licence[3]);
-	gl_text(0,40,strout,-1);
-
-	
-	sprintf(strout, "limit %d",i);
-	gl_text(0,50,strout,-1);
-
-	return 0;
-	if (licence_true[3] == uselog.licence[3]) {
-		gl_text(0,50,"okokokook",-1);
-		return 1;
-	}
-
-	gl_text(0,50,"noooooooooo",-1);
-	return 0;
 }
 
