@@ -7,9 +7,12 @@
 #ifndef _DEBUG_LICENCE_
 #define gl_text
 #endif
+
+// 最多能容纳 LOG_CACHE 天记录，除非不 开启无穷 (INFINITUDE) 记录，
+// 此时 Flash 读出的注册日期为 INFINITUDE
 #define LOG_CACHE (4*200)
 
-#define DATE_PER_MONTH (9)
+#define DATE_PER_MONTH (31)
 struct pro_licence
 {
 	char key[4];					// 公钥
@@ -334,15 +337,15 @@ int UseTick(int bwrite)
 	// 	return 3;
 	// }
 	// 在Log里遍历注册日期前的日子
-	if (LOG_CACHE / 4 < uselog.date) {
-		maxdata = LOG_CACHE / 4;
+	if (LOG_CACHE  < uselog.date) {
+		maxdata = LOG_CACHE ;
 	}
 	else {
 		maxdata = uselog.date;
 	}
 	// return uselog.date;
 
-	for (i = 0; i < maxdata; i++) {
+	for (i = 0; i < LOG_CACHE / 4; i++) {
 		switch(*plog) {
 		case 0xFFFFFFFF:
 			*plog = 0xffffff00;
