@@ -2,6 +2,9 @@
 2015-10-12: Menglong Wu
 	- Bug-VEx1-4-0-2051012-1 BUG-N : 调试代码最长注册时间仅200天，理论上应该4*200天
 		- \subpage Bug-VEx1-4-0-2051012-1
+	- Add Flash解锁放在产品信息配置菜单，并且有误操作保护：两行"----"，选定Unlock后Flash解锁，所有信息删除
+	- Add Flash 保护锁完成
+	- Release VEx1.4.0
 
 2015-10-11: Menglong Wu
 	- Bug-VEx1-4-0-2051011-1 BUG-N:已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册

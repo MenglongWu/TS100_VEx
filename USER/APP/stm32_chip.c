@@ -57,9 +57,9 @@ unsigned long Rand()
 			(ADCConvertedValue[0] << 2) + 
 			(ADCConvertedValue[2] << 4) + 
 			(ADCConvertedValue[4] << 8) + 
-			(ADCConvertedValue[6])    ;//  + 
+			(ADCConvertedValue[6])      + 
 
-	ret = 	(ADCConvertedValue[1] << 2) + 
+		 	(ADCConvertedValue[1] << 2) + 
 			(ADCConvertedValue[3] << 4) + 
 			(ADCConvertedValue[5] << 8) + 
 			(ADCConvertedValue[7])      ;

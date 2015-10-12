@@ -2170,7 +2170,7 @@ case 3:
 	if((int32_t)hackval == -4000) {
 		state = 0;
 		
-		UnProtectFlash();
+		// UnProtectFlash();
 		tmpredmode = g_red_mode;//保存红光当前状态，防止在校准界面弹出红光闪烁
 		g_red_mode = 0;			
 		Ctrl_RedLight(g_red_mode);//关闭红光
