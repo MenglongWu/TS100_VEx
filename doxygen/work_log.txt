@@ -1,5 +1,9 @@
 /*! \page workhis TS100 项目工作日志
-2015-10-10: Menglong Wu
+2015-10-12: Menglong Wu
+	- Bug-VEx1-4-0-2051012-1 BUG-N : 调试代码最长注册时间仅200天，理论上应该4*200天
+		- \subpage Bug-VEx1-4-0-2051012-1
+
+2015-10-11: Menglong Wu
 	- Bug-VEx1-4-0-2051011-1 BUG-N:已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册
 		- \subpage Bug-VEx1-4-0-2051011-1
 	- Bug-VEx1-4-0-2051011-2 BUG-C:已经注册的设备反复注册，延长使用期限

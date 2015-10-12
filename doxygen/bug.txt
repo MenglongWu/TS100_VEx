@@ -6,6 +6,51 @@
 	\endcode
 */
 
+/*! \page Bug-VEx1-4-0-2051012-1 Bug-VEx1-4-0-2051012-1-N : 调试代码最长注册时间仅200天，理论上应该4*200天
+	
+	计算使用日志算法疏漏，将for循环里的maxdata改成LOG_CACHE / 4
+
+	\code {.cpp}
+	diff --git a/USER/APP/stm32_chip.c b/USER/APP/stm32_chip.c
+	index a1c6eeb..bd99c4f 100644
+	--- a/USER/APP/stm32_chip.c
+	+++ b/USER/APP/stm32_chip.c
+	@@ -7,9 +7,12 @@
+	 #ifndef _DEBUG_LICENCE_
+	 #define gl_text
+	 #endif
+	+
+	+// 最多能容纳 LOG_CACHE 天记录，除非不 开启无穷 (INFINITUDE) 记录，
+	+// 此时 Flash 读出的注册日期为 INFINITUDE
+	 #define LOG_CACHE (4*200)
+	 
+	-#define DATE_PER_MONTH (9)
+	+#define DATE_PER_MONTH (31)
+	 struct pro_licence
+	 {
+	 	char key[4];					// 公钥
+	@@ -334,15 +337,15 @@ int UseTick(int bwrite)
+	 	// 	return 3;
+	 	// }
+	 	// 在Log里遍历注册日期前的日子
+	-	if (LOG_CACHE / 4 < uselog.date) {
+	-		maxdata = LOG_CACHE / 4;
+	+	if (LOG_CACHE  < uselog.date) {
+	+		maxdata = LOG_CACHE ;
+	 	}
+	 	else {
+	 		maxdata = uselog.date;
+	 	}
+	 	// return uselog.date;
+	 
+	-	for (i = 0; i < maxdata; i++) {
+	+	for (i = 0; i < LOG_CACHE / 4; i++) {
+	 		switch(*plog) {
+	 		case 0xFFFFFFFF:
+	 			*plog = 0xffffff00;
+	\endcode
+*/
+
 
 /*! \page Bug-VEx1-4-0-2051011-4 Bug-VEx1-4-0-2051011-4-N : 伪随机数为0，芯片ID最后一位为0
 	在LICENCE Dialog前关闭AD输入信号，由于采用AD值作为随机数，当关闭AD输入信号后AD值全为0，所以导致芯片ID最后一位为0。

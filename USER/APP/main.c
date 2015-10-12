@@ -2518,7 +2518,7 @@ int main(void)
 	if ( !lc_IsLicence()) {
 		lc_CheckLicence(lic);
 		Ctrl_Wavelength(WL_OFF);
-		UI_LicenceDlg();	
+		UI_LicenceDlg();
 	}
 	lc_CheckLicence(lic);	
 	LCD_DrawMain();
