@@ -318,7 +318,7 @@ void UI_LicenceDlg()
 {
 	struct gl_widget widget_list[] = 
 	{
-		{GUI_ID_STATIC,151- 20,41, "LICENCE"},		//licence 标题
+		{GUI_ID_STATIC,151- 50,41, "Hello KuGo LICENCE"},		//licence 标题
 		{GUI_ID_STATIC,55- 20,63,	"message                                    "},		//message
 		{GUI_ID_STATIC,55- 20,84,	"SN"},		//SN
 		{GUI_ID_STATIC,107- 20,84,	"00000000 00000000 00000000 00000000"},		//SN val

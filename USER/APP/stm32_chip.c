@@ -27,6 +27,7 @@ static void calc_licence(unsigned long *lic, unsigned long month);
 static int WriteProLicence(struct pro_licence *puselog);
 
 int g_licence_timeout = 0;				///< 许可证是否超时
+int g_forevery = 0;
 // struct pro_licence 必须4字节对齐，方便Flash读写操作
 
 
@@ -123,18 +124,21 @@ void LicencePageReset()
 #define MONTH_RESET		72
 #define MOUNT_LIMIT		24
 
-#define INFINITUDE  (DATE_PER_MONTH * MONTH_FOREVERY)
+// #define INFINITUDE  (DATE_PER_MONTH * MONTH_FOREVERY)
+#define INFINITUDE  (90*31)//(DATE_PER_MONTH * MONTH_FOREVERY)
 #define LIMIT_DATE  (DATE_PER_MONTH * MOUNT_LIMIT)
 void lc_CheckMonth(unsigned long *month)
 {
+	g_forevery = 0;
 	switch (*month) {
 	case MONTH_FOREVERY:
-		return ;
+		g_forevery = 1;
+		break;
 	case MONTH_RESET:
 		// TODO reset page FLASH_PAGE_LICENCE
 		// WriteFlash
 		LicencePageReset();
-		return ;
+		break;
 	}
 	if (*month > MOUNT_LIMIT) {
 		*month = MOUNT_LIMIT;
@@ -145,8 +149,9 @@ int lc_IsLicence()
 {
 	struct pro_licence uselog;
 	unsigned long licence_true[4];
-
+	
 	ReadProLicence(&uselog);
+	
 	calc_licence(licence_true, uselog.date);
 	// 已经注册
 	if (licence_true[3] == uselog.licence[3]) {
@@ -174,6 +179,7 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 	unsigned long licence_true[4];
 	char strout[111];
 	int i;
+	unsigned long date = 0;
 
 
 	// 已经注册
@@ -182,18 +188,29 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 	}
 
 	// 未注册
-	calc_licence(licence_true, (*month) * DATE_PER_MONTH);
+	// 永久性注册
+	if (g_forevery == 1) {
+		date = INFINITUDE;
+	}
+	// 时间受限注册
+	else {
+		date = (*month) * DATE_PER_MONTH;
+	}
+
+	
+	calc_licence(licence_true, date);	
 	if (licence_true[3] == licence[0]) {
 		ReadProLicence(&uselog);
 		uselog.licence[0] = licence_true[0];
 		uselog.licence[1] = licence_true[1];
 		uselog.licence[2] = licence_true[2];
 		uselog.licence[3] = licence_true[3];
-		uselog.date = (*month)  * DATE_PER_MONTH;
+		uselog.date = date;
 		for (i = 0; i < LOG_CACHE; i++) {
 			uselog.log[i] = -1;
 		}
 		WriteProLicence(&uselog);
+		
 		return 0;
 	}
 	else {
@@ -256,7 +273,10 @@ int ReadProLicence(struct pro_licence *puselog)
 		WriteProLicence(puselog);
 	}
 	// 授权期限最大2年，这是个虚值，开始时并未写入Flash，只有获取有效Licence后才写入具体值
-	if (puselog->date > LIMIT_DATE) {
+	if (puselog->date == INFINITUDE) {
+		return 0;
+	}
+	else if (puselog->date > LIMIT_DATE) {
 		puselog->date = LIMIT_DATE;
 	}
 	return 0;
