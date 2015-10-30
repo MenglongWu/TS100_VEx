@@ -12,10 +12,26 @@ struct gl_widget
 	uint32_t id;
 	uint16_t x;
 	uint16_t y;
-	int8_t *caption;
+	uint8_t *caption;
 	int32_t property;
 };
 
+struct gl_msg
+{
+	uint32_t msg_id;
+	uint32_t msg_idnext;
+	struct gl_widget *win_id;
+	struct gl_widget *child_id;
+	uint32_t  wparam;
+	void 	 *lparam;
+	uint32_t focus;
+};
+
+struct gl_keyevent
+{
+	int code;
+	int press;
+};
 #define GUI_EN_FOCUSE			 0x80000000
 #define GUI_ID_OK                1
 #define GUI_ID_CANCEL            2
@@ -131,7 +147,7 @@ struct gl_widget
 
 #define GUI_ID_USER     0x800
 
-
+#define GUI_WM_UNUSE 0
 #define GUI_WM_CREATE 1
 #define GUI_WM_PAINT  2
 #define GUI_WM_QUIT 3

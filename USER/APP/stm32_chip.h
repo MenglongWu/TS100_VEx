@@ -5,13 +5,11 @@ extern int g_licence_timeout;				///< 许可证是否超时
 
 
 
-unsigned long Rand();
-void Get_ChipID(unsigned long *id);
-int WriteProLicence(struct pro_licence *puselog);
-int WriteTick(struct pro_licence *puselog);
-int ReadProLicence(struct pro_licence *puselog);
-int UseTick(int bwrite);
-int ShowTick();
-int ShowTotal();
-int CheckLicence(unsigned long licence[4]);
+void lc_GetChipID(unsigned long *id);
+void lc_GetChipMonth(unsigned long *month);
+void lc_GetChipleave(unsigned long *leave);
+void lc_CheckMonth(unsigned long *month);
+int lc_InputLicence(unsigned long *licence, unsigned long *month);
+int lc_CheckLicence(unsigned long licence[4]);
+int lc_IsLicence();
 #endif

@@ -838,17 +838,17 @@ void UI_ProductConfig()
 	POINT stloc[] = {//静态文本位置
 		4,2,     4,14,    4,26,//   4,38,  4,50,    4,62,     
 		66,14,   66,26,   66,38,  66,50,    66,62,
-		156,50,  156,62};
+		157,14, 157,26, 157,38, 157,50,  157,62};
 	POINT loc[] = {//游标位置
 		34,2,    
 		4,38,    4,50,    4,62,
 		34,26,   34,38,  34,50,    34,62,     //Logo /*66 14*/
 		104,26,   104,38,  104,50,    104,62,
-		156,50,  156,62};
+		157,14, 157,26, 157,38, 157,50,  157,62};
 	int8_t *caption[] = {//静态文本内容
 		"SN","Laser","650",//"1310","1490","1550",
 		"LOGO","Addr","Color","High","Width",
-		"Save","Exit"};
+		"---","Lock", "---", "Save","Exit"};
 	struct adj_power_flash tmpFlash;
 	
 	
@@ -876,7 +876,7 @@ _Redraw:;
 	gl_clear(0,0,320,240,COL_White);
 	
 	//静态文本
- 	for(i = 0;i < 10;++i) {
+ 	for(i = 0;i < sizeof(caption) / sizeof(int8_t*);++i) {
  		gl_text(stloc[i].x,stloc[i].y,caption[i],-1);
  	}
 // 	for(i = 0;i < 3;++i) {
@@ -1087,19 +1087,23 @@ _Redraw:;
 					gl_text(loc[11].x,loc[11].y,strout,-1);
 					break;
 				
-				
-				case 12://Save
+				case 13:
+					gl_text(loc[13].x,loc[13].y,"Unlock...",-1);
+					Delay_ms(1000);
+					UnProtectFlash();
+					break;
+				case 15://Save
 					g_adj_power = tmpFlash;
 					g_adj_power.flag = 0xaabbccdd;
 					WriteFlash(FLASH_PAGE_PRODUCT,
 						(uint32_t*)&(g_adj_power),
 						sizeof(struct adj_power_flash));
-					gl_text(loc[12].x,loc[12].y,"Save...",-1);
+					gl_text(loc[15].x,loc[15].y,"Save...",-1);
 					Delay_ms(1000);
-					gl_text(loc[12].x,loc[12].y,"       ",-1);
-					gl_text(loc[12].x,loc[12].y,"Save",-1);
+					gl_text(loc[15].x,loc[15].y,"       ",-1);
+					gl_text(loc[15].x,loc[15].y,"Save",-1);
 					break;
-				case 13://Exit
+				case 16://Exit
 					goto _End;
 					break;
 				}

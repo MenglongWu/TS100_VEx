@@ -1,8 +1,39 @@
 /*! \page workhis TS100 项目工作日志
+2015-10-12: Menglong Wu
+	- Bug-VEx1-4-0-2051012-1 BUG-N : 调试代码最长注册时间仅200天，理论上应该4*200天
+		- \subpage Bug-VEx1-4-0-2051012-1
+	- Add Flash解锁放在产品信息配置菜单，并且有误操作保护：两行"----"，选定Unlock后Flash解锁，所有信息删除
+	- Add Flash 保护锁完成
+	- Release VEx1.4.0
+
+2015-10-11: Menglong Wu
+	- Bug-VEx1-4-0-2051011-1 BUG-N:已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册
+		- \subpage Bug-VEx1-4-0-2051011-1
+	- Bug-VEx1-4-0-2051011-2 BUG-C:已经注册的设备反复注册，延长使用期限
+		- \subpage Bug-VEx1-4-0-2051011-2
+	- Bug-VEx1-4-0-2051011-3 BUG-C : 未注册显示剩余时间不为0
+		- \subpage Bug-VEx1-4-0-2051011-3
+	- Bug-VEx1-4-0-2051011-4 BUG-N : 伪随机数为0，芯片ID最后一位为0
+		- \subpage Bug-VEx1-4-0-2051011-4
+	- Add 序列号与主模块组装初步完毕，暂时每月设置成9天
+	- TODO 开启FLASH写保护
+	- TODO 将核心部件打包成 lib 知识产权保护，不提供源码，核心包括 stm32_chip.c 以及 Ctrl_Power
+
+2015-10-10: Menglong Wu
+	- Add MD5 modules
+        encrypt id0-id1-id2-id3-month
+        md5     12345678 xxxxxxxx xxxxxxxx xxxxxxxx
+        licence[0] = md5[0], licence[1] = md5[1] ....
+        only checking licence[3]
+    - Bug : 当每月日子数从30修改成9后，不在UseTick计数
+    - Bug : LicencePageReset 调用后再调用lc_GetChipleave得到剩余时间为200
+        
 2015-10-09: Menglong Wu
 	- Add : 添加 gl_widget.h 添加 struct gl_widget ，逐步实现一种类似UCGUI的 “字符” 界面
 	- Add : NewFocus 获取下一个坐标
 	- Edit : DrawFocus 修改成记录上次坐标位置，当输入坐标为 (-1,-1) 时复位记录值
+	- Add : 添加 struct gl_msg，系统输入事件放在 wparm 里，用户输入事件放到 lparam 里
+	- TODO : 将 struct gl_msg,struct gl_widget,gl_dlgxx 整合形成 struct gl_win
 	
 */
 

@@ -1,15 +1,15 @@
 #ifndef _PROJECT_H_
 #define _PROJECT_H_
 
-//ÆÁ±Î¾¯¸æ
+//å±è”½è­¦å‘Š
 #pragma diag_suppress 167
 #pragma diag_suppress 174
-#pragma diag_suppress 1295//º¯Êı²ÎÊıÊÇ¿Õ±ØĞëÉùÃ÷³Évoid
-#pragma diag_suppress 68//Ç¿ÖÆ×ª»»ÓĞ·ûºÅºÍÎŞ·ûºÅ
+#pragma diag_suppress 1295//å‡½æ•°å‚æ•°æ˜¯ç©ºå¿…é¡»å£°æ˜æˆvoid
+#pragma diag_suppress 68//å¼ºåˆ¶è½¬æ¢æœ‰ç¬¦å·å’Œæ— ç¬¦å·
 
 
 
-/*°´¼ü*/
+/*æŒ‰é”®*/
 #define KEY_A GPIO_Pin_5
 #define KEY_B GPIO_Pin_3
 #define KEY_C GPIO_Pin_2
@@ -78,9 +78,9 @@ void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_
 // uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);
 
 
-//Æô¶¯°æ±¾ĞÅÏ¢
-#define TARGET_NAME		"G-LINK TS100 VEX1.3.4"    		//Ä¿±ê°åÃû³Æ
-#define RELEASE_DATE	"Release Date 2015.08.20"				//ĞŞ¸Ä·¢²¼Ê±¼ä
+//å¯åŠ¨ç‰ˆæœ¬ä¿¡æ¯
+#define TARGET_NAME		"G-LINK TS100 VEX1.4.0"    		//ç›®æ ‡æ¿åç§°
+#define RELEASE_DATE	"Release Date 2015.10.12"				//ä¿®æ”¹å‘å¸ƒæ—¶é—´
 
 #endif
 
