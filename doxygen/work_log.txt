@@ -1,4 +1,7 @@
 /*! \page workhis TS100 项目工作日志
+2015-10-20: Menglong Wu
+    - 上次提交到github没有合并MDK-ARM目录，现在加回来
+
 2015-10-12: Menglong Wu
 	- Bug-VEx1-4-0-2051012-1 BUG-N : 调试代码最长注册时间仅200天，理论上应该4*200天
 		- \subpage Bug-VEx1-4-0-2051012-1
