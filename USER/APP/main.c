@@ -1555,7 +1555,7 @@ void UI_ProWavelength()
 {
 	int tmpWave;
 
-	if(KeyDown(GPIOA,KEY_B)) {
+	if(KeyPress(GPIOA,KEY_B)) {
 		int wave[3] = {WL_1310,WL_1490,WL_1550};
 		int i,find;
 		static int index = 0;
@@ -1597,8 +1597,10 @@ void UI_ProWavelength()
 		Ctrl_Operating_Mode( Operating_Mode);
 		Ctrl_Wavelength( Wavelength_Selection_state); //Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
 		LCD_Wavelength_Selection_Ex( 170,200 ,Wavelength_Selection_state ,g_sm_mm_color, Grey );	//波长显示切换
+		// memset((void*)&fastsw.set,0,sizeof(struct fast_switch) - sizeof(int32_t));
+		fastsw.enable = 0;
 		Ctrl_Power(&g_power);
-	}
+	}                                            
 }
 
 /**
