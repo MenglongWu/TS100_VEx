@@ -653,15 +653,15 @@ void FLASH_Configuration()
 	if(g_adj_power.flag != 0xaabbccdd) 
 	{
 
-		g_adj_power._adc	  = 300;
-		g_adj_power._dac      = 300;
-		g_adj_power._1310_1k  = 0;
-		g_adj_power._1310_2k  = 0;
+		g_adj_power._adc   = 300;
+		g_adj_power._dac   = 300;
 
-		g_adj_power._1550cw   = 0;
-		g_adj_power._1550_270 = 0;
-		g_adj_power._1550_1k  = 0;
-		g_adj_power._1550_2k  = 0;
+		g_adj_power._adc0  = 300;
+		g_adj_power._dac0  = 300;
+		g_adj_power._adc1  = 300;
+		g_adj_power._dac1  = 300;
+		g_adj_power._adc2  = 300;
+		g_adj_power._dac2  = 300;
 
 		for(i = 0;i < 24;++i) {
 			g_adj_power.sn[i] = '0';
@@ -1153,40 +1153,40 @@ void Ctrl_Power(struct ctrl_param *v)
 // 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac;
 // 		}
 // 		else if(Operating_Mode == OPM_1K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1310_1k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._adc0;
 // 		}
 // 		else if(Operating_Mode == OPM_2K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1310_2k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac0;
 // 		}
 // 	}
 // 	else if(Wavelength_Selection_state == WL_1490 ) {
 // 	}
 // 	else if(Wavelength_Selection_state == WL_1550) {
 // 		if(Operating_Mode == OPM_CW) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550cw;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._adc1;
 // 		}
 // 		else if(Operating_Mode == OPM_270) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_270;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac1;
 // 		}
 // 		else if(Operating_Mode == OPM_1K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_1k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._adc2;
 // 		}
 // 		else if(Operating_Mode == OPM_2K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_2k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac2;
 // 		}
 // 	}
 // 	else {
 // 		//tmp.set = v->set;
 // 		tmpdbm = (float)(v->set/1000.0);
 // 	}
-	tmpdbm = (float)(v->set/1000.0);// + g_adj_power._1550_1k;
+	tmpdbm = (float)(v->set/1000.0);// + g_adj_power._adc2;
 	
 // 	//v->dac = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 2460);//2460只是个大概的数，方便快速调节
 // 	
 // 	if(Wavelength_Selection_state == WL_1550) {
 // 		//v->adc = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 1224.84472);
 // 		//v->adc = (uint16_t)(DbmToScale(tmpdbm) * 1224.84472);
-// 		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._1550cw*10);
+// 		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc1*10);
 // 	}
 // 	else if(Wavelength_Selection_state == WL_1310) {
 // 		//v->adc = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * (1000*1.040/0.805));
@@ -1200,8 +1200,27 @@ void Ctrl_Power(struct ctrl_param *v)
 	
 // 	
 	//以上计算v->adc全部忽略
+	// V1.4.0版本
 	v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc*10);
 	v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac*10);
+	// V1.4.1-bate版本
+	switch (Wavelength_Selection_state) {
+	case WL_1310:
+		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc0*10);
+		v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac0*10);
+		break;
+	case WL_1490:
+		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc1*10);
+		v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac1*10);
+		break;
+	case WL_1550:
+		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc2*10);
+		v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac2*10);
+		break;
+	default:
+		break;
+	}
+	
 
 
 	
@@ -1828,13 +1847,13 @@ void UI_ProductionAdjust()
 
 	adjval[0] = (float)g_adj_power._adc;
 	adjval[1] = (float)g_adj_power._dac;
-	adjval[2] = (float)g_adj_power._1310_1k;
-	adjval[3] = (float)g_adj_power._1310_2k;
+	adjval[2] = (float)g_adj_power._adc0;
+	adjval[3] = (float)g_adj_power._dac0;
 
-	adjval[4] = (float)g_adj_power._1550cw;
-	adjval[5] = (float)g_adj_power._1550_270;
-	adjval[6] = (float)g_adj_power._1550_1k;
-	adjval[7] = (float)g_adj_power._1550_2k;
+	adjval[4] = (float)g_adj_power._adc1;
+	adjval[5] = (float)g_adj_power._dac1;
+	adjval[6] = (float)g_adj_power._adc2;
+	adjval[7] = (float)g_adj_power._dac2;
 
 _Redraw:;
 	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
@@ -1912,13 +1931,13 @@ _Redraw:;
 
 				g_adj_power._adc   = adjval[0];
 				g_adj_power._dac = adjval[1];
-				g_adj_power._1310_1k  = adjval[2];
-				g_adj_power._1310_2k  = adjval[3];
+				g_adj_power._adc0  = adjval[2];
+				g_adj_power._dac0  = adjval[3];
 
-				g_adj_power._1550cw   = adjval[4];
-				g_adj_power._1550_270 = adjval[5];
-				g_adj_power._1550_1k  = adjval[6];
-				g_adj_power._1550_2k  = adjval[7];
+				g_adj_power._adc1   = adjval[4];
+				g_adj_power._dac1 = adjval[5];
+				g_adj_power._adc2  = adjval[6];
+				g_adj_power._dac2  = adjval[7];
 
 				WriteFlash(FLASH_PAGE_PRODUCT,
 					(uint32_t*)&(g_adj_power),
