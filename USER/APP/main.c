@@ -1825,7 +1825,6 @@ void UI_ProRedLight_ShutdownTimer()
  * @retval\n	NULL
  * @remarks	
  */
-
 void UI_ProductionAdjust()
 {
 	uint16_t x,y;
@@ -1834,13 +1833,27 @@ void UI_ProductionAdjust()
 	int32_t strlen;
 	uint32_t btnClk = 0;
 	struct point loc[10] = {
-		(4)*8,(56),(4+10)*8,(56),(4+10+10)*8,(56),(4+10+10+10)*8,(56),
-		(4)*8,(56+24),(4+10)*8,(56+24),(4+10+10)*8,(56+24),(4+10+10+10)*8,(56+24),
-		20,56+24+24,
-		20,56+24+24+24,
+		// (4)*8,(56),(4+10)*8,(56),(4+10+10)*8,(56),(4+10+10+10)*8,(56),
+		// (4)*8,(56+24),(4+10)*8,(56+24),(4+10+10)*8,(56+24),(4+10+10+10)*8,(56+24),
+		// 20,56+24+24,
+		// 20,56+24+24+24,
+
+		(4)*8,(56+24*0),
+		(4+10)*8,(56+24*0),
+		(4)*8,(56+24*1),
+		(4+10)*8,(56+24*1),
+		(4)*8,(56+24*2),
+		(4+10)*8,(56+24*2),
+		(4)*8,(56+24*3),
+		(4+10)*8,(56+24*3),
+
+		20,56+24*4,
+		20,56+24*5,
 	};
 	float adjval[8];
 	int8_t index = 0,last_index;
+	char strout[16] = {0};
+
 	last_index = index;
 
 
@@ -1864,31 +1877,56 @@ _Redraw:;
 	gl_clear(0,0,320,240,COL_White);
 	gl_text((4)*8,(56-24),"ADC",-1);
 	gl_text((4+10)*8,(56-24),"DAC",-1);
-	gl_text((4+10+10)*8,(56-24),"--",-1);
-	gl_text((4+10+10+10)*8,(56-24),"--",-1);
+	// gl_text((4+10+10)*8,(56-24),"--",-1);
+	// gl_text((4+10+10+10)*8,(56-24),"--",-1);
 
-	gl_text(0,(56),"-10",-1);
+	gl_text(0,(56+24*0),"---",-1);
 	sprintf(strout,"%6.2f",(float)(adjval[0]));
-	gl_text((4)*8,(56),strout,-1);
+	gl_text((4)*8,(56+24*0),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[1]);
-	gl_text((4+10)*8,(56),strout,-1);
-	sprintf(strout,"%6.2f",(float)adjval[2]);
-	gl_text((4+10+10)*8,(56),strout,-1);
+	gl_text((4+10)*8,(56+24*0),strout,-1);
+
+	// Ch0
+	snprintf(strout,16,"%d",g_adj_power._ch1wave);
+	gl_text(0,(56+24*1),strout,-1);
+	sprintf(strout,"%6.2f",(float)(adjval[2]));
+	gl_text((4)*8,(56+24*1),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[3]);
-	gl_text((4+10+10+10)*8,(56),strout,-1);
+	gl_text((4+10)*8,(56+24*1),strout,-1);
 
-	gl_text(0,(56+24),"---",-1);
-	sprintf(strout,"%6.2f",(float)adjval[4]);
-	gl_text((4)*8,(56+24),strout,-1);
+	// Ch1
+	snprintf(strout,16,"%d",g_adj_power._ch2wave);
+	gl_text(0,(56+24*2),strout,-1);
+	sprintf(strout,"%6.2f",(float)(adjval[4]));
+	gl_text((4)*8,(56+24*2),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[5]);
-	gl_text((4+10)*8,(56+24),strout,-1);
-	sprintf(strout,"%6.2f",(float)adjval[6]);
-	gl_text((4+10+10)*8,(56+24),strout,-1);
-	sprintf(strout,"%6.2f",(float)adjval[7]);
-	gl_text((4+10+10+10)*8,(56+24),strout,-1);
+	gl_text((4+10)*8,(56+24*2),strout,-1);
 
-	gl_text(20,56+24+24,"save",-1);
-	gl_text(20,56+24+24+24,"exit",-1);
+	// Ch2
+	snprintf(strout,16,"%d",g_adj_power._ch3wave);
+	gl_text(0,(56+24*3),strout,-1);
+	sprintf(strout,"%6.2f",(float)(adjval[6]));
+	gl_text((4)*8,(56+24*3),strout,-1);
+	sprintf(strout,"%6.2f",(float)adjval[7]);
+	gl_text((4+10)*8,(56+24*3),strout,-1);
+
+	// sprintf(strout,"%6.2f",(float)adjval[2]);
+	// gl_text((4+10)*8,(56),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[3]);
+	// gl_text((4+10+10+10)*8,(56),strout,-1);
+
+	// gl_text(0,(56+24),"---",-1);
+	// sprintf(strout,"%6.2f",(float)adjval[4]);
+	// gl_text((4)*8,(56+24),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[5]);
+	// gl_text((4+10)*8,(56+24),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[6]);
+	// gl_text((4+10+10)*8,(56+24),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[7]);
+	// gl_text((4+10+10+10)*8,(56+24),strout,-1);
+
+	gl_text(20,56+24*4,"save",-1);
+	gl_text(20,56+24*5,"exit",-1);
 
 	DrawFocus(loc[index].x,loc[index].y,COL_Black);//RGB16(255,255,0));
 	while(1) {
@@ -1943,10 +1981,10 @@ _Redraw:;
 					(uint32_t*)&(g_adj_power),
 					sizeof(struct adj_power_flash));
 				//gl_text(0,0,"save",-1);
-				gl_text(20,56+24+24,"save...",-1);
+				gl_text(20,56+24*4,"save...",-1);
 				Delay_ms(1000);
-				gl_text(20,56+24+24,"       ",-1);
-				gl_text(20,56+24+24,"save",-1);
+				gl_text(20,56+24*4,"       ",-1);
+				gl_text(20,56+24*4,"save",-1);
 			}
 			else if(index == 9) {
 				break;
