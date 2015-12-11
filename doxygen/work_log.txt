@@ -11,6 +11,7 @@
         float _dac2;//float _1550_2k;
     - \subpage Fix-VEx1-4-1-2051211-1
     - Change 多通道单独校准界面
+    - V1.4.1-bate 开启
 
 2015-12-09: Menglong Wu
     - \subpage Bug-VEx1-4-0-2051209-1
