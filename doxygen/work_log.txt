@@ -1,4 +1,18 @@
 /*! \page workhis TS100 项目工作日志
+2015-12-11: Menglong Wu
+    - Add 对用户妥协，按黄梦琳的建议：每个通道留一单独ADC、DAC校准值，内容存储于struct adj_power_flash
+        float _adc;///<校准ADC值，V1.4.1-bate后无用，保证FLASH存储内容兼容性
+        float _dac;///<加载DAC值，V1.4.1-bate后无用，保证FLASH存储内容兼容性
+        float _adc0;//float _1310_1k;
+        float _dac0;//float _1310_2k;
+        float _adc1;//float _1550cw;
+        float _dac1;//float _1550_270;
+        float _adc2;//float _1550_1k;
+        float _dac2;//float _1550_2k;
+    - \subpage Fix-VEx1-4-1-2051211-1
+    - Change 多通道单独校准界面
+    - V1.4.1-bate 开启
+
 2015-12-09: Menglong Wu
     - \subpage Bug-VEx1-4-0-2051209-1
 
