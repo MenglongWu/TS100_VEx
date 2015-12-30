@@ -4,4 +4,6 @@
 .tags_sorted_by_file
 .tags
 MDK-ARM/Output
+MDK-ARM-app/Output
+MDK-ARM-lib/Output
 *.bak

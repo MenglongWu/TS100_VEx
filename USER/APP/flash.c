@@ -2,7 +2,7 @@
 #include "flash.h"
 
 #include "stm32f10x.h" 
-#include "lcd\\gl_ui.h"
+// #include "lcd\\gl_ui.h"
 #include "flash.h"
 
 /*
@@ -177,7 +177,14 @@ uint32_t CoverFlash(uint32_t addr,uint32_t addr2,uint32_t *data,uint32_t len)
 
 void ProtectFlash()
 {
-#ifdef _USE_PROTECT_FLASH_
+// #ifdef _USE_PROTECT_FLASH_
+// 	FLASH_Unlock();
+// 	FLASH_ReadOutProtection(ENABLE);
+// 	FLASH_Lock();
+// #endif
+
+#ifdef _UN_USE_PROTECT_FLASH_
+#else
 	FLASH_Unlock();
 	FLASH_ReadOutProtection(ENABLE);
 	FLASH_Lock();

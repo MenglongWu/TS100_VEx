@@ -1,4 +1,17 @@
 /*! \page workhis TS100 项目工作日志
+2015-12-30: Menglong Wu
+    - Change FLASH保护开关从_USE_PROTECT_FLASH_改成_UN_USE_PROTECT_FLASH_
+        + 以前的版本中，预定义依旧对lib文件有作用，如要APP工程调用LIB工程的lib文件开启FLASH保护，必须定义_USE_PROTECT_FLASH_
+        + 推断生成的lib并不是可执行文件，为了“保密”将只要用户为定义_UN_USE_PROTECT_FLASH_则开启FLASH保护
+    - Slate 将lib文件分离出来
+        + lib文件包括stm32_chip.c，md5.c，flash.c
+        + 在stm32_chip.c定义ADCConvertedValue，保证能编译成lib
+        + main.c里声明ADCConvertedValue
+    - What 上面的Chang推断有错误
+        + 正确的理解是lib生成的东西预定义其实有效的，但是在APP里可以再次引用新的预定义，如果没修改采用采用lib原始预定义配置
+        + 可能上面的理解仍旧是错的
+    
+
 2015-12-11: Menglong Wu
     - Add 对用户妥协，按黄梦琳的建议：每个通道留一单独ADC、DAC校准值，内容存储于struct adj_power_flash
         float _adc;///<校准ADC值，V1.4.1-bate后无用，保证FLASH存储内容兼容性

@@ -26,6 +26,9 @@
 *
 
 * @section notes Version
+- TS100_VEx1.4.0_手持稳定光源_20151211
+	-# 工程分离lib和app
+
 - TS100_VEx1.4.1-bate_手持稳定光源_20151211
     -# 添加每个通道单独校准，利用原FLASH保留为，FLASH存储结构不变
 
