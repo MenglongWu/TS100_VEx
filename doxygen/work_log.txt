@@ -3,6 +3,11 @@
     - Change FLASH保护开关从_USE_PROTECT_FLASH_改成_UN_USE_PROTECT_FLASH_
         + 以前的版本中，预定义依旧对lib文件有作用，如要APP工程调用LIB工程的lib文件开启FLASH保护，必须定义_USE_PROTECT_FLASH_
         + 推断生成的lib并不是可执行文件，为了“保密”将只要用户为定义_UN_USE_PROTECT_FLASH_则开启FLASH保护
+    - Chang 将lib文件分离出来
+        + lib文件包括stm32_chip.c，md5.c
+        + 在stm32_chip.c定义ADCConvertedValue，保证能编译成lib
+        + main.c里声明ADCConvertedValue
+        
 
 2015-12-11: Menglong Wu
     - Add 对用户妥协，按黄梦琳的建议：每个通道留一单独ADC、DAC校准值，内容存储于struct adj_power_flash

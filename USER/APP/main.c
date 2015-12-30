@@ -136,7 +136,8 @@ volatile uint16_t	g_ad_ms = 0,		///<<AD采样间隔
 					///<则需要对IC重新启动初始化，启动间隔由g_lcdlisten_ms决定
 					g_debug_ms = 0,		///<Debugxxx函数里为减缓输出频率使用的延时
 					g_redbug_ms = 0;	///<ad采样间隔
-volatile uint16_t ADCConvertedValue[2000];///<AD采样DMA缓存，实际上只使用了400个空间
+
+extern volatile uint16_t ADCConvertedValue[2000];
 volatile uint16_t g_adc[200];			///<得到ADCConvertedValue里某通道的连续采样AD值
 
 int8_t g_recvflag = 0;					/*<串口接收标志，调试所用，可以废除 */

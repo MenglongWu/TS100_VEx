@@ -43,7 +43,8 @@ int g_forevery = 0;
 // 	unsigned long id_rand;   ///<随机值，来源于第一次开机存放于struct pro_licence的rand_hw
 // };
 // 采用AD值做随机值
-extern volatile uint16_t ADCConvertedValue[2000];
+// extern volatile uint16_t ADCConvertedValue[2000];
+volatile uint16_t ADCConvertedValue[2000];///<AD采样DMA缓存，实际上只使用了400个空间
 unsigned long Rand()
 {
 	unsigned long arr[1024];
