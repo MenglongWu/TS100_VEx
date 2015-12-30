@@ -79,8 +79,8 @@ void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_
 
 
 //启动版本信息
-#define TARGET_NAME		"G-LINK TS100 VEX1.4.0"    		//目标板名称
-#define RELEASE_DATE	"Release Date 2015.10.12"				//修改发布时间
+#define TARGET_NAME		"G-LINK TS100 VEX1.4.1-bate"    		//目标板名称
+#define RELEASE_DATE	"Release Date 2015.12.11"				//修改发布时间
 
 #endif
 

@@ -91,14 +91,14 @@ struct adj_power_flash
 	//float _1310_270;//DAC
 	float _dac;///<校准DAC值，记录在输出10dBm时的DAC值，提高自动调节速度，@see AutoCtrlPower
 
-	//////无用区域
-	float _1310_1k;
-	float _1310_2k;
-	
-	float _1550cw;
-	float _1550_270;
-	float _1550_1k;
-	float _1550_2k;
+	//////使用原保留内容分别是3个激光器通道的ADC、DAC校准值
+	// 其中0-3分别对应默认的1310、1490、1550激光器
+	float _adc1;//float _1310_1k;
+	float _dac1;//float _1310_2k;
+	float _adc2;//float _1550cw;
+	float _dac2;//float _1550_270;
+	float _adc3;//float _1550_1k;
+	float _dac3;//float _1550_2k;
 	//////////
 	uint8_t sn[28];
 	uint8_t _650_en;///<650使能

@@ -608,13 +608,13 @@ _Redraw:;
 	laser = Wavelength_Selection_state;
 	switch(laser) {
 	case 1:
-		sprintf(strout,"1310");
+		snprintf(strout,5,"%d", g_adj_power._ch1wave);
 		break;
 	case 2:
-		sprintf(strout,"1490");
+		snprintf(strout,5,"%d", g_adj_power._ch2wave);;
 		break;
 	case 3:
-		sprintf(strout,"1550");
+		snprintf(strout,5,"%d", g_adj_power._ch3wave);
 		break;
 	case 4:
 		sprintf(strout,"650 ");

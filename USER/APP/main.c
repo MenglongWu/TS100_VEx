@@ -653,15 +653,15 @@ void FLASH_Configuration()
 	if(g_adj_power.flag != 0xaabbccdd) 
 	{
 
-		g_adj_power._adc	  = 300;
-		g_adj_power._dac      = 300;
-		g_adj_power._1310_1k  = 0;
-		g_adj_power._1310_2k  = 0;
+		g_adj_power._adc   = 300;
+		g_adj_power._dac   = 300;
 
-		g_adj_power._1550cw   = 0;
-		g_adj_power._1550_270 = 0;
-		g_adj_power._1550_1k  = 0;
-		g_adj_power._1550_2k  = 0;
+		g_adj_power._adc1  = 300;
+		g_adj_power._dac1  = 300;
+		g_adj_power._adc2  = 300;
+		g_adj_power._dac2  = 300;
+		g_adj_power._adc3  = 300;
+		g_adj_power._dac3  = 300;
 
 		for(i = 0;i < 24;++i) {
 			g_adj_power.sn[i] = '0';
@@ -1153,40 +1153,40 @@ void Ctrl_Power(struct ctrl_param *v)
 // 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac;
 // 		}
 // 		else if(Operating_Mode == OPM_1K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1310_1k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._adc1;
 // 		}
 // 		else if(Operating_Mode == OPM_2K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1310_2k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac1;
 // 		}
 // 	}
 // 	else if(Wavelength_Selection_state == WL_1490 ) {
 // 	}
 // 	else if(Wavelength_Selection_state == WL_1550) {
 // 		if(Operating_Mode == OPM_CW) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550cw;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._adc2;
 // 		}
 // 		else if(Operating_Mode == OPM_270) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_270;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac2;
 // 		}
 // 		else if(Operating_Mode == OPM_1K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_1k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._adc3;
 // 		}
 // 		else if(Operating_Mode == OPM_2K) {
-// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_2k;
+// 			tmpdbm = (float)(v->set/1000.0) + g_adj_power._dac3;
 // 		}
 // 	}
 // 	else {
 // 		//tmp.set = v->set;
 // 		tmpdbm = (float)(v->set/1000.0);
 // 	}
-	tmpdbm = (float)(v->set/1000.0);// + g_adj_power._1550_1k;
+	tmpdbm = (float)(v->set/1000.0);// + g_adj_power._adc3;
 	
 // 	//v->dac = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 2460);//2460只是个大概的数，方便快速调节
 // 	
 // 	if(Wavelength_Selection_state == WL_1550) {
 // 		//v->adc = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 1224.84472);
 // 		//v->adc = (uint16_t)(DbmToScale(tmpdbm) * 1224.84472);
-// 		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._1550cw*10);
+// 		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc2*10);
 // 	}
 // 	else if(Wavelength_Selection_state == WL_1310) {
 // 		//v->adc = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * (1000*1.040/0.805));
@@ -1200,8 +1200,27 @@ void Ctrl_Power(struct ctrl_param *v)
 	
 // 	
 	//以上计算v->adc全部忽略
+	// V1.4.0版本
 	v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc*10);
 	v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac*10);
+	// V1.4.1-bate版本
+	switch (Wavelength_Selection_state) {
+	case WL_1310:
+		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc1*10);
+		v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac1*10);
+		break;
+	case WL_1490:
+		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc2*10);
+		v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac2*10);
+		break;
+	case WL_1550:
+		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._adc3*10);
+		v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._dac3*10);
+		break;
+	default:
+		break;
+	}
+	
 
 
 	
@@ -1438,10 +1457,10 @@ void LCD_DrawMain(void)
 	// 功率值一直在跳动，
 	// 当切换成其他功率值再切换回-10dBm功率输出稳定
 	// Ctrl_Power 波长快速切换并不能实现光源off - CW/270/1K/2K之间的快速切换，以后想办法修订
-	g_power.set = (int32_t)(-9000);
-	Ctrl_Power(&g_power);
-	g_power.set = (int32_t)(-10000);
-	Ctrl_Power(&g_power);
+	// g_power.set = (int32_t)(-9000);
+	// Ctrl_Power(&g_power);
+	// g_power.set = (int32_t)(-10000);
+	// Ctrl_Power(&g_power);
 	/////////////////////////////////////////
 	
 	
@@ -1555,7 +1574,7 @@ void UI_ProWavelength()
 {
 	int tmpWave;
 
-	if(KeyDown(GPIOA,KEY_B)) {
+	if(KeyPress(GPIOA,KEY_B)) {
 		int wave[3] = {WL_1310,WL_1490,WL_1550};
 		int i,find;
 		static int index = 0;
@@ -1597,8 +1616,10 @@ void UI_ProWavelength()
 		Ctrl_Operating_Mode( Operating_Mode);
 		Ctrl_Wavelength( Wavelength_Selection_state); //Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
 		LCD_Wavelength_Selection_Ex( 170,200 ,Wavelength_Selection_state ,g_sm_mm_color, Grey );	//波长显示切换
+		// memset((void*)&fastsw.set,0,sizeof(struct fast_switch) - sizeof(int32_t));
+		fastsw.enable = 0;
 		Ctrl_Power(&g_power);
-	}
+	}                                            
 }
 
 /**
@@ -1804,7 +1825,6 @@ void UI_ProRedLight_ShutdownTimer()
  * @retval\n	NULL
  * @remarks	
  */
-
 void UI_ProductionAdjust()
 {
 	uint16_t x,y;
@@ -1813,26 +1833,40 @@ void UI_ProductionAdjust()
 	int32_t strlen;
 	uint32_t btnClk = 0;
 	struct point loc[10] = {
-		(4)*8,(56),(4+10)*8,(56),(4+10+10)*8,(56),(4+10+10+10)*8,(56),
-		(4)*8,(56+24),(4+10)*8,(56+24),(4+10+10)*8,(56+24),(4+10+10+10)*8,(56+24),
-		20,56+24+24,
-		20,56+24+24+24,
+		// (4)*8,(56),(4+10)*8,(56),(4+10+10)*8,(56),(4+10+10+10)*8,(56),
+		// (4)*8,(56+24),(4+10)*8,(56+24),(4+10+10)*8,(56+24),(4+10+10+10)*8,(56+24),
+		// 20,56+24+24,
+		// 20,56+24+24+24,
+
+		(4)*8,(56+24*0),
+		(4+10)*8,(56+24*0),
+		(4)*8,(56+24*1),
+		(4+10)*8,(56+24*1),
+		(4)*8,(56+24*2),
+		(4+10)*8,(56+24*2),
+		(4)*8,(56+24*3),
+		(4+10)*8,(56+24*3),
+
+		20,56+24*4,
+		20,56+24*5,
 	};
 	float adjval[8];
 	int8_t index = 0,last_index;
+	char strout[16] = {0};
+
 	last_index = index;
 
 
 
 	adjval[0] = (float)g_adj_power._adc;
 	adjval[1] = (float)g_adj_power._dac;
-	adjval[2] = (float)g_adj_power._1310_1k;
-	adjval[3] = (float)g_adj_power._1310_2k;
+	adjval[2] = (float)g_adj_power._adc1;
+	adjval[3] = (float)g_adj_power._dac1;
 
-	adjval[4] = (float)g_adj_power._1550cw;
-	adjval[5] = (float)g_adj_power._1550_270;
-	adjval[6] = (float)g_adj_power._1550_1k;
-	adjval[7] = (float)g_adj_power._1550_2k;
+	adjval[4] = (float)g_adj_power._adc2;
+	adjval[5] = (float)g_adj_power._dac2;
+	adjval[6] = (float)g_adj_power._adc3;
+	adjval[7] = (float)g_adj_power._dac3;
 
 _Redraw:;
 	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
@@ -1843,31 +1877,56 @@ _Redraw:;
 	gl_clear(0,0,320,240,COL_White);
 	gl_text((4)*8,(56-24),"ADC",-1);
 	gl_text((4+10)*8,(56-24),"DAC",-1);
-	gl_text((4+10+10)*8,(56-24),"--",-1);
-	gl_text((4+10+10+10)*8,(56-24),"--",-1);
+	// gl_text((4+10+10)*8,(56-24),"--",-1);
+	// gl_text((4+10+10+10)*8,(56-24),"--",-1);
 
-	gl_text(0,(56),"-10",-1);
+	gl_text(0,(56+24*0),"---",-1);
 	sprintf(strout,"%6.2f",(float)(adjval[0]));
-	gl_text((4)*8,(56),strout,-1);
+	gl_text((4)*8,(56+24*0),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[1]);
-	gl_text((4+10)*8,(56),strout,-1);
-	sprintf(strout,"%6.2f",(float)adjval[2]);
-	gl_text((4+10+10)*8,(56),strout,-1);
+	gl_text((4+10)*8,(56+24*0),strout,-1);
+
+	// Ch1
+	snprintf(strout,5,"%d",g_adj_power._ch1wave);
+	gl_text(0,(56+24*1),strout,-1);
+	sprintf(strout,"%6.2f",(float)(adjval[2]));
+	gl_text((4)*8,(56+24*1),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[3]);
-	gl_text((4+10+10+10)*8,(56),strout,-1);
+	gl_text((4+10)*8,(56+24*1),strout,-1);
 
-	gl_text(0,(56+24),"---",-1);
-	sprintf(strout,"%6.2f",(float)adjval[4]);
-	gl_text((4)*8,(56+24),strout,-1);
+	// Ch2
+	snprintf(strout,5,"%d",g_adj_power._ch2wave);
+	gl_text(0,(56+24*2),strout,-1);
+	sprintf(strout,"%6.2f",(float)(adjval[4]));
+	gl_text((4)*8,(56+24*2),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[5]);
-	gl_text((4+10)*8,(56+24),strout,-1);
-	sprintf(strout,"%6.2f",(float)adjval[6]);
-	gl_text((4+10+10)*8,(56+24),strout,-1);
-	sprintf(strout,"%6.2f",(float)adjval[7]);
-	gl_text((4+10+10+10)*8,(56+24),strout,-1);
+	gl_text((4+10)*8,(56+24*2),strout,-1);
 
-	gl_text(20,56+24+24,"save",-1);
-	gl_text(20,56+24+24+24,"exit",-1);
+	// Ch3
+	snprintf(strout,5,"%d",g_adj_power._ch3wave);
+	gl_text(0,(56+24*3),strout,-1);
+	sprintf(strout,"%6.2f",(float)(adjval[6]));
+	gl_text((4)*8,(56+24*3),strout,-1);
+	sprintf(strout,"%6.2f",(float)adjval[7]);
+	gl_text((4+10)*8,(56+24*3),strout,-1);
+
+	// sprintf(strout,"%6.2f",(float)adjval[2]);
+	// gl_text((4+10)*8,(56),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[3]);
+	// gl_text((4+10+10+10)*8,(56),strout,-1);
+
+	// gl_text(0,(56+24),"---",-1);
+	// sprintf(strout,"%6.2f",(float)adjval[4]);
+	// gl_text((4)*8,(56+24),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[5]);
+	// gl_text((4+10)*8,(56+24),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[6]);
+	// gl_text((4+10+10)*8,(56+24),strout,-1);
+	// sprintf(strout,"%6.2f",(float)adjval[7]);
+	// gl_text((4+10+10+10)*8,(56+24),strout,-1);
+
+	gl_text(20,56+24*4,"save",-1);
+	gl_text(20,56+24*5,"exit",-1);
 
 	DrawFocus(loc[index].x,loc[index].y,COL_Black);//RGB16(255,255,0));
 	while(1) {
@@ -1910,22 +1969,22 @@ _Redraw:;
 
 				g_adj_power._adc   = adjval[0];
 				g_adj_power._dac = adjval[1];
-				g_adj_power._1310_1k  = adjval[2];
-				g_adj_power._1310_2k  = adjval[3];
+				g_adj_power._adc1  = adjval[2];
+				g_adj_power._dac1  = adjval[3];
 
-				g_adj_power._1550cw   = adjval[4];
-				g_adj_power._1550_270 = adjval[5];
-				g_adj_power._1550_1k  = adjval[6];
-				g_adj_power._1550_2k  = adjval[7];
+				g_adj_power._adc2   = adjval[4];
+				g_adj_power._dac2 = adjval[5];
+				g_adj_power._adc3  = adjval[6];
+				g_adj_power._dac3  = adjval[7];
 
 				WriteFlash(FLASH_PAGE_PRODUCT,
 					(uint32_t*)&(g_adj_power),
 					sizeof(struct adj_power_flash));
 				//gl_text(0,0,"save",-1);
-				gl_text(20,56+24+24,"save...",-1);
+				gl_text(20,56+24*4,"save...",-1);
 				Delay_ms(1000);
-				gl_text(20,56+24+24,"       ",-1);
-				gl_text(20,56+24+24,"save",-1);
+				gl_text(20,56+24*4,"       ",-1);
+				gl_text(20,56+24*4,"save",-1);
 			}
 			else if(index == 9) {
 				break;
