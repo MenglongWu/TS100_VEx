@@ -2,7 +2,7 @@
 #include "flash.h"
 
 #include "stm32f10x.h" 
-#include "lcd\\gl_ui.h"
+// #include "lcd\\gl_ui.h"
 #include "flash.h"
 
 /*
