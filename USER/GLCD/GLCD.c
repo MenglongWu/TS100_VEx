@@ -332,12 +332,27 @@ static void SSD1963_SPI_WriteReg(uint8_t reg, uint16_t cmd)
 }
 
 //利用LCD的gpio寄存器配置信息，反正这个GPIO也没用，干脆用来检测复位
+/*
+	set/get_gpio_conf 寄存器
+			D7 D6 D5 D4   D3 D2 D1 D0
+	param1  X  X  X  X    X  X  X  X
+	param2  0  0  0  0    0  0  0  X
+*/
 void SSD1963_SetCheckFlag()
 {
-	LCD_WriteCommand(0xB8);
-	LCD_WriteData(0x0f);
+	// 写入地址是 CMD_SET_GPIO_CONF 0xb8，读取地址是 CMD_GET_GPIO_CONF 0xb9
+	//  写入的第一个值 CHECK_LCD_VAL 0x0f
+	LCD_WriteCommand(CMD_SET_GPIO_CONF);
+	// 2016.01.26 Menglong Woo
+	// 下面两个值理论上可以随便写任何值，但第1个取值0~0xff，第2个取值0 ~ 0x01
+	// 对于TS100电路板，暂时发现 param1=0x0f param2=0x01写入后能正常运行
+	// 向 CMD_GET_GPIO_CONF 寄存器读取 得 0x000F ,第2个参数无效，至于怎么无效的暂时不清楚
+	// 也不去纠结，该功能只是为了坚持LCD是否正常启动
+	// End 2016.01.26 Menglong Woo
+	LCD_WriteData(CHECK_LCD_VAL);
 	LCD_WriteData(0x01);
 }
+
 
 uint8_t SSD1963_IsRestart()
 {
@@ -345,7 +360,7 @@ uint8_t SSD1963_IsRestart()
 	LCD_WriteCommand(0xb9);
 	data1 = LCD_ReadData();
 	data2 = LCD_ReadData();
-	if(data1 != 0x0f)
+	if(data1 != CHECK_LCD_VAL)
 		return 1;
 	return 0;
 }

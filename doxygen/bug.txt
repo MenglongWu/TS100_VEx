@@ -6,6 +6,21 @@
 	\endcode
 */
 
+/*! \page Fix-VEx1-4-1-bate20160126-2 Fix-VEx1-4-0-bate20160126-2: 
+	加入调试信息，添加调试界面定位LCD蓝屏问题，后期待测试
+
+	断电定位到CheckLCD函数，向SSD1963操作LCD_SetPoint、LCD_GetPoint时导致程序崩溃。
+	暂时将其注释掉。
+
+	加入启动信息输出后又定位到lc_CheckLicence位置也会导致程序崩溃
+
+	同时修改SSD1963自检代码Check1963，将原来的读取 CMD_RD_MEMSTART 寄存器的值改成读取 CMD_GET_GPIO_CONF 寄存器，CMD_RD_MEMSTART 的值属于经验值，换一套程序该值就变了，该方法是SSD1963自检第1套方法，后来忘记删掉
+
+	SSD1963三套检测方法
+	- 经验值读取CMD_RD_MEMSTART（废除）
+	- 读写GPIO CMD_GET_GPIO_CONF，相关函数SSD1963_SetCheckFlag、SSD1963_IsRestart，该方法未必适用于其他电路板，TS100是将SSD1963的4个GPIO不用的，倘若作为其他用处，SSD1963_SetCheckFlag、SSD1963_IsRestart读写的值CHECK_LCD_VAL根据电路板调试而修改，保证写入该值不引起LCD闪烁
+	- 向LCD某点写入值然后读出。该方法只能用于启动初期，不应该用于运行过程，否者某点会闪烁。即使用在运行也可以，选取一个边缘点如(0,0),(1,1)，首先读取该点的色彩，然后写入与该色彩相差无几的，再次读出，如果读出值与写入值相同则表示启动正常，最后恢复原始色彩
+*/
 /*! \page Bug-VEx1-4-1-bate20160126-1 Bug-VEx1-4-0-bate20160126-1: 
 	设备被锁死
 

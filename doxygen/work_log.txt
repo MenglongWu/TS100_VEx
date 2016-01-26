@@ -1,7 +1,9 @@
 /*! \page workhis TS100 项目工作日志
 2016-01-26: Menglong Wu
     - \subpage Bug-VEx1-4-0-bate20160126-1
-    
+    - \subpage Fix-VEx1-4-0-bate20160126-2
+    - Add 添加启动进度输出，为以后定位问题提供依据
+
 2015-12-30: Menglong Wu
     - Change FLASH保护开关从_USE_PROTECT_FLASH_改成_UN_USE_PROTECT_FLASH_
         + 以前的版本中，预定义依旧对lib文件有作用，如要APP工程调用LIB工程的lib文件开启FLASH保护，必须定义_USE_PROTECT_FLASH_
