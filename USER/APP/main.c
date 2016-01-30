@@ -2200,7 +2200,7 @@ void ProGet1963State()
 void IsHacker()
 {
 	int8_t tmpredmode;
-	static uint8_t state = 0;
+	static uint8_t state = 3;
 
 	//UI_ProductionAdjust();//debug;
 	if(hackflag == 1) {
@@ -2598,7 +2598,7 @@ int main(void)
 	TurnOnPower();
 	LCD_Initializtion();	
 	LCD_Clear(Black);		
-	gl_text(10,10,"check 1963", -1);
+	gl_text(10,10,"check SSD1963", -1);
 	Delay_ms(200);
 	Check1963();
 	gl_text(10,22,"turn on lcd blacklight", -1);
@@ -2626,9 +2626,10 @@ int main(void)
 	}
 	gl_text(10,70,"checking licence", -1);
 	Delay_ms(200);
+	gl_text(10,82,"checking licence2", -1);
 	lc_CheckLicence(lic);
-	gl_text(10,82,"run main", -1);
-	Delay_ms(2000);
+	gl_text(10,210,"run main", -1);
+	Delay_ms(4000);
 	LCD_DrawMain();
 
 	

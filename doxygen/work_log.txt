@@ -1,4 +1,7 @@
 /*! \page workhis TS100 项目工作日志
+2016-01-30: Menglong Wu
+    - Fix Fix-VEx1-4-0-bate20160130-1
+
 2016-01-26: Menglong Wu
     - \subpage Bug-VEx1-4-0-bate20160126-1
     - \subpage Fix-VEx1-4-0-bate20160126-2
