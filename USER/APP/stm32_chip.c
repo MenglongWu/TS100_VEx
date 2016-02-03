@@ -171,18 +171,14 @@ int lc_IsLicence()
 	struct pro_licence uselog;
 	unsigned long licence_true[4];
 	
-	write("lic ", -1);
 	ReadProLicence(&uselog);
 	
 	calc_licence(licence_true, uselog.date);
-	write("licA ", -1);
 	// 已经注册
 	if (licence_true[3] == uselog.licence[3]) {
-		write("A1 ", -1);
 		return 1;
 	}
 	else  {
-		write("A2 ", -1);
 		return 0;
 	}
 }
@@ -278,11 +274,10 @@ int ReadProLicence(struct pro_licence *puselog)
 {
 	int i;
 	char *plog;
-	write("RfB", -1);
+
 	ReadFlash(FLASH_PAGE_LICENCE,
 		(uint32_t*)(puselog),
 		sizeof(struct pro_licence));
-	write("RfA", -1);
 	// 检验是否存在硬件序列号，没有则生成
 	if (puselog->rand_hw == (unsigned long)(-1)) {
 		puselog->rand_hw = Rand();
@@ -341,7 +336,6 @@ int UseTick(int bwrite)
 		return INFINITUDE;
 	}
 
-	write("fm0", -1);
 	for (i = 0; i < 3 ;i++) {
 		sprintf(strout, "k%2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x",
 			uselog.log[i*16 + 0],uselog.log[i*16 + 1],uselog.log[i*16 + 2],uselog.log[i*16 + 3],
@@ -366,7 +360,6 @@ int UseTick(int bwrite)
 		maxdata = uselog.date;
 	}
 	// return uselog.date;
-	write("log0", -1);
 	for (i = 0; i < LOG_CACHE / 4; i++) {
 		switch(*plog) {
 		case 0xFFFFFFFF:
@@ -401,13 +394,11 @@ _Write:;
 	child = (unsigned long)plog;
 	// child = (unsigned long)&uselog.log[0];
 	if (bwrite == 1) {
-		write("wfB", -1);
 		// WriteTick(&uselog);
 		WriteFlash0(FLASH_PAGE_LICENCE ,
 			 (child - start),
 			(uint32_t*)plog,
 			4);
-		write("wfA", -1);
 	}
 	
 	return maxdata - use;
@@ -539,7 +530,7 @@ int lc_CheckLicence(unsigned long licence2[4])
 	// sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", *(id+0), *(id+1), *(id+2), *(id+3));
 	// gl_dtext(0,20,strout,-1);
 
-	write("L1 ",-1);
+
 	// // 无licence则失败
 	// val = !uselog.licence[0] + !uselog.licence[1] + !uselog.licence[2] + !uselog.licence[3];
 	// val = 1;
@@ -552,18 +543,14 @@ int lc_CheckLicence(unsigned long licence2[4])
 	// }
 	sprintf(strout, "%8.8u %8.8u",licence_true[3], -1);
 	gl_dtext(0,30,strout,-1);
-	write("L2 ",-1);
 	islic = lc_IsLicence();
-	write("L3 ",-1);
 	val = UseTick(0);
-	write("L4 ",-1);
 	// if (licence_true[3] == uselog.licence[3] && val > 0) {
 	if (islic && val > 0) {
 		sprintf(strout, "ok %d", val);
 		gl_dtext(0,50,strout,-1);
 		g_licence_timeout = 0;
 		UseTick(1);
-		write("L41 ",-1);
 		return 1;
 	}
 	// else if (licence_true[3] == uselog.licence[3] && val == 0) {
@@ -572,15 +559,12 @@ int lc_CheckLicence(unsigned long licence2[4])
 		LicencePageReset();
 		ReadProLicence(&uselog);
 		g_licence_timeout = 1;
-		write("L42 ",-1);
 		return 2;
 	}
 	else {
 		gl_dtext(0,50,"noooooooooo",-1);
 		g_licence_timeout = 1;
-		write("L40 ",-1);
 		return 0;
 	}
-	write("L5 ",-1);
 }
 

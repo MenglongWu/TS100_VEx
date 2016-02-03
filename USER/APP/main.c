@@ -2200,7 +2200,7 @@ void ProGet1963State()
 void IsHacker()
 {
 	int8_t tmpredmode;
-	static uint8_t state = 3;
+	static uint8_t state = 0;
 
 	//UI_ProductionAdjust();//debug;
 	if(hackflag == 1) {
@@ -2597,19 +2597,21 @@ int main(void)
 	printf("Power On\n");
 	TurnOnPower();
 	LCD_Initializtion();	
-	LCD_Clear(Black);		
-	gl_text(10,10,"check SSD1963", -1);
+	LCD_Clear(Black);
+	gl_text(10,10,TARGET_NAME, -1);
+	gl_text(10,22,RELEASE_DATE, -1);
+	gl_text(10,34,"check SSD1963", -1);
 	Delay_ms(200);
 	Check1963();
-	gl_text(10,22,"turn on lcd blacklight", -1);
+	gl_text(10,46,"turn on lcd blacklight", -1);
 	Delay_ms(200);
 	// CheckLCD();
 	//LCD_SetBacklight(0x70);
 	LCD_SetBacklight(0x80);
-	gl_text(10,34,"load flash", -1);
+	gl_text(10,58,"load flash", -1);
 	Delay_ms(200);
 	FLASH_Configuration();
-	gl_text(10,46,"protect flash", -1);
+	gl_text(10,70,"protect flash", -1);
 	Delay_ms(200);
 	ProtectFlash();
 	printf("Draw UI\n");
@@ -2617,18 +2619,17 @@ int main(void)
 	// lc_CheckLicence(lic);
 	//Ctrl_Wavelength(WL_OFF);
 	// 已经注册
-	gl_text(10,58,"load licence", -1);
+	gl_text(10,82,"load licence", -1);
 	Delay_ms(200);
 	if ( !lc_IsLicence()) {
 		lc_CheckLicence(lic);
 		Ctrl_Wavelength(WL_OFF);
 		UI_LicenceDlg();
 	}
-	gl_text(10,70,"checking licence", -1);
 	Delay_ms(200);
-	gl_text(10,82,"checking licence2", -1);
+	gl_text(10,94,"checking licence", -1);
 	lc_CheckLicence(lic);
-	gl_text(10,210,"run main", -1);
+	gl_text(10,106,"run main", -1);
 	Delay_ms(4000);
 	LCD_DrawMain();
 
