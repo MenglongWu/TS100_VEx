@@ -1,4 +1,12 @@
 /*! \page workhis TS100 项目工作日志
+2016-01-30: Menglong Wu
+    - Fix Fix-VEx1-4-0-bate20160130-1
+
+2016-01-26: Menglong Wu
+    - \subpage Bug-VEx1-4-0-bate20160126-1
+    - \subpage Fix-VEx1-4-0-bate20160126-2
+    - Add 添加启动进度输出，为以后定位问题提供依据
+
 2015-12-30: Menglong Wu
     - Change FLASH保护开关从_USE_PROTECT_FLASH_改成_UN_USE_PROTECT_FLASH_
         + 以前的版本中，预定义依旧对lib文件有作用，如要APP工程调用LIB工程的lib文件开启FLASH保护，必须定义_USE_PROTECT_FLASH_
@@ -22,32 +30,32 @@
         float _dac1;//float _1550_270;
         float _adc2;//float _1550_1k;
         float _dac2;//float _1550_2k;
-    - \subpage Fix-VEx1-4-1-2051211-1
+    - \subpage Fix-VEx1-4-1-20151211-1
     - Change 多通道单独校准界面
     - V1.4.1-bate 开启
 
 2015-12-09: Menglong Wu
-    - \subpage Bug-VEx1-4-0-2051209-1
+    - \subpage Bug-VEx1-4-0-20151209-1
 
 2015-10-20: Menglong Wu
     - 上次提交到github没有合并MDK-ARM目录，现在加回来
 
 2015-10-12: Menglong Wu
-	- Bug-VEx1-4-0-2051012-1 BUG-N : 调试代码最长注册时间仅200天，理论上应该4*200天
-		- \subpage Bug-VEx1-4-0-2051012-1
+	- Bug-VEx1-4-0-20151012-1 BUG-N : 调试代码最长注册时间仅200天，理论上应该4*200天
+		- \subpage Bug-VEx1-4-0-20151012-1
 	- Add Flash解锁放在产品信息配置菜单，并且有误操作保护：两行"----"，选定Unlock后Flash解锁，所有信息删除
 	- Add Flash 保护锁完成
 	- Release VEx1.4.0
 
 2015-10-11: Menglong Wu
-	- Bug-VEx1-4-0-2051011-1 BUG-N:已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册
-		- \subpage Bug-VEx1-4-0-2051011-1
-	- Bug-VEx1-4-0-2051011-2 BUG-C:已经注册的设备反复注册，延长使用期限
-		- \subpage Bug-VEx1-4-0-2051011-2
-	- Bug-VEx1-4-0-2051011-3 BUG-C : 未注册显示剩余时间不为0
-		- \subpage Bug-VEx1-4-0-2051011-3
-	- Bug-VEx1-4-0-2051011-4 BUG-N : 伪随机数为0，芯片ID最后一位为0
-		- \subpage Bug-VEx1-4-0-2051011-4
+	- Bug-VEx1-4-0-20151011-1 BUG-N:已经注册 1 * 9周期 的使用期限，改成 1 * N周期(N<>9)后变成未注册
+		- \subpage Bug-VEx1-4-0-20151011-1
+	- Bug-VEx1-4-0-20151011-2 BUG-C:已经注册的设备反复注册，延长使用期限
+		- \subpage Bug-VEx1-4-0-20151011-2
+	- Bug-VEx1-4-0-20151011-3 BUG-C : 未注册显示剩余时间不为0
+		- \subpage Bug-VEx1-4-0-20151011-3
+	- Bug-VEx1-4-0-20151011-4 BUG-N : 伪随机数为0，芯片ID最后一位为0
+		- \subpage Bug-VEx1-4-0-20151011-4
 	- Add 序列号与主模块组装初步完毕，暂时每月设置成9天
 	- TODO 开启FLASH写保护
 	- TODO 将核心部件打包成 lib 知识产权保护，不提供源码，核心包括 stm32_chip.c 以及 Ctrl_Power

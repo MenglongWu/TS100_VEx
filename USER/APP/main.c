@@ -1417,7 +1417,7 @@ void LCD_DrawMain(void)
 	LCD_Clear(Black);
 
 	LCD_FLSAH_DrawPicture(38,91,38+243-1,91+57-1,(uint8_t*)gImage_logo);
-	Delay_ms(2000);
+	Delay_ms(1000);
 	// 	gl_setarea(0,0,319,239);
 	// 	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
 	// 		for( y=0; y < 240; y++ )
@@ -2200,7 +2200,7 @@ void ProGet1963State()
 void IsHacker()
 {
 	int8_t tmpredmode;
-	static uint8_t state = 0;
+	static uint8_t state = 3;
 
 	//UI_ProductionAdjust();//debug;
 	if(hackflag == 1) {
@@ -2444,12 +2444,13 @@ void ProTimerShutdown()
 }
 
 /**
- * @brief	串口输出启动过程，检测1963
+ * @brief	串口输出启动过程，检测1963是否有重启迹象，如未启动则自动重启3次
  * @param\n	
  * @retval\n	NULL
  * @remarks	
  */
 int restarttimes = 100;
+#if 0
 void Check1963()
 {
 	uint8_t strout[256];
@@ -2491,15 +2492,49 @@ void Check1963()
 	printf("\nStartup chip success!\n");
 	LCD_SetBacklight(0x80);
 }
+#else
+void Check1963()
+{
+	uint8_t strout[256];
+	uint16_t data;
+	int times = 0;	
+
+	printf("Checking chip...");
+	// LCD_ReadReg(CMD_RD_MEMSTART,&data);
+	if (SSD1963_IsRestart()) {
+		while(times++ < 3) {
+			LCD_ReadReg(CMD_RD_MEMSTART,&data);
+			if (SSD1963_IsRestart()) {
+			// if(data != 0x22f2) {
+				printf(".");
+				LCD_Initializtion();	
+				Delay_ms(100);
+			}
+		}
+		g_usart_ms = 2000;
+		printf("\n");
+		//多次启动LCD失败，关闭系统
+		if (SSD1963_IsRestart()) {
+			printf("Startup chip error!\n\n");
+			ProGet1963State();
+		}
+	}
+	restarttimes = times;
+	printf("\nStartup chip success!\n");
+	LCD_SetBacklight(0x80);
+}
+#endif
 /**
- * @brief	串口输出启动过程，检测LCD
+ * @brief	除了设置GPIO寄存器外，另一种检测 SSD1963 是否正常启动的方式，
+ *			向LCD某点写入数据，然后读出，该方法可以作为启动初期检测方式
+ *			运行阶段不能采用，否则某点存在闪烁问题
  * @param\n	
  * @retval\n	NULL
  * @remarks	
  */
-
 void CheckLCD()
 {
+#if 0
 	uint16_t data;
 	printf("Checking LCD...\n");
 	LCD_SetPoint(15,15,0xaabb);
@@ -2511,7 +2546,7 @@ void CheckLCD()
 	else {
 		printf("Open LCD success\n");
 	}
-
+#endif
 }
 /*******************************************************************************
 * Function Name  : main
@@ -2534,9 +2569,9 @@ int main(void)
 	//液晶屏GUI配置
 	gl_ui_setlib(p_zm_ascii_st9,8,12,p_zm_step_st9);
 	gl_ui_setbkmode(BACKFILL);//背景填充模式
-	gl_ui_setfontcolor(RGB16(255,0,0));
-	gl_ui_setbkcolor(RGB16(0,255,0));
-	gl_ui_setpencolor(RGB16(235,34,209));
+	gl_ui_setfontcolor(White);//RGB16(255,0,0));
+	gl_ui_setbkcolor(Black);//RGB16(0,255,0));
+	gl_ui_setpencolor(White);//RGB16(235,34,209));
 
 	delay_init();
 	/*****************按键中断初始化部分*********************** */
@@ -2563,24 +2598,38 @@ int main(void)
 	TurnOnPower();
 	LCD_Initializtion();	
 	LCD_Clear(Black);		
+	gl_text(10,10,"check SSD1963", -1);
+	Delay_ms(200);
 	Check1963();
-	CheckLCD();
+	gl_text(10,22,"turn on lcd blacklight", -1);
+	Delay_ms(200);
+	// CheckLCD();
 	//LCD_SetBacklight(0x70);
 	LCD_SetBacklight(0x80);
-
+	gl_text(10,34,"load flash", -1);
+	Delay_ms(200);
 	FLASH_Configuration();
+	gl_text(10,46,"protect flash", -1);
+	Delay_ms(200);
 	ProtectFlash();
 	printf("Draw UI\n");
 
 	// lc_CheckLicence(lic);
 	//Ctrl_Wavelength(WL_OFF);
 	// 已经注册
+	gl_text(10,58,"load licence", -1);
+	Delay_ms(200);
 	if ( !lc_IsLicence()) {
 		lc_CheckLicence(lic);
 		Ctrl_Wavelength(WL_OFF);
 		UI_LicenceDlg();
 	}
-	lc_CheckLicence(lic);	
+	gl_text(10,70,"checking licence", -1);
+	Delay_ms(200);
+	gl_text(10,82,"checking licence2", -1);
+	lc_CheckLicence(lic);
+	gl_text(10,210,"run main", -1);
+	Delay_ms(4000);
 	LCD_DrawMain();
 
 	
@@ -2590,7 +2639,7 @@ int main(void)
 	// while(1)
 	// 	UI_DebugMain();
 	//InputPanel(strout,50,0);
-	sprintf(strout,"res times %d",restarttimes);
+	// sprintf(strout,"res times %d",restarttimes);
 	//printf("%s\n",strout);
 
 	//Get_ChipID();

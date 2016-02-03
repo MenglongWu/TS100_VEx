@@ -5,9 +5,26 @@
 // #include "stm32_chip.h"
 
 #ifndef _DEBUG_LICENCE_
-#define gl_text
+#define gl_dtext
 #endif
+int y_move = 110;
+int x_move = 10;
 
+extern volatile uint8_t strout[256];
+void write(char *text, int len)
+{
+	len = strlen(text);
+	if (x_move + len > 220) {
+		x_move = 0;
+		y_move += 12;
+	}
+	
+	if (y_move > 300) {
+		y_move = 0;
+	}
+	gl_text(x_move, y_move, text, len);
+	x_move += len * 8;
+}
 // 最多能容纳 LOG_CACHE 天记录，除非不 开启无穷 (INFINITUDE) 记录，
 // 此时 Flash 读出的注册日期为 INFINITUDE
 #define LOG_CACHE (4*200)
@@ -43,8 +60,8 @@ int g_forevery = 0;
 // 	unsigned long id_rand;   ///<随机值，来源于第一次开机存放于struct pro_licence的rand_hw
 // };
 // 采用AD值做随机值
-// extern volatile uint16_t ADCConvertedValue[2000];
-volatile uint16_t ADCConvertedValue[2000];///<AD采样DMA缓存，实际上只使用了400个空间
+// extern uint16_t ADCConvertedValue[2000];
+uint16_t ADCConvertedValue[2000];///<AD采样DMA缓存，实际上只使用了400个空间
 unsigned long Rand()
 {
 	unsigned long arr[1024];
@@ -73,7 +90,7 @@ unsigned long Rand()
 void lc_GetChipID(unsigned long *id)
 {
 	struct pro_licence uselog;
-	char strout[256];
+	// char strout[256];
 	
 	*(id+2) = *(__IO u32 *)(0X1FFFF7E8);  // 低字节
 	*(id+1) = *(__IO u32 *)(0X1FFFF7EC); // 
@@ -154,14 +171,18 @@ int lc_IsLicence()
 	struct pro_licence uselog;
 	unsigned long licence_true[4];
 	
+	write("lic ", -1);
 	ReadProLicence(&uselog);
 	
 	calc_licence(licence_true, uselog.date);
+	write("licA ", -1);
 	// 已经注册
 	if (licence_true[3] == uselog.licence[3]) {
+		write("A1 ", -1);
 		return 1;
 	}
 	else  {
+		write("A2 ", -1);
 		return 0;
 	}
 }
@@ -181,7 +202,6 @@ int lc_InputLicence(unsigned long *licence, unsigned long *month)
 {
 	struct pro_licence uselog;
 	unsigned long licence_true[4];
-	char strout[111];
 	int i;
 	unsigned long date = 0;
 
@@ -258,11 +278,11 @@ int ReadProLicence(struct pro_licence *puselog)
 {
 	int i;
 	char *plog;
-
+	write("RfB", -1);
 	ReadFlash(FLASH_PAGE_LICENCE,
 		(uint32_t*)(puselog),
 		sizeof(struct pro_licence));
-
+	write("RfA", -1);
 	// 检验是否存在硬件序列号，没有则生成
 	if (puselog->rand_hw == (unsigned long)(-1)) {
 		puselog->rand_hw = Rand();
@@ -306,7 +326,7 @@ int UseTick(int bwrite)
 	unsigned long *plog;
 	struct pro_licence uselog;
 	int istimeout = 0;
-	char strout[256];
+	// char strout[256];
 	unsigned long start, child;
 	int use = 0;
 	int maxdata;
@@ -321,6 +341,7 @@ int UseTick(int bwrite)
 		return INFINITUDE;
 	}
 
+	write("fm0", -1);
 	for (i = 0; i < 3 ;i++) {
 		sprintf(strout, "k%2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x",
 			uselog.log[i*16 + 0],uselog.log[i*16 + 1],uselog.log[i*16 + 2],uselog.log[i*16 + 3],
@@ -328,7 +349,7 @@ int UseTick(int bwrite)
 			uselog.log[i*16 + 8],uselog.log[i*16 + 9],uselog.log[i*16 +10],uselog.log[i*16 +11],
 			uselog.log[i*16 +12],uselog.log[i*16 +13],uselog.log[i*16 +14],uselog.log[i*16 +15]
 			);
-		gl_text(0, 90 + i*10,strout, -1);
+		gl_dtext(0, 90 + i*10,strout, -1);
 	}
 	plog = (unsigned long*)&uselog.log[0];
 	istimeout = 1;
@@ -345,7 +366,7 @@ int UseTick(int bwrite)
 		maxdata = uselog.date;
 	}
 	// return uselog.date;
-
+	write("log0", -1);
 	for (i = 0; i < LOG_CACHE / 4; i++) {
 		switch(*plog) {
 		case 0xFFFFFFFF:
@@ -380,11 +401,13 @@ _Write:;
 	child = (unsigned long)plog;
 	// child = (unsigned long)&uselog.log[0];
 	if (bwrite == 1) {
+		write("wfB", -1);
 		// WriteTick(&uselog);
 		WriteFlash0(FLASH_PAGE_LICENCE ,
 			 (child - start),
 			(uint32_t*)plog,
 			4);
+		write("wfA", -1);
 	}
 	
 	return maxdata - use;
@@ -451,13 +474,13 @@ static void calc_licence(unsigned long *lic, unsigned long month)
 	unsigned long val;
 	unsigned char encrypt[64] ="admin";//21232f29 7a57a5a7 43894a0e 4a801fc3
 	unsigned char decrypt[16];
-	char strout[120];
+	// char strout[120];
 	MD5_CTX md5;
 
 	lc_GetChipID(&id[0]);
 	sprintf(encrypt, "%8.8x-%8.8x-%8.8x-%8.8x-%2.2d",
 		id[0],id[1],id[2],id[3],month);
-	gl_text(0,180, encrypt,-1);
+	gl_dtext(0,180, encrypt,-1);
 
 	MD5Init(&md5);         		
 	MD5Update(&md5,encrypt,strlen((char *)encrypt));
@@ -477,7 +500,7 @@ static void calc_licence(unsigned long *lic, unsigned long month)
 	*(lic + 2) = decrypt[11] + (decrypt[10] << 8) + (decrypt[9] << 16) + (decrypt[8] << 24);
 	*(lic + 3) = decrypt[15] + (decrypt[14] << 8) + (decrypt[13] << 16) + (decrypt[12] << 24);
 
-	gl_text(0,200, strout,-1);
+	gl_dtext(0,200, strout,-1);
 	
 	// getchar();
 	
@@ -503,7 +526,7 @@ int lc_CheckLicence(unsigned long licence2[4])
 	struct pro_licence uselog;
 	unsigned long id[4];
 	int istimeout = 0;
-	char strout[256];
+	// char strout[256];
 	unsigned long val, licence_true[4];
 	unsigned long islic;
 	
@@ -514,9 +537,9 @@ int lc_CheckLicence(unsigned long licence2[4])
 	// 比较Licence
 	// lc_GetChipID(&id[0]);
 	// sprintf(strout, "%8.8x %8.8x %8.8x %8.8x", *(id+0), *(id+1), *(id+2), *(id+3));
-	// gl_text(0,20,strout,-1);
+	// gl_dtext(0,20,strout,-1);
 
-
+	write("L1 ",-1);
 	// // 无licence则失败
 	// val = !uselog.licence[0] + !uselog.licence[1] + !uselog.licence[2] + !uselog.licence[3];
 	// val = 1;
@@ -528,29 +551,36 @@ int lc_CheckLicence(unsigned long licence2[4])
 	// 	calc_licence(licence_true, uselog.date); //  / DATE_PER_MONTH );	
 	// }
 	sprintf(strout, "%8.8u %8.8u",licence_true[3], -1);
-	gl_text(0,30,strout,-1);
+	gl_dtext(0,30,strout,-1);
+	write("L2 ",-1);
 	islic = lc_IsLicence();
+	write("L3 ",-1);
 	val = UseTick(0);
+	write("L4 ",-1);
 	// if (licence_true[3] == uselog.licence[3] && val > 0) {
 	if (islic && val > 0) {
 		sprintf(strout, "ok %d", val);
-		gl_text(0,50,strout,-1);
+		gl_dtext(0,50,strout,-1);
 		g_licence_timeout = 0;
 		UseTick(1);
+		write("L41 ",-1);
 		return 1;
 	}
 	// else if (licence_true[3] == uselog.licence[3] && val == 0) {
 	else if (islic && val == 0) {
-		gl_text(0,50,"timeout",-1);
+		gl_dtext(0,50,"timeout",-1);
 		LicencePageReset();
 		ReadProLicence(&uselog);
 		g_licence_timeout = 1;
+		write("L42 ",-1);
 		return 2;
 	}
 	else {
-		gl_text(0,50,"noooooooooo",-1);
+		gl_dtext(0,50,"noooooooooo",-1);
 		g_licence_timeout = 1;
+		write("L40 ",-1);
 		return 0;
 	}
+	write("L5 ",-1);
 }
 

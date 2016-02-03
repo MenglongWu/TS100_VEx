@@ -116,6 +116,10 @@
 #define CMD_SET_DATA_INTERFACE	0xF0
 #define CMD_GET_DATA_INTERFACE	0xF1
 
+
+// 2016.01.26 Menglong Woo
+#define CHECK_LCD_VAL 0x0f // ∏√÷µ–¥»ÎLCD
+// End 2016.01.26 Menglong Woo
 #endif
 
 /*********************************************************************************************************
