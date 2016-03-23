@@ -1,4 +1,10 @@
 /*! \page workhis TS100 项目工作日志
+2016-03-23: MenglongWu
+    - Modifi 修改project.h里TARGET_NAME改成G-LINK TS100 VEX1.4.2
+    - Release 将readme里记录的“TS100_VEx1.4.0_手持稳定光源_20151211”改成“TS100_VEx1.4.2_手持稳定光源_20150230”，当初版本记错了
+    - Edit 编辑Readme
+    
+
 2016-01-30: Menglong Wu
     - Fix Fix-VEx1-4-0-bate20160130-1
 
