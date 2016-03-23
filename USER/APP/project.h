@@ -1,15 +1,15 @@
 #ifndef _PROJECT_H_
 #define _PROJECT_H_
 
-//å±è”½è­¦å‘Š
+//ÆÁ±Î¾¯¸æ
 #pragma diag_suppress 167
 #pragma diag_suppress 174
-#pragma diag_suppress 1295//å‡½æ•°å‚æ•°æ˜¯ç©ºå¿…é¡»å£°æ˜æˆvoid
-#pragma diag_suppress 68//å¼ºåˆ¶è½¬æ¢æœ‰ç¬¦å·å’Œæ— ç¬¦å·
+#pragma diag_suppress 1295//º¯Êı²ÎÊıÊÇ¿Õ±ØĞëÉùÃ÷³Évoid
+#pragma diag_suppress 68//Ç¿ÖÆ×ª»»ÓĞ·ûºÅºÍÎŞ·ûºÅ
 
 
 
-/*æŒ‰é”®*/
+/*°´¼ü*/
 #define KEY_A GPIO_Pin_5
 #define KEY_B GPIO_Pin_3
 #define KEY_C GPIO_Pin_2
@@ -42,6 +42,7 @@ void RedLightIOConfig(void);
 void External_Interrupt_Config(void);
 void External_Interrupt_EXIT_Init(void);
 void External_Interrupt_InterruptConfig(void);
+void delayUs(vu32 cnt);
 void LCD_DrawMain(void);
 void TurnOnPower(void);
 void TurnOffPower(void);
@@ -56,7 +57,7 @@ int main(void);
 void DebugLookAD(void);
 void UI_ProductionAdjust(void);
 void UI_ProductConfig(void);
-
+void DrawFocus(int16_t x,int16_t y,uint32_t color);
 void IsHacker(void);
 int ProTick1963IsLive(void);
 void ProGet1963State(void);
@@ -75,12 +76,12 @@ void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_
 
 
 //uint32_t InputPanel(int8_t *str,uint32_t len);
-// uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);
+uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);
 
 
-//å¯åŠ¨ç‰ˆæœ¬ä¿¡æ¯
-#define TARGET_NAME		"G-LINK TS100 VEX1.4.2"    		//ç›®æ ‡æ¿åç§°
-#define RELEASE_DATE	"Release Date 2016.2.3"				//ä¿®æ”¹å‘å¸ƒæ—¶é—´
+//Æô¶¯°æ±¾ĞÅÏ¢
+#define TARGET_NAME		"G-LINK TS100 V1.2.2"    		//Ä¿±ê°åÃû³Æ
+#define RELEASE_DATA	"Data 2013.10\r\n"				//ĞŞ¸Ä·¢²¼Ê±¼ä
 
 #endif
 

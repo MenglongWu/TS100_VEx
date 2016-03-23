@@ -117,9 +117,6 @@ void LCD_OperatMode_Selection( uint16_t x0, uint16_t y0 ,uint16_t mode ,uint16_t
 void LCD_Wavelength_Selection_Ex( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor );
 void LCD_Power_Control_Selection_Ex( uint16_t x0, uint16_t y0 ,int16_t Current_Power ,uint16_t CharColor, uint16_t BkColor );
 uint32_t ReadReg(uint16_t cmd,uint16_t *data);
-uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen);
-void DrawFocus(int16_t x,int16_t y,uint32_t color);
-void UI_LicenceDlg();
 #endif 
 
 /*********************************************************************************************************

@@ -24,57 +24,12 @@
 #define Key_Port_Right GPIOA
 #define Key_Pin_Right KEY_A
 
-//保存当前波长、各个模式下的adc、dac值，提升用户体验
-struct fast_switch
-{
-	int32_t enable;
-	int32_t set;
 
-	//CH1
-	uint16_t ch1_adc_off;///<快速校准ch1
-	uint16_t ch1_adc_cw;///<
-	uint16_t ch1_adc_270;///<
-	uint16_t ch1_adc_1k;///<
-	uint16_t ch1_adc_2k;///<
-
-	uint16_t ch1_dac_off;
-	uint16_t ch1_dac_cw;
-	uint16_t ch1_dac_270;
-	uint16_t ch1_dac_1k;
-	uint16_t ch1_dac_2k;
-
-	//CH2
-	uint16_t ch2_adc_off;
-	uint16_t ch2_adc_cw;
-	uint16_t ch2_adc_270;
-	uint16_t ch2_adc_1k;
-	uint16_t ch2_adc_2k;
-
-	uint16_t ch2_dac_off;
-	uint16_t ch2_dac_cw;
-	uint16_t ch2_dac_270;
-	uint16_t ch2_dac_1k;
-	uint16_t ch2_dac_2k;
-
-	//CH3
-	uint16_t ch3_adc_off;
-	uint16_t ch3_adc_cw;
-	uint16_t ch3_adc_270;
-	uint16_t ch3_adc_1k;
-	uint16_t ch3_adc_2k;
-
-	uint16_t ch3_dac_off;
-	uint16_t ch3_dac_cw;
-	uint16_t ch3_dac_270;
-	uint16_t ch3_dac_1k;
-	uint16_t ch3_dac_2k;
-};
 struct ctrl_param//需要控制的参数
 {
-	int32_t lastset;
-	int32_t set; ///<设置值参数扩大1000倍
-	int32_t cur; ///<实际值
-	uint16_t adc;///<dac
+	int32_t set; //设置值参数扩大1000倍
+	int32_t cur; //实际值
+	uint16_t adc;
 	uint16_t dac;
 	int8_t  ld;
 	uint16_t vol;
@@ -84,39 +39,29 @@ struct ctrl_param//需要控制的参数
 
 struct adj_power_flash
 {
-	uint32_t flag;///<标志，当其为0xAABBCCDD时候表示下面的数据有效，否则下面数据清零
-
-	float _adc;///<校准ADC值，记录在输出10dBm时的ADC值，@see Ctrl_Power
-
-	//float _1310_270;//DAC
-	float _dac;///<校准DAC值，记录在输出10dBm时的DAC值，提高自动调节速度，@see AutoCtrlPower
-
-	//////使用原保留内容分别是3个激光器通道的ADC、DAC校准值
-	// 其中0-3分别对应默认的1310、1490、1550激光器
-	float _adc1;//float _1310_1k;
-	float _dac1;//float _1310_2k;
-	float _adc2;//float _1550cw;
-	float _dac2;//float _1550_270;
-	float _adc3;//float _1550_1k;
-	float _dac3;//float _1550_2k;
+	uint32_t flag;//标志，当其为0xAABBCCDD时候表示下面的数据有效，否则下面数据清零
+	float _1310cw;//ADC
+	float _1310_270;//DAC
+	//////无用区域
+	float _1310_1k;
+	float _1310_2k;
+	
+	float _1550cw;
+	float _1550_270;
+	float _1550_1k;
+	float _1550_2k;
 	//////////
 	uint8_t sn[28];
-	uint8_t _650_en;///<650使能
-	uint8_t _1310_en;///<ch1（1310）使能
-	uint8_t _1490_en;///<ch2（1490）使能
-	uint8_t _1550_en;///<ch3（1550）使能
-	
+	uint8_t _650_en;//650
+	uint8_t _1310_en;//1310
+	uint8_t _1490_en;//1490
+	uint8_t _1550_en;//1550
 	
 	//贴牌
-	uint32_t _logo_addr;///<logo地址，保留
-	uint16_t _logo_backcolor;///<logo背景色，保留
-	uint16_t _logo_w;///<logo宽度，宽高有最大限制，保留
-	uint16_t _logo_h;///<logo高度，保留
-	
-	uint16_t _ch1wave;///<ch1波长，默认1310
-	uint16_t _ch2wave;///<ch2波长，默认1490
-	uint16_t _ch3wave;///<ch3波长，默认1550
-	
+	uint32_t _logo_addr;//logo地址
+	uint16_t _logo_backcolor;//logo背景色
+	uint16_t _logo_w;//logo宽度，宽高有最大限制
+	uint16_t _logo_h;//logo高度
 };
 struct point
 {
@@ -157,7 +102,7 @@ extern volatile uint16_t g_adc[200];//ad采样数
 extern volatile uint16_t ADCConvertedValue[2000];//AD采样DMA缓存
 
 extern int8_t g_recvflag ;//串口接收标志
-extern volatile uint8_t strout[256];
+extern volatile uint8_t strout[50];
 
 /*****************************************************************************
 原来的定义

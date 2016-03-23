@@ -450,21 +450,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Common\lib\base.c</FilePath>
             </File>
-            <File>
-              <FileName>stm32_chip.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\stm32_chip.c</FilePath>
-            </File>
-            <File>
-              <FileName>licenceDlg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
-            </File>
-            <File>
-              <FileName>md5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\md5.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1402,21 +1387,6 @@
               <FileName>base.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Common\lib\base.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32_chip.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\stm32_chip.c</FilePath>
-            </File>
-            <File>
-              <FileName>licenceDlg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
-            </File>
-            <File>
-              <FileName>md5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\md5.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2356,21 +2326,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Common\lib\base.c</FilePath>
             </File>
-            <File>
-              <FileName>stm32_chip.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\stm32_chip.c</FilePath>
-            </File>
-            <File>
-              <FileName>licenceDlg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
-            </File>
-            <File>
-              <FileName>md5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\md5.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -3064,7 +3019,7 @@
             <DriverSelection>4099</DriverSelection>
           </Flash1>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
         </Utilities>
         <TargetArmAds>
@@ -3348,21 +3303,6 @@
               <FileName>base.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Common\lib\base.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32_chip.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\stm32_chip.c</FilePath>
-            </File>
-            <File>
-              <FileName>licenceDlg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
-            </File>
-            <File>
-              <FileName>md5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\md5.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4341,21 +4281,6 @@
               <FileName>base.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Common\lib\base.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32_chip.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\stm32_chip.c</FilePath>
-            </File>
-            <File>
-              <FileName>licenceDlg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\GLCD\licenceDlg.c</FilePath>
-            </File>
-            <File>
-              <FileName>md5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\APP\md5.c</FilePath>
             </File>
           </Files>
         </Group>

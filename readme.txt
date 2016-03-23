@@ -1,123 +1,30 @@
-/**
-* @mainpage 
-* @author MenglongWu
-* @date 2014-07-02
-* @section Product
- - 手持稳定光源功能:
-*		- 光源可调范围0 ~ -17dBm（产品实际需求是0 ~ -10dBm）
-*		- 可调精度1dBm（硬件能实现0 ~ -10dBm范围内±0.020dBm可调精度）
-*		- 6个按键
-*			-# 开机键：长按实现开关功能
-*			-# mode键：
-*				-# 长按实现非可见光波长切换（CW、270Hz、1KHz、2KHz），或从关闭光源模式中跳出
-*				-# 短按实现关闭非可见光输出/恢复输出
-*			-# up键：功率增加1dBm
-*			-# dowm键：功率减小1dBm
-*			-# red/timer键：
-*				-# 短按实现红光输出模式切换（CW、2Hz、Off）
-*				-# 长按实现10min误操作定时关机，关闭定时关机功能
-*			-# 入键：切换输出波长1310/1550/1490（默认配置）
-*		- 进入软件设置可设置软件功能
-*			-# 可选输出波长，满足2非可见光/3非可见光配置
-*			-# 可选是否有红光功能
-*			-# 可选具体三波长（默认1310/1550/1490）
-*			-# 序列号记录
-*			-# 光源输出功率可校准（以-10dBm为校准源）
-*
+TS100 V1.2.2 2013.10.22
+1���޸���������ֱ�ӹػ�ͬʱ����ʾ��ص�����ϢBUG��
 
-* @section notes Version
-- TS100_VEx1.4.2_手持稳定光源_20150230
-	-# 工程分离lib和app
+TS100 V1.2.1 2013.09.05
+1���޸ĺ�̨ϸ΢��������������
+2��ԭ��Device��STM32F103VC�����ڸĳ�STM32F103VE
+3��usart.c����������ԭʼ�ģ���Bootloader��usart.c�޸���ɣ�������ֲ����ͳһ�������ù�����
+4��ԭ��������10min�Զ��ػ����ܱ��رյģ����ڴ򿪣�Ϊ�˷�ֹ�������һֱ����
 
-- TS100_VEx1.4.1-bate_手持稳定光源_20151211
-    -# 添加每个通道单独校准，利用原FLASH保留为，FLASH存储结构不变
-
-- TS100_VEx1.4.0_手持稳定光源_20150928
-	-# 添加Flash读写锁，防破解
-	-# 添加Licence注册机制，每个设备可以被多次注册，每次注册码不同
-	-# 添加Licence使用期限，到期时提示需要再次注册，未注册锁死激光器输出功能
-	-# 添加Licence买断，设备只需注册一次即可无限使用
-	-# 添加Licence清洗，无论有期限注册或无限注册，均可以用隐藏手段设置成未注册（实际产品未开放）
-
-- TS100_VEx1.3.4_手持稳定光源_20150820
-	-# 对LCD FSMC降频处理，解决LCD启动后画面颗粒、像素点错位情况
-	读速度
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime = 5;  // 地址建立时间  
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 2;	// 原来是0
-	FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime = 5;	   // 数据建立时间  
-	FSMC_NORSRAMTimingInitStructure.FSMC_BusTurnAroundDuration = 0x00;
-	FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0x02;   // 原来是0
-	FSMC_NORSRAMTimingInitStructure.FSMC_DataLatency = 0x00;
-	写速度
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime = 5;   // 地址建立时间 原来是1 
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 2;	// 原来是0
-	FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime = 5;	   // 数据建立时间 原来是1 
-	FSMC_NORSRAMTimingInitStructure.FSMC_BusTurnAroundDuration = 0x00;
-	FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0x02;   // 原来是0
-	FSMC_NORSRAMTimingInitStructure.FSMC_DataLatency = 0x00;
-- TS100_VEx1.3.3_手持稳定光源_20150702
-	-# Fix 启动时候CW模式光功率跳动厉害，示波表查看实际模式270Hz，因为LCD_DrawMain失误将Ctrl_Operating_Mode注释掉
-	-# Bug 启动时候CW模式光功率跳动厉害，除了上面所说的原因外，还有就是-10dBm校准值不准确，怀疑反复过调。问题在于Ctrl_Power里快速校准有缺陷，用户按键切换-9dbm、-10dbm可以稳定，代码里自动执行两次Ctrl_Power，输入-9dbm、-10dbm勉强解决，治标不治本。
-	-# Ctrl_Power 里的光功率快速切换代码，对波长切换没有问题，但对同波长off - CW/270/1K/2K之间模式之间的切换有缺陷，快速切换记录的是off模式下的值，而不是输出模式下的值
-	-# Add 多模、单模光源字体颜色有区分，多模棕色、单模黄色，颜色用Flash里struct adj_power_flash 的 _logo_backcolor 指定，当 _logo_backcolor 为0时显示棕色，否则为黄色。
-	-# Fix 之前所有代码里对ADC、DAC的取值范围全部写错，应该限定在0~4095，而代码里错写成0~6095
+TS100 V1.2.0
+1������˫��Դ������Դ����
+2����̨���ӡ���Ʒ��Ϣ���롱�͡���Ʒ�������á�
+3�����������ģʽ�޸ĳ�1000/6Hz����䰵
 
 
-- TS100_VEx1.3.2_手持稳定光源_20150401
-	-# Fix 解决当只有1个激光器且不是焊接在1310端口上时，启动后激光器不亮，需要按Mode键才能开启激光器。原因：允许后台配置焊接激光器不是1310（Ch1）端口，但实际启动后默认开启131端口。
+TS100 V1.1.1 2013.08.23
+����Դ
 
-- TS100_VEx1.3.1_手持稳定光源_20140702 稳定版
-	-# 删除功率控制Ctrl_Power部分无用代码
-	-# FLASH存储的产品配置信息新增波长配置功能，不仅仅是原来的1310、1490、1550三种波长显示，对于红光650因为没有必要显示数值，所以没对它提供配置。
-	-# 进入后台模式时关闭红光，防止红光闪烁图标影响后台输入
-	-# 添加同功率下不同波长、不同模式快速输出稳定光，减少功率自动校准时间
-	-# 修改Mode键功能，短按切换Off和其他某一模式，长按在其他调制模式切换。这样的修改能得打更好的用户体验，毕竟大多数时候用户只会选择某一调制模式，不用时候关闭它，不会再几个调制模式来回切换
-	-# 打开机检测端口由原来的下拉输入改成悬浮输入。目的：防止硅胶按键阻抗原因导致无法开机，另外分压电阻R20改成7.5K，即使接上15V适配器，端口上的电平也就3.7V
+TS100 V1.1.0 2013.06.18
+˫����
+�����ӿں͵�·����
+�ں����޸ĳ�3�����ȶ��ͺŲ�Ʒ�������õ�ͨ�ð汾
+�����Ժ�̨
 
-- TS100_VEx1.2.4_手持稳定光源_20140611 稳定版
-	-# 修改保存设备信息Product的内容，flash保存内容在后面2K空间，只有第一个字节内容是0xaabbccdd时内容才认为是有效。最初这个设计时为Adjust对话框设计的，Adjust保存时自动添加0xaabbccdd，但Product对话框保存时没有添加0xaabbccdd，导致序列号等信息无效。现已经对product也自动添加0xaabbccdd。当只设置了Product信息，Adjust无论设置与否都被认为是有效的（此时Adjust内容为全0），只要在校准激光器后设置Addjust即可。
-- TS100_VEx1.2.3_手持稳定光源_20140418
-	-# 添加非可见光关闭功能，在插光接口时候保护人眼，长按Mode键可实现该功能，该版本仅供公司内部使用。
-	-# 修改KeyDown_Ex函数返回值意义，原来返回值x100得到按键长按时间（ms），现在直接返回具体时间（ms），并且把扫描间隔从100ms缩短到10ms。
+TS100 V1.0.0 2013.03.14
+1�����LCD��λ����
 
-- TS100_VEx1.2.2_手持稳定光源_20140414
-	-# 在TS100_V1.2.2基础上修改此版本，“Ex”版本是公司内部使用的，不对外公开。
-	-# 添加功率可调范围设置成0 ~ -19dBm，-15dBm以上功率可调精度才比较精确。该版本仅用于公司内部，供生产调试用。
-	-# 红光激光器发射极改成5~10Ω，功率能达到-6 ~ -9dBm左右，改成2Ω可以达到2 ~ -2dBm
-	-# 添加关闭光源“off”功能
-
-
-- TS100 V1.2.2 2013.10.22
-	-# 修复电量不足直接关机同时不显示电池电量信息BUG。
-
-- TS100 V1.2.1 2013.09.05
-	-# 修改后台细微操作，避免歧义
-	-# 原来Device是STM32F103VC，现在改成STM32F103VE
-	-# usart.c还是沿用最原始的，带Bootloader的usart.c修改完成（便于移植）再统一拷贝到该工程下
-	-# 原来开机后10min自动关机功能被关闭的，现在打开，为了防止运输过程一直开机
-
-- TS100 V1.2.0
-	-# 整合双光源、三光源代码
-	-# 后台添加“产品信息输入”和“产品功能配置”
-	-# 红光连续光模式修改成1000/6Hz，光变暗
-
-
-- TS100 V1.1.1 2013.08.23
-	-# 三波长实现
-
-- TS100 V1.1.0 2013.06.18
-	-# 双波长实现
-	-# 触屏接口和电路整改
-	-# 在后期修改成3波长等多型号产品易于配置的通用版本
-	-# 带调试后台
-
-- TS100 V1.0.0 2013.03.14
-	-# 解决LCD复位问题
-
-- TS100 V1.0.0 2012.11.13
-	-# 从9.26至今完成全部功能，存在如下BUG
-	-# 红光按下偶有导致LCD复位
-
-
-
-*/
+TS100 V1.0.0 2012.11.13
+��9.26�������ȫ�����ܣ���������BUG
+1����ⰴ��ż�е���LCD��λ

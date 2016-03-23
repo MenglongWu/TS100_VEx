@@ -127,10 +127,10 @@ static void LCD_FSMCConfig(void)
 	FSMC_NORSRAMTimingInitTypeDef FSMC_NORSRAMTimingInitStructure;
 	/* FSMC读速度设置 */
 	FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime = 5;  /* 地址建立时间  */
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 2;	   
+	FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 0;	   
 	FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime = 5;	   /* 数据建立时间  */
 	FSMC_NORSRAMTimingInitStructure.FSMC_BusTurnAroundDuration = 0x00;
-	FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0x02;
+	FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0x00;
 	FSMC_NORSRAMTimingInitStructure.FSMC_DataLatency = 0x00;
 	FSMC_NORSRAMTimingInitStructure.FSMC_AccessMode = FSMC_AccessMode_A;	/* FSMC 访问模式 */
 	
@@ -150,11 +150,11 @@ static void LCD_FSMCConfig(void)
 	FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct = &FSMC_NORSRAMTimingInitStructure;
 	FSMC_NORSRAMInit(&FSMC_NORSRAMInitStructure); 
 	/* FSMC写速度设置 */
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime = 5;   /* 地址建立时间  */
-	FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 2;	   
-	FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime = 5;	   /* 数据建立时间  */
+	FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime = 1;   /* 地址建立时间  */
+	FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 0;	   
+	FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime = 1;	   /* 数据建立时间  */
 	FSMC_NORSRAMTimingInitStructure.FSMC_BusTurnAroundDuration = 0x00;
-	FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0x02;
+	FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0x00;
 	FSMC_NORSRAMTimingInitStructure.FSMC_DataLatency = 0x00;
 	FSMC_NORSRAMTimingInitStructure.FSMC_AccessMode = FSMC_AccessMode_A;	/* FSMC 访问模式 */
 	FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &FSMC_NORSRAMTimingInitStructure;	  
@@ -332,27 +332,12 @@ static void SSD1963_SPI_WriteReg(uint8_t reg, uint16_t cmd)
 }
 
 //利用LCD的gpio寄存器配置信息，反正这个GPIO也没用，干脆用来检测复位
-/*
-	set/get_gpio_conf 寄存器
-			D7 D6 D5 D4   D3 D2 D1 D0
-	param1  X  X  X  X    X  X  X  X
-	param2  0  0  0  0    0  0  0  X
-*/
 void SSD1963_SetCheckFlag()
 {
-	// 写入地址是 CMD_SET_GPIO_CONF 0xb8，读取地址是 CMD_GET_GPIO_CONF 0xb9
-	//  写入的第一个值 CHECK_LCD_VAL 0x0f
-	LCD_WriteCommand(CMD_SET_GPIO_CONF);
-	// 2016.01.26 Menglong Woo
-	// 下面两个值理论上可以随便写任何值，但第1个取值0~0xff，第2个取值0 ~ 0x01
-	// 对于TS100电路板，暂时发现 param1=0x0f param2=0x01写入后能正常运行
-	// 向 CMD_GET_GPIO_CONF 寄存器读取 得 0x000F ,第2个参数无效，至于怎么无效的暂时不清楚
-	// 也不去纠结，该功能只是为了坚持LCD是否正常启动
-	// End 2016.01.26 Menglong Woo
-	LCD_WriteData(CHECK_LCD_VAL);
+	LCD_WriteCommand(0xB8);
+	LCD_WriteData(0x0f);
 	LCD_WriteData(0x01);
 }
-
 
 uint8_t SSD1963_IsRestart()
 {
@@ -360,7 +345,7 @@ uint8_t SSD1963_IsRestart()
 	LCD_WriteCommand(0xb9);
 	data1 = LCD_ReadData();
 	data2 = LCD_ReadData();
-	if(data1 != CHECK_LCD_VAL)
+	if(data1 != 0x0f)
 		return 1;
 	return 0;
 }
@@ -409,7 +394,6 @@ void LCD_Initializtion(void)
 	LCD_WriteCommand(0xE0);			    /* Start PLL command */
 	LCD_WriteData(0x01);				/* enable PLL */	
 	delay_ms(10);						/* wait stablize */
-	delay_ms(50);
 	
 	LCD_WriteCommand(0xE0);			    /* Start PLL command again */
 	LCD_WriteData(0x03);				/* now, use PLL output as system clock */		
@@ -418,7 +402,6 @@ void LCD_Initializtion(void)
 	/* once PLL locked (at 120MHz), the data hold time set shortest */
  	LCD_WriteCommand(0x01);			    /* Soft reset */
  	delay_ms(10);
-	delay_ms(50);
 	
 	/* Set LSHIFT freq, i.e. the DCLK with PLL freq 120MHz set previously */
 	/* Typical DCLK for TYX350TFT320240 is 6.5MHz in 24 bit format */
@@ -473,7 +456,6 @@ void LCD_Initializtion(void)
 	LCD_WriteData(0x00);		/* 8-bit data for 16bpp */
 	#endif
 	delay_ms(5);
-	delay_ms(50);
 	
 	LCD_WriteCommand(0xB8);	    /* Set all GPIOs to output, controlled by host */
 	LCD_WriteData(0x0f);		/* Set GPIO0 as output */

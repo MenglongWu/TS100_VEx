@@ -34,18 +34,14 @@ V1.0    yujignxiong   2011.11.27
 	key.c   			按键扫描
 	flash.c  			内部flash读写
 	usart.c   			外部
-	
-	2013.03.15 吴梦龙
-1、重新划分编译器rom空间，0x08000000 - 0x0803f7ff（0x3f800大小），
-	余下0x800（2K）空间用于存储校准信息，flash.h文件里开始写入开始地址是0x0803F800
 *********************************************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h" 
-//#include "stm32_eval.h" 
-#include "..\\TouchPanel\\TouchPanel.h"
-#include "..\\SysTick\\systick.h"
-#include "..\\GLCD\\GLCD.h"
+#include "stm32_eval.h" 
+#include "TouchPanel.h"
+#include "systick.h"
+#include "GLCD.h"
 #include "stm32f10x_adc.h" 
 #include "stm32f10x_dac.h"
 #include "stm32f10x_dma.h"   
@@ -69,12 +65,7 @@ V1.0    yujignxiong   2011.11.27
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-//#include <PictureData.h>
-#include "USER\\GLCD\\PictureData.h"
-#include "project.h"
-#include "gl_key.h"
-#include "lib\\base.h"
-#include "LCD\\gl_type.h"
+#include <PictureData.h>
 
 /*****************************************************************************
 我的定义
@@ -85,11 +76,46 @@ V1.0    yujignxiong   2011.11.27
 #define debugtxt gl_text
 #endif
 
-#ifndef _DEBUG_
-#define dprintf
-#else 
-#define dprintf printf
-#endif
+void USART_Configuration();
+void delayMs(uint16_t ms);
+void ADC_Configuration();
+uint16_t GetAD(uint8_t chx);
+void DAC_Configuration(void);
+void TIM2_Init(void);
+void TIM3_Init(uint16_t);
+void TIM4_Init(uint16_t);
+void TIM5_Init(uint16_t);
+void TIM6_Init(void);
+void NVIC_Configuration(void);
+void FLASH_Configuration();
+float DbmToScale(float dbm);
+void Ctrl_RedLight(u8 v);
+void Ctrl_Wavelength(u8 Wavelength_Selection_state);
+void Ctrl_Operating_Mode(u8 Operating_Mode);
+void Ctrl_Power(struct ctrl_param *v);
+void AutoCtrlPower();
+void Ctrl_Timing_Device(u8 Timer);
+void Function_IO_config(void);
+void RedLightIOConfig();
+void External_Interrupt_Config(void);
+void External_Interrupt_EXIT_Init(void);
+void External_Interrupt_InterruptConfig(void);
+void delayUs(vu32 cnt);
+void LCD_DrawMain(void);
+void TurnOnPower();
+void TurnOffPower();
+void UI_ProWavelength();
+void UI_ProPower();
+void UI_ProMode();
+void UI_ProRedLight_ShutdownTimer();
+void ProChargerMonitor();
+void ProTimerShutdown();
+int main(void);
+void DebugLookAD();
+void UI_ProductionAdjust();
+void DrawFocus(int16_t x,int16_t y,uint32_t color);
+void IsHacker();
+
 
 
 struct ctrl_param g_power;//功率设置
@@ -101,19 +127,16 @@ volatile u8 g_red_onoff = 0;//
 volatile int8_t g_red_mode = 0;//红灯显示模式，常亮、闪烁、关闭
 volatile u8 g_red_delay_100ms = 0;//红灯闪烁0.5s延时
 volatile u8 g_onoff_en = 0;//使能关机，防止开机后再关机
-volatile u8 g_autoctrlpower_en = 1;
 
 volatile u8 g_key_timer_100ms = 0;//按键定时器，用于判断长按下和单击，复用红灯和定时关机按键
 volatile uint16_t g_batter_delay = 0;//电池刷新显示延时
-volatile float g_battery_vol = 12;//电池电压，默认12V
 /////////////////////
-volatile uint16_t g_power_down = 0;
-volatile uint16_t g_ad_ms = 0,g_adjust_ms = 0,g_lcdbug_ms = 0,g_usart_ms = 0,g_lcdlisten_ms = 0,g_debug_ms = 0,g_redbug_ms = 0;//ad采样间隔
+volatile uint16_t g_ad_ms = 0,g_adjust_ms = 0,g_lcdbug_ms = 0;//ad采样间隔
 volatile uint16_t g_adc[200];//ad采样数
 volatile uint16_t ADCConvertedValue[2000];//AD采样DMA缓存
 
 int8_t g_recvflag = 0;//串口接收标志
-volatile uint8_t strout[50];
+
 
 /*****************************************************************************
 原来的定义
@@ -159,7 +182,7 @@ uint16_t Y[3]={487,3352,1982};
 #define GPIO_KEY_1490_CON 					   GPIO_Pin_2
 #define GPIO_KEY_1550_CON 					   GPIO_Pin_1
 #define GPIO_CHARG_CHK 					       GPIO_Pin_8
-//#define Control_KEYS				GPIO_KEY_1310_CON | GPIO_KEY_1490_CON | GPIO_KEY_1550_CON | GPIO_CHARG_CHK ;
+#define Control_KEYS				GPIO_KEY_1310_CON | GPIO_KEY_1490_CON | GPIO_KEY_1550_CON | GPIO_CHARG_CHK ;
 
 #define RCC_GPIO_CTRL_D 			RCC_APB2Periph_GPIOD 
 #define GPIO_CTRL_PORT_D 			GPIOD
@@ -214,71 +237,118 @@ uint16_t Y[3]={487,3352,1982};
 #define GPIO_TimingSet_CHK_PIN_SOURCE                       GPIO_PinSource3
 #define GPIO_TimingSet_CHK_IRQn                             EXTI3_IRQn
 
-
+/*按键*/
+#define KEY_A GPIO_Pin_5
+#define KEY_B GPIO_Pin_3
+#define KEY_C GPIO_Pin_2
+#define KEY_X GPIO_Pin_1
+#define KEY_Y GPIO_Pin_7
+#define KEY_Z GPIO_Pin_6
 
 
 /*****************************************************************************
 工程模块配置
 *****************************************************************************/
 /*****************一般功能IO口初始化******************************************/
-
 void Function_IO_config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-
-	//电源检测端口CHECK1(KEY_X)、CHECK2、CHARGER
-	//CHECK1
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_ONOFF_CHK;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	//CHECK2
-	GPIO_InitStructure.GPIO_Pin = GPIO_SYSPWR_ONOFF;
+	
+	//电源检测端口CHECK1(KEY_X)、CHECK2
+	
+	//按键KEY_A,KEY_b,KEY_B,KEY_X,KEY_Y,KEY_Z
+	
+	
+	
+	
+	
+	
+	
+	/* Enable GPIOD clock */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOA, ENABLE);
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOB, GPIO_SYSPWR_ONOFF);
-	//CHARGER悬浮或下拉
-	
-	
-	
-	//按键KEY_A,KEY_b,KEY_B,KEY_Y,KEY_Z
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_InitStructure.GPIO_Pin = KEY_A | KEY_B | KEY_C | KEY_Y | KEY_Z;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	
-	//激光器：1550、1310、1490、650
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = 
-		GPIO_KEY_RED_CON | GPIO_KEY_1310_CON | 
-		GPIO_KEY_1490_CON | GPIO_KEY_1550_CON;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOC,GPIO_KEY_1310_CON);
-	GPIO_ResetBits(GPIOC,GPIO_KEY_1490_CON);
-	GPIO_ResetBits(GPIOC,GPIO_KEY_1550_CON);
-	GPIO_ResetBits(GPIOC,GPIO_KEY_RED_CON);
 	
-// 	//LCD使能
-// 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-// 	GPIO_InitStructure.GPIO_Pin = GPIO_LCD_OFF;
-// 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-// 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-// 	GPIO_Init(GPIOD, &GPIO_InitStructure);
-// 	GPIO_SetBits(GPIOD,GPIO_LCD_OFF);
 	
-	//1963:TS
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_Init(GPIOA,&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOB,&GPIO_InitStructure);
+	GPIO_SetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); 
+	
+	
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_B | RCC_GPIO_CTRL_C | RCC_GPIO_CTRL_D |RCC_APB2Periph_AFIO , ENABLE);    
+	/* Control pins 开关机 CHECK2 configuration */
+	GPIO_InitStructure.GPIO_Pin = GPIO_SYSPWR_ONOFF;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIO_CTRL_PORT_B, &GPIO_InitStructure);
+
+	/* Control pins选择开关控制，充电指示 configuration */
+	GPIO_InitStructure.GPIO_Pin = Control_KEYS;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIO_CTRL_PORT_C, &GPIO_InitStructure);
+
+	/* Control pins液晶屏片选开关 configuration */
+	GPIO_InitStructure.GPIO_Pin = GPIO_LCD_OFF;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIO_CTRL_PORT_D, &GPIO_InitStructure);
 	
-	LCD_Configuration();
+	
+	////////////////
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+	/* Configure CHECK1 Button 按键开关机 */
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_A, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_InitStructure.GPIO_Pin = GPIO_ONOFF_CHK;
+	GPIO_Init(GPIO_CTRL_PORT_A, &GPIO_InitStructure);
+
+	/* Configure CHECK3  波长选择按键中断 */
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_A, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin = GPIO_WaveSelection_CHK;
+	GPIO_Init(GPIO_CTRL_PORT_A, &GPIO_InitStructure);
+
+	/* Configure CHECK4  模式选择按键中断 */
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_A, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin = GPIO_OperatingMode_CHK;
+	GPIO_Init(GPIO_CTRL_PORT_A, &GPIO_InitStructure);  
+
+	/* Configure CHECK4  功率 递曾 选择按键中断 */
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_A, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin = GPIO_PowerUp_CHK;
+	GPIO_Init(GPIO_CTRL_PORT_A, &GPIO_InitStructure);
+
+	/* Configure CHECK4  功率 递减 选择按键中断 */
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_A, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin = GPIO_PowerDown_CHK;
+	GPIO_Init(GPIO_CTRL_PORT_A, &GPIO_InitStructure);
+
+	/* Configure CHECK4  TimingSet选择按键中断 */
+	RCC_APB2PeriphClockCmd(RCC_GPIO_CTRL_A, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin = GPIO_TimingSet_CHK;
+	GPIO_Init(GPIO_CTRL_PORT_A, &GPIO_InitStructure);
+	
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_Init(GPIOA,&GPIO_InitStructure);
 }
 /*
 *Function:红光端口配置
@@ -298,7 +368,7 @@ void USART_Configuration()
 	USART_InitTypeDef USART_InitStructure;
 	struct com_dev comdev;
 	//u8 KeyNum = 0;
-	//uint32_t IntDeviceSeriNum[3];	
+	uint32_t IntDeviceSeriNum[3];	
 
 	USART_InitStructure.USART_BaudRate = 115200;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -318,11 +388,11 @@ void USART_Configuration()
 }
 void delayMs(uint16_t ms)    //20000约为3s
 { 
-// 	uint16_t i,j; 
-// 	for( i = 0; i < ms; i++ )
-// 	{ 
-// 		for( j = 0; j < 1141; j++ );
-// 	}
+	uint16_t i,j; 
+	for( i = 0; i < ms; i++ )
+	{ 
+		for( j = 0; j < 1141; j++ );
+	}
 }
 
 /*
@@ -608,7 +678,7 @@ void NVIC_Configuration(void)
 */
 void FLASH_Configuration()
 {
-	uint32_t i;
+	int8_t strout[50];
 	ReadFlash(FLASH_PAGE_START,
 				(uint32_t*)&(g_adj_power),
 				sizeof(struct adj_power_flash));
@@ -624,39 +694,7 @@ void FLASH_Configuration()
 		g_adj_power._1550_270 = 0;
 		g_adj_power._1550_1k = 0;
 		g_adj_power._1550_2k = 0;
-
-		for(i = 0;i < 24;++i) {
-			g_adj_power.sn[i] = '0';
-		}
-		g_adj_power.sn[24] = '\0';
-
-		g_adj_power._650_en = 1;//650
-		g_adj_power._1310_en = 1;//1310
-		g_adj_power._1490_en = 0;//1490
-		g_adj_power._1550_en = 1;//1550
-
-		g_adj_power._logo_addr = 0x0000000;//logo地址
-		g_adj_power._logo_backcolor = 0x22f2;//logo背景色
-		g_adj_power._logo_w = 243;//logo宽度，宽高有最大限制
-		g_adj_power._logo_h = 57;//logo高度	
-	
 	}
-	printf("Load config from FLASH\r\n");
-	printf("------------------------------------------------\n");
-	printf("SN:%s\n",g_adj_power.sn);
-	printf("Out:%4.4d\tIn:%4.4d\n",(uint32_t)g_adj_power._1310cw,(uint32_t)g_adj_power._1310_270);
-	printf("Product Configuration\n");
-	printf("    |650\t|%s\t",
-		g_adj_power._650_en?"On":"Off");
-	printf("    |1310\t|%s\n",
-		g_adj_power._1310_en?"On":"Off");
-	printf("    |1490\t|%s\t",
-		g_adj_power._1490_en?"On":"Off");
-	printf("    |1550\t|%s\n",
-		g_adj_power._1550_en?"On":"Off");
-	printf("------------------------------------------------\n");
-
-	
 }
 
 
@@ -675,7 +713,7 @@ void FLASH_Configuration()
 */
 uint16_t GetAD(uint8_t chx)
 {
-	uint32_t i,k,start = 0;
+	uint32_t i,j,k,start = 0;
 	uint32_t tmp;
 	float ave;
 	
@@ -773,11 +811,11 @@ void Ctrl_RedLight(u8 v)
 #define WL_1550 3
 #define WL_RED  4
 void Ctrl_Wavelength(u8 Wavelength_Selection_state)	  //Operating_Mode  0 = CW、 1 = 270Hz、2 = 1KHz、3 = 2KHz  连续光/脉冲光选择
-{
-	//Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
+{											//Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
+
 	switch(Wavelength_Selection_state)				
 	{
-	case   WL_OFF:	  // 0 = 关闭光源
+	case   0:	  // 0 = 关闭光源
 		TIM_Cmd(TIM3, DISABLE);	   //1310nm
 		TIM_Cmd(TIM4, DISABLE);	   //1490nm
 		TIM_Cmd(TIM5, DISABLE);	   //1550nm
@@ -787,7 +825,7 @@ void Ctrl_Wavelength(u8 Wavelength_Selection_state)	  //Operating_Mode  0 = CW、
 
 		break;
 
-	case	WL_1310:	 // 1 = 1310nm	PC1			
+	case	1:	 // 1 = 1310nm	PC1			
 		TIM_Cmd(TIM4, DISABLE);
 		TIM_Cmd(TIM5, DISABLE);
 		TIM_Cmd(TIM3, ENABLE);
@@ -796,7 +834,7 @@ void Ctrl_Wavelength(u8 Wavelength_Selection_state)	  //Operating_Mode  0 = CW、
 
 		break;		
 
-	case	WL_1490:	 // 2 = 1490nm	PC2
+	case	2:	 // 2 = 1490nm	PC2
 		TIM_Cmd(TIM3, DISABLE);			
 		TIM_Cmd(TIM5, DISABLE);
 		TIM_Cmd(TIM4, ENABLE);
@@ -805,7 +843,7 @@ void Ctrl_Wavelength(u8 Wavelength_Selection_state)	  //Operating_Mode  0 = CW、
 
 		break;
 
-	case	WL_1550:	 // 3 = 1550nm	PC3
+	case	3:	 // 3 = 1550nm	PC3
 		TIM_Cmd(TIM3, DISABLE);
 		TIM_Cmd(TIM4, DISABLE);
 		TIM_Cmd(TIM5, ENABLE);
@@ -814,7 +852,7 @@ void Ctrl_Wavelength(u8 Wavelength_Selection_state)	  //Operating_Mode  0 = CW、
 
 		break; 
 
-	case	WL_RED:	 // 4 = 红光
+	case	4:	 // 4 = 红光
 
 		break;
 
@@ -998,7 +1036,7 @@ void Ctrl_Operating_Mode(u8 Operating_Mode)	 //Operating_Mode  0 = CW、 1 = 270H
 */
 void Ctrl_Power(struct ctrl_param *v)
 {
-	uint8_t strout[30];
+	int8_t strout[30];
 	float tmpdbm;
 	/*3.3V分成4096份，每份0.805mV
 	Vad = AD * 0.805mV
@@ -1048,26 +1086,19 @@ void Ctrl_Power(struct ctrl_param *v)
 		//tmp.set = v->set;
 		tmpdbm = (float)(v->set/1000.0);
 	}
-	tmpdbm = (float)(v->set/1000.0) + g_adj_power._1550_1k;
-	//v->dac = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 2460);//2460只是个大概的数，方便快速调节
-	
-	v->dac = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._1310_270*10);
+	v->dac = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 2460);//2460只是个大概的数，方便快速调节
+	//v->dac = (uint16_t)(DbmToScale(tmpdbm) * 3000);//2460只是个大概的数，方便快速调节
 	if(Wavelength_Selection_state == WL_1550) {
 		//v->adc = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * 1224.84472);
-		//v->adc = (uint16_t)(DbmToScale(tmpdbm) * 1224.84472);
-		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._1550cw*10);
+		v->adc = (uint16_t)(DbmToScale(tmpdbm) * 1224.84472);
 	}
 	else if(Wavelength_Selection_state == WL_1310) {
 		//v->adc = (uint16_t)(DbmToScale((float)(v->set/1000.0)) * (1000*1.040/0.805));
-		//v->adc = (uint16_t)(DbmToScale(tmpdbm) * (1000*1.040/0.805));
-		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._1310cw*10);
+		v->adc = (uint16_t)(DbmToScale(tmpdbm) * (1000*1.040/0.805));
 	}
 	else {
-		//v->adc = (uint16_t)(DbmToScale(tmpdbm) * 1224.84472);
-		v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*0);
-	}
-	//以上计算v->adc全部忽略
-	v->adc = (uint16_t)((pow(10,(float)tmpdbm/10))*g_adj_power._1310cw*10);
+		v->adc = (uint16_t)(DbmToScale(tmpdbm) * 1224.84472);
+	}		
 	
 	sprintf(strout,"v->dac %4.4d",v->dac);
 	debugtxt(0,12,strout,-1);
@@ -1075,24 +1106,10 @@ void Ctrl_Power(struct ctrl_param *v)
 	debugtxt(0,24,strout,-1);
 	sprintf(strout,"v->set dbm %3.3f",(float)(v->set / 1000.0));
 	debugtxt(0,36,strout,-1);
-	
-	if(v->adc > 4095) {
-		v->adc = 6095;
-	}
-	else if(v->adc < 0){
-		v->adc = 0;
-	}
-	if(v->dac > 4095) {
-		v->dac = 6095;
-	}
-	else if(v->dac < 0){
-		v->dac = 0;
-	}
 	DAC_SoftwareTriggerCmd(DAC_Channel_1,DISABLE);  
 	DAC_SetChannel1Data(DAC_Align_12b_R, v->dac);
 	DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE);	
 	LCD_Power_Control_Selection_Ex(55,90,((uint16_t)((int32_t)v->set / 1000)),White, Grey);	
-	g_autoctrlpower_en = 1;
 // 	g_red_mode++;
 // 	if(g_red_mode >=3)
 // 		g_red_mode = 0;
@@ -1104,17 +1121,13 @@ void Ctrl_Power(struct ctrl_param *v)
 */
 void AutoCtrlPower()
 {
-	uint8_t strout[20];
+	int8_t strout[20];
 	uint16_t ad,flag = 0,fadj = 0;
 	static uint16_t adjust_time  = 800;
-	static uint16_t balance_times = 0;
 	
 	//根据偏差的多少，设定下次校正时间和校正幅度
 	if(g_adjust_ms >= adjust_time ) {
 		g_adjust_ms = 0;
-		if(g_autoctrlpower_en == 0) {
-			return ;
-		}
 		ad = GetAD(1);//读取ad值，200次取平均
 		sprintf(strout,"GetAD %4.4d",ad);
 		debugtxt(0,48,strout,-1);
@@ -1123,53 +1136,31 @@ void AutoCtrlPower()
 			g_power.dac -= 50;//校正幅度-50
 			fadj = 1;
 			adjust_time  = 300;//300ms后再次校正
-			balance_times = 0;
 		}
 		else if(g_power.adc - ad > 50) {
 			g_power.dac += 50;
 			fadj = 1;
 			adjust_time  = 300;
-			balance_times = 0;
 		}
 		else if(ad - g_power.adc > 6) {
 			g_power.dac -= 5;
 			fadj = 1;
-			adjust_time  = 200;
-			balance_times = 0;
-			
-			
+			adjust_time  = 500;
 		}
 		else if(g_power.adc - ad> 6) {
 			g_power.dac += 5;
 			fadj = 1;
-			adjust_time  = 200;
-			balance_times = 0;
-			
-			
+			adjust_time  = 500;
 		}
-		else if(ad - g_power.adc > 2) {
+		else if(ad - g_power.adc > 4) {
 			g_power.dac -= 1;
 			fadj = 1;
 			adjust_time  = 1000;
-			balance_times = 0;
-			if(Operating_Mode ==OPM_270) {
-				g_autoctrlpower_en = 0;
-			}
-			
 		}
-		else if(g_power.adc - ad> 2) {
+		else if(g_power.adc - ad> 4) {
 			g_power.dac += 1;
 			fadj = 1;
 			adjust_time  = 1000;
-			balance_times = 0;
-			if(Operating_Mode ==OPM_270 ) {
-				g_autoctrlpower_en = 0;
-			}
-		}
-		else {
-			if(balance_times++ > 2) {
-				g_autoctrlpower_en = 0;
-			}
 		}
 		
 		if(fadj) {
@@ -1240,9 +1231,9 @@ void External_Interrupt_Config(void)
 /*CHECK1、CHECK3、CHECK4外部中断初始化**********************************/
 void External_Interrupt_EXIT_Init(void)
 {
-	//EXTI_InitTypeDef EXTI_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
 	/* Configure the Priority Group to 2 bits */
-	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 
 	/* Connect CHECK1 EXTI Line to CHECK1 GPIO Pin */
 
@@ -1365,15 +1356,15 @@ void External_Interrupt_InterruptConfig(void)
 *******************************************************************************/
 void delayUs(vu32 cnt)
 {
-// 	uint16_t i;
-// 	for(i = 0;i<cnt;i++)
-// 	{
-// 		uint8_t us = 12; /* 设置值为12，大约延1微秒 */    
-// 		while (us--)     /* 延1微秒	*/
-// 		{
-// 			;   
-// 		}
-// 	}
+	uint16_t i;
+	for(i = 0;i<cnt;i++)
+	{
+		uint8_t us = 12; /* 设置值为12，大约延1微秒 */    
+		while (us--)     /* 延1微秒	*/
+		{
+			;   
+		}
+	}
 }
 
 /*
@@ -1384,49 +1375,37 @@ void LCD_DrawMain(void)
 	uint16_t x,y;
 
 	//显示LOGO
-// 	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
-// 		for( y=0; y < 240; y++ )
-// 			gl_setpoint(x,y,0x22f2);	//屏幕主色调gray
-	LCD_Clear(Black);
+	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
+		for( y=0; y < 240; y++ )
+			gl_setpoint(x,y,0x22f2);	//屏幕主色调gray
 			
-	LCD_FLSAH_DrawPicture(38,91,38+243-1,91+57-1,(uint8_t*)gImage_logo);
-	Delay_ms(2000);
-// 	gl_setarea(0,0,319,239);
-// 	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
-// 		for( y=0; y < 240; y++ )
-// 			gl_setpoint(x,y,0x22f2);	//屏幕主色调gray
-	gl_clear(0,0,320,240,0x22f2);
+	LCD_FLSAH_DrawPicture(38,91,38+243-1,91+57-1,gImage_logo);
+	delayMs(6000);
+	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
+		for( y=0; y < 240; y++ )
+			gl_setpoint(x,y,0x22f2);	//屏幕主色调gray
 	
 	//初始化功率
-	g_power.set = (int32_t)(-10000);
+	g_power.set = (uint32_t)(-10000);
 	Ctrl_Power(&g_power);
 	//初始化波长
 	Wavelength_Selection_state = WL_1310;
-	if(g_adj_power._1310_en == 0) {
-		if(g_adj_power._1490_en) {
-			Wavelength_Selection_state = WL_1490;
-		}
-		else {
-			Wavelength_Selection_state = WL_1550;
-		}
-	}
-	//Ctrl_Wavelength( Wavelength_Selection_state); //Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
+	Ctrl_Wavelength( Wavelength_Selection_state); //Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
 	LCD_Wavelength_Selection_Ex( 170,200 ,Wavelength_Selection_state ,Yellow, Grey );
 	
 	//初始化输出频率
 	Operating_Mode = OPM_CW;
-	//Ctrl_Operating_Mode( Operating_Mode);	     //Operating_Mode  0 = CW、 1 = 270Hz、2 = 1KHz、3 = 2KHz  连续光/脉冲光选择
+	Ctrl_Operating_Mode( Operating_Mode);	     //Operating_Mode  0 = CW、 1 = 270Hz、2 = 1KHz、3 = 2KHz  连续光/脉冲光选择
 	LCD_OperatMode_Selection( 15, 200,Operating_Mode, Yellow,Grey );
 	
 	//初始化定时关机
-	Timer_State = TM_10MIN;//TM_OFF;
+	Timer_State = TM_OFF;
 	Ctrl_Timing_Device( Timer_State );
 	LCD_Timing_Display( 120, 12 ,Timer_State);
 	
 	//初始化红光
 	g_red_onoff = 0;
-	if(g_adj_power._650_en == 1)
-		LCD_RedLight_Show(9,15,g_red_onoff);
+	LCD_RedLight_Show(9,15,g_red_onoff);
 	
 	//初始化电池电量
 	g_batter_delay = -1;//立即检测，而不是100ms后
@@ -1435,10 +1414,7 @@ void LCD_DrawMain(void)
 	TouchPanel_Calibrate();	//校准触摸屏
 	LCD_Batter_Show(0,0,6/*LEVEL_4*/);//为了解决初始化时候电池判别次数不够，不显示电池量	
 }
-void Delay(uint32_t time)
-{
-  for (; time!= 0; time--);
-}
+
 /*
 * Function: 打开电源
 */
@@ -1448,33 +1424,42 @@ void TurnOnPower()
 	
 // 	//总电源使能，打开
  	GPIO_SetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);
-	Delay_ms(10); 
+	//LCD电源使能
+	GPIO_SetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);	  //液晶屏使能端口
+	Delay_ms(1000);
+	
 	//开机按键是否按下
+	//GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);
 	i = 0;
-	while(i++ < 100) {//用户长按800ms，每10ms去抖动
-		Delay_ms(10);
-		if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_1) == 1) {
-			isDown = 1;
-		}
-		else {
-			isDown = 0;
-			break;
-		}
-	}
+// 	while(i++ < 200) {//用户长按800ms，每10ms去抖动
+// 		Delay_ms(10);
+// 		if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_1) == 1) {
+// 			isDown = 1;
+// 		}
+// 		else {
+// 			isDown = 0;
+// 			break;
+// 		}
+// 	}
 	
 	//if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_1) == 1) 
-	if(isDown)
-	{ 		
-	}
-	else {
-		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);//关闭总电源
+	//if(isDown)
+	{
+		GPIO_SetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);//打开总电源
 		powerDownDelayCnt = 0;
-		i = 0;
-		while(i++<10) {
-			printf("power off\n");
-			Delay_ms(1000);
-		}
+		
+		
+		GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);	  //液晶屏使能端口
+		Delay_ms(1000);
 	}
+// 	else {
+// 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);//关闭总电源
+// 		powerDownDelayCnt = 0;
+// 		i = 0;
+// 		while(i++<10) {
+// 			Delay_ms(1000);
+// 		}
+// 	}
 }
 
 /*
@@ -1484,8 +1469,7 @@ void TurnOffPower()
 {
 	//GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);
 	//关闭液晶屏，提示用户关机成
-	if(powerDownDelayCnt >= 6) {
-		g_power_down = 1;
+	if(powerDownDelayCnt >= 3) {
 		g_red_mode = 0;
 		Ctrl_RedLight(0);
 		LCD_Clear(Black);
@@ -1493,8 +1477,7 @@ void TurnOffPower()
 		LCD_SetBacklight(0x03);		
 		//TODO :关闭LCD背光和电源
 		GPIO_SetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);//关显示屏操作 
-// 		delayMs(10);//延迟一小段时间，等待操作者松开按键
-// 		Delay_ms(10
+		delayMs(10);//延迟一小段时间，等待操作者松开按键
 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); //关机 CHECK2置0 清标志位
 		
 	}	
@@ -1512,51 +1495,38 @@ A  B  C
 */
 void UI_ProWavelength()
 {
-	int tmpWave;
-	
 	if(KeyDown(GPIOA,KEY_B)) {
-		int wave[3] = {WL_1310,WL_1490,WL_1550};
-		int i,find;
-		static int index = 0;
+//		keyflag = 1;
+		Wavelength_Selection_state++;
+		switch(Wavelength_Selection_state)				
+		{
+		case   0:
+			Wavelength_Selection_state = 1;	 /*无效状态*/ 
+			break;
+		case   1:
+			Wavelength_Selection_state = 3;	 /*2*/ 
+			break;
+		case   2:
+			Wavelength_Selection_state = 3;	 /*无效状态*/ 
+			break;
+		case   3:
+			Wavelength_Selection_state = 1;	 /*4*/
+			break;
+		case   4:
+			Wavelength_Selection_state = 1;	 /*0*/ /*无效状态*/
+			break; 	
 
-		
-		if(g_adj_power._1310_en == 0) {
-			wave[0] = 0;
-		}
-		if(g_adj_power._1490_en == 0) {
-			wave[1] = 0;
-		}
-		if(g_adj_power._1550_en == 0) {
-			wave[2] = 0;
-		}
-		
-		find = 0;
-		for(i = index+1;i < 3;++i) {
-			if(wave[i] != 0 && wave[i] != Wavelength_Selection_state) {
-				Wavelength_Selection_state = wave[i];
-				index = i;
-				find = 1;
-				break;
-			}
-		}
-		if(find == 0) {
-			for(i = 0;i < index;++i) {
-				if(wave[i] != 0 && wave[i] != Wavelength_Selection_state) {
-					Wavelength_Selection_state = wave[i];
-					index = i;
-					find = 1;
-					break;
-				}
-			}
-		}
-
-		if(find == 0 || index >= 3)
-			index = -1;		
-		
+		default:
+			break;    		 		    	
+		}	
 		Ctrl_Operating_Mode( Operating_Mode);
 		Ctrl_Wavelength( Wavelength_Selection_state); //Wavelength_Selection_state   0 = 关闭状态 1 = 1310nm 2 = 1495nm 3 = 1550nm 4 = 红光
 		LCD_Wavelength_Selection_Ex( 170,200 ,Wavelength_Selection_state ,Yellow, Grey );	//波长显示切换
 		Ctrl_Power(&g_power);
+		if(Wavelength_Selection_state == WL_1310) {
+			hackflag = 1;
+			hackval = g_power.set;
+		}
 	}
 }
 
@@ -1613,10 +1583,6 @@ void UI_ProMode()
 			break;
 		}
 		Ctrl_Power(&g_power);
-		if(Operating_Mode == 0 && Timer_State == TM_OFF) {
-			hackflag = 1;
-			hackval = g_power.set;
-		}
 	}	
 }
 
@@ -1642,7 +1608,7 @@ void UI_ProRedLight_ShutdownTimer()
 		LCD_Timing_Display( 120, 12 ,Timer_State);
 		while(GPIO_ReadInputDataBit(GPIOA,KEY_A) == 0);
 	}
-	else if(i >0 && i < 6 && g_adj_power._650_en == 1)
+	else if(i >0 && i < 6)
 	{
 		g_red_mode++;
 		if(g_red_mode >= 3)
@@ -1657,48 +1623,15 @@ void UI_ProRedLight_ShutdownTimer()
 		LCD_RedLight_Show(9,15,g_red_onoff);
 	}
 }
-// double atof_(char* s)
-// {
-// 	double v=0,k = 0,j = 1;
-// 	int sign=1;
-// 	while ( *s == ' '  ||  (unsigned int)(*s - 9) < 5u) s++;
-// 	switch (*s)
-// 	{
-// 	case '-':
-// 		sign=-1;
-// 	case '+':
-// 		++s;
-// 	}
-// 	while ((unsigned int) (*s - '0') < 10u)
-// 	{
-// 		v=v*10+*s-'0';
-// 		++s;
-// 	}
-// 	if(*s == '.') {
-// 		s++;
-// 		while ((unsigned int) (*s - '0') < 10u)
-// 		{
-// 			k=k*10+*s-'0';
-// 			++s;
-// 			j = j * 10;
-// 		}
-// 		k /= j;
-// 	}
-// 	
-// 	v = v + k;
-// 	return sign==-1?-v:v;
-// }
+
 /*
 * Function: 响应后门按键过程
 */
-
 void UI_ProductionAdjust()
 {
+	int8_t strout[20];
 	uint16_t x,y;
 	uint8_t flag = 0;
-	uint8_t light = 0xff;
-	int32_t strlen;
-	uint32_t btnClk = 0;
 	struct point loc[10] = {
 		(4)*8,(56),(4+10)*8,(56),(4+10+10)*8,(56),(4+10+10+10)*8,(56),
 		(4)*8,(56+24),(4+10)*8,(56+24),(4+10+10)*8,(56+24),(4+10+10+10)*8,(56+24),
@@ -1710,7 +1643,6 @@ void UI_ProductionAdjust()
 	last_index = index;
 	
 	
-
 	adjval[0] = (float)g_adj_power._1310cw;
 	adjval[1] = (float)g_adj_power._1310_270;
 	adjval[2] = (float)g_adj_power._1310_1k;
@@ -1720,20 +1652,16 @@ void UI_ProductionAdjust()
 	adjval[5] = (float)g_adj_power._1550_270;
 	adjval[6] = (float)g_adj_power._1550_1k;
 	adjval[7] = (float)g_adj_power._1550_2k;
-	
-_Redraw:;
 	for( x=0; x < 320; x++ )		//上边界蓝条宽34  下边界蓝条宽49
 		for( y=0; y < 240; y++ )
-			;//gl_setpoint(x,y,0x22f2);	//屏幕主色调gray
-			
-	//LCD_Clear(0x22f2);
-	gl_clear(0,0,320,240,COL_White);
-	gl_text((4)*8,(56-24),"ADC",-1);
-	gl_text((4+10)*8,(56-24),"DAC",-1);
-	gl_text((4+10+10)*8,(56-24),"--",-1);
-	gl_text((4+10+10+10)*8,(56-24),"--",-1);
+			gl_setpoint(x,y,0x22f2);	//屏幕主色调gray
 	
-	gl_text(0,(56),"-10",-1);
+	gl_text((4)*8,(56-24),"CW",-1);
+	gl_text((4+10)*8,(56-24),"270",-1);
+	gl_text((4+10+10)*8,(56-24),"1K",-1);
+	gl_text((4+10+10+10)*8,(56-24),"2K",-1);
+	
+	gl_text(0,(56),"1310",-1);
 	sprintf(strout,"%6.2f",(float)(adjval[0]));
 	gl_text((4)*8,(56),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[1]);
@@ -1743,7 +1671,7 @@ _Redraw:;
 	sprintf(strout,"%6.2f",(float)adjval[3]);
 	gl_text((4+10+10+10)*8,(56),strout,-1);
 	
-	gl_text(0,(56+24),"---",-1);
+	gl_text(0,(56+24),"1550",-1);
 	sprintf(strout,"%6.2f",(float)adjval[4]);
 	gl_text((4)*8,(56+24),strout,-1);
 	sprintf(strout,"%6.2f",(float)adjval[5]);
@@ -1756,42 +1684,28 @@ _Redraw:;
 	gl_text(20,56+24+24,"save",-1);
 	gl_text(20,56+24+24+24,"exit",-1);
 	
-	DrawFocus(loc[index].x,loc[index].y,COL_Black);//RGB16(255,255,0));
+	DrawFocus(loc[index].x,loc[index].y,RGB16(255,255,0));
 	while(1) {
-		if(ProTick1963IsLive())
-			;
-		ProGet1963State();
-		TurnOffPower();
-		//if(ProTick1963IsLive()) 
-		{
-			;//goto _Redraw;
-		}
 		if(KeyPress(GPIOA,KEY_A)) {
 			flag = 1;
 			index--;
 		}
-		else if(KeyPress(GPIOA,KEY_C)) {
+		else if(KeyPress(GPIOA,KEY_B)) {
 			flag = 1;
 			index++;
 		}
 		else if(KeyPress(GPIOA,KEY_C)) {
 			flag = 1;
-			//adjval[index] -= 0.01;
+			adjval[index] -= 0.01;
 		}
-// 		else if(KeyPress(GPIOA,KEY_Z)) {
-// 			flag = 1;
-// 			btnClk = 1;
-// 			//while(KeyPress(GPIOA,KEY_Z));
-// 			//adjval[index] += 0.01;
-// 			
-// 		}
 		else if(KeyPress(GPIOA,KEY_Z)) {
 			flag = 1;
-			btnClk = 1;
-			if(index < 8) {
-				//adjval[index] = 0;	
-				
-			}
+			adjval[index] += 0.01;
+		}
+		else if(KeyPress(GPIOA,KEY_Y)) {
+			flag = 1;
+			if(index < 8)
+				adjval[index] = 0;
 			else if(index == 8) {
 				g_adj_power.flag = 0xaabbccdd;
 		
@@ -1808,11 +1722,9 @@ _Redraw:;
 				WriteFlash(FLASH_PAGE_START,
 						(uint32_t*)&(g_adj_power),
 						sizeof(struct adj_power_flash));
-				//gl_text(0,0,"save",-1);
-				gl_text(20,56+24+24,"save...",-1);
+				gl_text(0,0,"save",-1);
 				Delay_ms(1000);
-				gl_text(20,56+24+24,"       ",-1);
-				gl_text(20,56+24+24,"save",-1);
+				gl_text(0,0,"    ",-1);
 			}
 			else if(index == 9) {
 				break;
@@ -1821,178 +1733,29 @@ _Redraw:;
 			
 		}
 		if(flag) {
-			//ProTick1963IsLive();
-			
+			flag = 0;
 			if(index >= 10)
 				index = 0;
 			else if(index < 0)
 				index = 9;
-			if(btnClk && index < 8) {
-				
-				//sprintf(strout,"%6.2f",adjval[index]);
-				*strout = '\0';
-				if(InputPanel(strout,6,&strlen)) {
-					adjval[index] = atof_(strout);
-				}
-				
+			if(index < 8) {
+				sprintf(strout,"%6.2f",adjval[index]);
 				gl_text(loc[index].x,loc[index].y,strout,-1);
-				btnClk = 0;
-				goto _Redraw;
-				
-			}
-			else if(btnClk && index == 9) {
-				break;
 			}
 // 			gl_fill_rect(loc[last_index].x,loc[last_index].y - 5,5,5);
 // 			gl_fill_rect(loc[index].x,loc[index].y - 5,5,5);
-			DrawFocus(loc[last_index].x,loc[last_index].y,COL_White);//RGB16(38,93,150));
-			DrawFocus(loc[index].x,loc[index].y,COL_Black);//RGB16(255,255,0));
+			DrawFocus(loc[last_index].x,loc[last_index].y,RGB16(38,93,150));
+			DrawFocus(loc[index].x,loc[index].y,RGB16(255,255,0));
 			last_index = index;
 			
-			
-			flag = 0;
-			btnClk = 0;
 		}
 		/*
 			
 		}*/
 		
 	}
-}
-
-/*
-* Function: 重新绘制用户界面
-* Note：主要是为处理LCD重启后的绘制，理想状态下不会使用到它
-*/
-void UI_ProRedraw()
-{
-	LCD_Clear(Black);	
-	LCD_Timing_Display( 120, 12 ,Timer_State);
-	LCD_RedLight_Show(9,15,g_red_onoff);
-	LCD_Batter_Show(0,0,4);
-	LCD_Power_Control_Selection_Ex(55,90,((uint16_t)((int32_t)g_power.set / 1000)),White, Grey);	
-	LCD_Wavelength_Selection_Ex( 170,200 ,Wavelength_Selection_state ,Yellow, Grey );	//波长显示切换
-	LCD_OperatMode_Selection( 15, 200,Operating_Mode, Yellow,Grey );	//工作模式显示切换
-}
-int ProTick1963IsLive()
-{
-	if(g_lcdlisten_ms >= 100 && g_power_down == 0) {
-		g_lcdlisten_ms = 0;
-		//LCD_ReadReg(CMD_RD_MEMSTART,&data1);
-		//if(data1 != 0x22f2 && data1 != 0xffe0) {
-		if(SSD1963_IsRestart()) {
-		
-		
-			printf("Restart LCD\n"); 
-			LCD_Initializtion();	
-			LCD_SetBacklight(0x80);
-			//UI_ProRedraw();
-			return 1;
-		}
-		
-	}
-	return 0;
-}
-#define RES1 0x0c
-#define RES2 0x0f
-#define RES3 0x3a
-#define RES4 0xa8
-#define RES5 0xe8
-#define RES6 0xe9
-#define RES7 0xff
-void ProGet1963State()
-{
-	static uint8_t strout[70];
-	uint16_t data1,data2,data3,data4;
-	LCD_WriteCommand(0x00);
-	if(g_usart_ms >= 1000) {
-			g_usart_ms = 0;
-		dprintf("\n*******************************************\n");
-		LCD_WriteCommand(0xb9);
-		data1 = LCD_ReadData();
-		data2 = LCD_ReadData();
-		dprintf("GPIO conf %x %x\n",data1,data2);
-		//LCD_ReadReg(0xb9,&data1);
-		//printf("GPIO conf %x\n",data1);
-		
-		LCD_ReadReg(RES1,&data1);
-		LCD_ReadReg(RES2,&data2);
-		LCD_ReadReg(RES3,&data3);
-		LCD_ReadReg(RES4,&data4);
-		dprintf("Reserved %x %x %x %x   ",data1,data2,data3,data4);
-		LCD_ReadReg(RES5,&data1);
-		LCD_ReadReg(RES6,&data2);
-		LCD_ReadReg(RES7,&data3);
-		dprintf("%x %x %x\n",data1,data2,data3);
-		
-		
-		
-		LCD_ReadReg(0X0A,&data1);
-		LCD_ReadReg(0X0B,&data2);
-		LCD_ReadReg(0X0D,&data2);
-		LCD_ReadReg(0X0E,&data2);
-		sprintf(strout,"Power Mode %x\tAddress Mode %x\tDisplay Mode %x\tEffect status %x\n",data1,data2,data3,data4);
-		dprintf(strout);
-		
-		LCD_ReadReg(CMD_RD_MEMSTART,&data1);
-		LCD_ReadReg(CMD_RD_MEM_AUTO,&data2);
-		LCD_ReadReg(CMD_RD_DDB_START,&data3);
-		LCD_ReadReg(CMD_GET_PANEL_MODE,&data4);
-		sprintf(strout,"Mem start %x\tMem auto %x\tDDB start %x\tPanel mode %x\n",data1,data2,data3,data4);
-		dprintf(strout);
-		//gl_text(0,8,strout,-1);
-		
-		LCD_ReadReg(CMD_GET_HOR_PERIOD,&data1);
-		LCD_ReadReg(CMD_GET_VER_PERIOD,&data2);
-		sprintf(strout,"Hor %x\tVer %x\n",data1,data2);
-		dprintf(strout);
-		//gl_text(0,20,strout,-1);
-		
-			
-		LCD_ReadReg(CMD_GET_GPIO_CONF,&data1);
-		LCD_ReadReg(CMD_GET_GPIO_STATUS,&data2);
-		sprintf(strout,"GPIO Conf %x\tStatus %x\n",data1,data2);
-		dprintf(strout);
-		//gl_text(0,32,strout+8,-1);
-		
-		LCD_ReadReg(CMD_GET_POST_PROC,&data1);
-		LCD_ReadReg(CMD_GET_PWM_CONF,&data2);
-		sprintf(strout,"Post %x\tPWM %x\n",data1,data2);
-		dprintf(strout);
-		//gl_text(0,44,strout,-1);
-		
-		
-		LCD_ReadReg(CMD_GET_LCD_GEN0,&data1);
-		LCD_ReadReg(CMD_GET_LCD_GEN1,&data2);
-		LCD_ReadReg(CMD_GET_LCD_GEN2,&data3);
-		LCD_ReadReg(CMD_GET_LCD_GEN3,&data4);
-		sprintf(strout,"LCD GEN[0-3] %x %x %x %x\n",data1,data2,data3,data4);
-		dprintf(strout);
-		//gl_text(0,56,strout,-1);
-		
-		
-		LCD_ReadReg(CMD_GET_GPIO0_ROP,&data1);
-		LCD_ReadReg(CMD_GET_GPIO1_ROP,&data2);
-		LCD_ReadReg(CMD_GET_GPIO2_ROP,&data3);
-		LCD_ReadReg(CMD_GET_GPIO3_ROP,&data4);
-		sprintf(strout,"GPIO[0-3] ROP %x %x %x %x\n",data1,data2,data3,data4);
-		dprintf(strout);
-		//gl_text(0,68,strout,-1);
-		
-		LCD_ReadReg(CMD_GET_ABC_DBC_CONF,&data1);
-		LCD_ReadReg(CMD_GET_DBC_HISTO_PTR,&data2);
-		LCD_ReadReg(CMD_GET_DBC_THRES,&data3);
-		sprintf(strout,"DBC conf Histo ptr Thres %x %x %x\n",data1,data2,data3);
-		dprintf(strout);
-		//gl_text(0,80,strout,-1);
-		
-		LCD_ReadReg(CMD_GET_SIGNAL_MODE,&data1);
-		sprintf(strout,"Tearing state %x\n",data1);
-		dprintf(strout);
-		//gl_text(0,92,strout,-1);
-		
-		dprintf("\n");
-	}
+	LCD_DrawMain();
+	
 }
 /*
 * Function: 绘制界面焦点
@@ -2005,8 +1768,7 @@ void DrawFocus(int16_t x,int16_t y,uint32_t color)
 	
 	brush = gl_ui_setbrushcolor(color);
 	pen = gl_ui_setpencolor(color);
-	//gl_fill_rect(x,y - 5,30,5);	
-	gl_fill_rect(x-3,y,3,12);
+	gl_fill_rect(x,y - 5,30,5);	
 	gl_ui_setbrushcolor(brush);
 	gl_ui_setpencolor(pen);
 }
@@ -2019,37 +1781,25 @@ void IsHacker()
 {
 	static uint8_t state = 0;
 	
-	//UI_ProductionAdjust();//debug;
 	if(hackflag == 1) {
 		hackflag = 0;
 		switch(state) {
 		case 0:
-			if((int32_t)hackval == -9000) {
-				state++;
-				//UI_DebugMain();
-			}
-			else
-				state = 0;
-			break;
-		case 1:
 			if((int32_t)hackval == -8000)
 				state++;
 			else
 				state = 0;
 			break;
-		case 2:
+		case 1:
 			if((int32_t)hackval == -7000)
 				state++;
 			else
 				state = 0;
 			break;
-		case 3:
+		case 2:
 			if((int32_t)hackval == -4000) {
 				state = 0;
-				UI_DebugMain();
-				LCD_DrawMain();
-				//UI_ProductionAdjust();
-				
+				UI_ProductionAdjust();
 			}
 			else
 				state = 0;
@@ -2090,28 +1840,21 @@ void IsHacker()
 };*/
 void ProChargerMonitor()
 {
-	uint8_t strout[60];
+	int8_t strout[30];
 	static uint8_t times = 100;
 	static uint16_t last_level = LEVEL_4,level_show = LEVEL_4;
 	uint16_t level = LEVEL_4; 
 	float vol,tvol;
 	//static float last_vol = 100;
 	int x,y;
-	int ad;
-	//return ;
+	
 	/*************************充电指示部分*******************************************************/
 	if(g_batter_delay > 100) {
 		g_batter_delay = 0;
-		ad = GetAD(0);
-		//vol = (float)GetAD(0)*0.00349+0.7;//Ref = 3.3
+		vol = (float)GetAD(0)*0.00349+0.7;
+		sprintf(strout,"better:%0.3f",vol);
+		debugtxt(0,12*6,strout,30);
 		
-		vol = (float)ad*0.002643333+0.77;//Ref = 2.5,M7二极管压降0.77
-		g_battery_vol = vol;
-		sprintf(strout,"better:%0.3f %d %f",vol,ad,(float)ad * 0.00061);
-		//debugtxt(0,12*6,strout,30);
-		//gl_text(0,65,strout,30);
-		
-		//debug
 		if((GPIO_ReadInputDataBit(GPIO_PORT_POWER_CHK, GPIO_CHARG_CHK)==0)) {//充满、只挂电池、只挂外加电源
 			if(vol > 12.0) {//外加电源远远大于
 				level = LEVEL_POWER;
@@ -2146,8 +1889,7 @@ void ProChargerMonitor()
 			}
 			else if(vol < 6.7) {
 				level = LEVEL_SHUTDOWN;
-
-				LCD_Batter_Show(0,0,LEVEL_0);
+				
 				for( x=0; x < 320; x++ )		//屏幕刷红色，表示电量过低自动关机
 					for( y=0; y < 240; y++ )
 						gl_setpoint(x,y,RGB16(255,0,0));
@@ -2190,18 +1932,7 @@ void ProChargerMonitor()
 	}
 	return ;
 }
-float GetBattery()
-{
-	uint32_t ad;
-	if(g_batter_delay > 100) {
-		g_batter_delay = 0;
-		ad = GetAD(0);
-		//vol = (float)GetAD(0)*0.00349+0.7;//Ref = 3.3
-		
-		g_battery_vol = (float)ad*0.002643333+0.77;//Ref = 2.5,M7二极管压降0.77
-	}
-	return g_battery_vol;
-}
+
 
 /*
 * Function: 响应定时关机
@@ -2220,8 +1951,7 @@ void ProTimerShutdown()
 	case   1:	  // 1 = 5min定时
 		if( Timer_Counter >=3000 )
 		{ GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);//关显示屏操作 
-		//delayMs(10);//延迟一小段时间，等待操作者松开按键
-		Delay_ms(10);
+		delayMs(10);//延迟一小段时间，等待操作者松开按键
 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); //关机 CHECK2置0 清标志位
 		Timer_State = 0;
 		//LCD_Timing_Display( 255, 12 ,Timer_State );	  //定时器显示切换
@@ -2230,8 +1960,7 @@ void ProTimerShutdown()
 	case   2:	  // 1 = 1Omin
 		if( Timer_Counter >=6000 )
 		{ GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);//关显示屏操作 
-		//delayMs(10);//延迟一小段时间，等待操作者松开按键
-		Delay_ms(10);
+		delayMs(10);//延迟一小段时间，等待操作者松开按键
 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); //关机 CHECK2置0 清标志位
 		Timer_State = 0;
 		//LCD_Timing_Display( 255, 12 ,Timer_State );	  //定时器显示切换
@@ -2240,8 +1969,7 @@ void ProTimerShutdown()
 	case   3:	  // 1 = 15min
 		if( Timer_Counter >=9000 )
 		{ GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);//关显示屏操作 
-		//delayMs(10);//延迟一小段时间，等待操作者松开按键
-		Delay_ms(10);
+		delayMs(10);//延迟一小段时间，等待操作者松开按键
 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); //关机 CHECK2置0 清标志位
 		Timer_State = 0;
 		//LCD_Timing_Display( 255, 12 ,Timer_State );	  //定时器显示切换
@@ -2250,8 +1978,7 @@ void ProTimerShutdown()
 	case   4:	  // 1 = 30min
 		if( Timer_Counter >=18000 )
 		{ GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);//关显示屏操作 
-		//delayMs(10);//延迟一小段时间，等待操作者松开按键
-		Delay_ms(10);
+		delayMs(10);//延迟一小段时间，等待操作者松开按键
 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); //关机 CHECK2置0 清标志位
 		Timer_State = 0;
 		//LCD_Timing_Display( 255, 12 ,Timer_State );	  //定时器显示切换
@@ -2260,8 +1987,7 @@ void ProTimerShutdown()
 	case   5:	  // 1 = 60min
 		if( Timer_Counter >=36000 )
 		{ GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);//关显示屏操作 
-		//delayMs(10);//延迟一小段时间，等待操作者松开按键
-		Delay_ms(10);
+		delayMs(10);//延迟一小段时间，等待操作者松开按键
 		GPIO_ResetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF); //关机 CHECK2置0 清标志位
 		Timer_State = 0;
 		//LCD_Timing_Display( 255, 12 ,Timer_State );	  //定时器显示切换
@@ -2271,62 +1997,41 @@ void ProTimerShutdown()
 		break;
 	}	
 }
-int restarttimes = 100;
 void Check1963()
 {
-	uint8_t strout[30];
-	uint16_t data;
-	int times = 0;	
+	int _1963Down = 0;
+	int times = 0;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	/* TP_CS */
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;		 
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
-	printf("Checking chip...");
-	LCD_ReadReg(CMD_RD_MEMSTART,&data);
-	if(data != 0x22f2) {
-		while(times++ < 3) {
-			LCD_ReadReg(CMD_RD_MEMSTART,&data);
-			if(data != 0x22f2) {
-				printf(".");
-				LCD_Initializtion();	
-				Delay_ms(100);
-			}
-		}
-		g_usart_ms = 2000;
-		printf("\n");
-		//多次启动LCD失败，关闭系统
-		LCD_ReadReg(CMD_RD_MEMSTART,&data);
-		if(data != 0x22f2) {
-			printf("Startup chip error!\n\n");
-			ProGet1963State();
-// 			powerDownDelayCnt = 1000;
-// 			while(1) {
-// 				printf("Shut down!!!\n");
-// 				TurnOffPower();
-// 				LCD_Initializtion();
-// // 				LCD_ReadReg(CMD_RD_MEMSTART,&data);
-// // 				if(data == 0x22f2) {	
-// // 					break;
-// // 				}
-// 				Delay_ms(30);
-// 			}
-		}
+
+	while(times++ <= 4 && GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_5) == 0) {
+		GPIO_SetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);	  
+		Delay_ms(700);
+		GPIO_ResetBits(GPIO_CTRL_PORT_D, GPIO_LCD_OFF);	  
+		Delay_ms(100);
+		LCD_Initializtion();
+		LCD_SetBacklight(0xff);
+		Delay_ms(500);
+		_1963Down = 1;
 	}
-	restarttimes = times;
-	printf("\nStartup chip success!\n");
-	LCD_SetBacklight(0x80);
-}
-void CheckLCD()
-{
-	uint16_t data;
-	printf("Checking LCD...\n");
-	LCD_SetPoint(15,15,0xaabb);
-	Delay_ms(1);
-	data = LCD_GetPoint(15,15);
-	if(data != 0xaabb) {
-		printf("Open LCD error!Please check whether the LCD  connect!\n");
+	if(_1963Down) {
+		LCD_DrawMain();
+		g_red_mode = 3;
+		g_red_onoff = 1;
+		Ctrl_RedLight(g_red_onoff);
+		LCD_RedLight_Show(9,15,g_red_onoff);
+		
 	}
-	else {
-		printf("Open LCD success\n");
-	}
-	
+	/* TP_CS */
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;		 
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 /*******************************************************************************
 * Function Name  : main
@@ -2336,15 +2041,43 @@ void CheckLCD()
 * Return         : None
 * Attention		 : None
 *******************************************************************************/
-//main()
 int main(void)
 {
-	USART_Configuration();
+	uint8_t str[20];
+	uint8_t i;
+
+	delay_init();
+	/*****************按键中断初始化部分*********************** */
+	Function_IO_config(); 
+	RedLightIOConfig();
 	
-	printf("\n\n----------------------------------------------------------------------------\n");
-	printf("        GLink TS100 Runing\n");
-#define SYSCLK_FREQ_24MHz
-	SystemInit();//SetSysClock();
+	//各个定时中断
+	TIM6_Init();//1MS定时
+	
+	
+	TIM2_Init();//1MS定时
+	
+	TIM3_Init( TIM_Period1310);
+	TIM4_Init( TIM_Period1490);
+	TIM5_Init( TIM_Period1550);
+	NVIC_Configuration();
+
+	//
+	ADC_Configuration();//dma mode
+	DAC_Configuration();
+TurnOnPower();
+	LCD_Initializtion();
+	LCD_SetBacklight(0xff);
+
+	
+	//串口通信
+	//USART_Configuration();
+	//初始化液晶屏
+	
+	//GPIO_SetBits(GPIO_CTRL_PORT_B, GPIO_SYSPWR_ONOFF);
+	//TP_Init();
+	
+	
 	//液晶屏GUI配置
 	gl_ui_setlib(p_zm_ascii_st9,8,12,p_zm_step_st9);
 	gl_ui_setbkmode(BACKFILL);//背景填充模式
@@ -2352,53 +2085,25 @@ int main(void)
 	gl_ui_setbkcolor(RGB16(0,255,0));
 	gl_ui_setpencolor(RGB16(235,34,209));
 	
-	delay_init();
-	/*****************按键中断初始化部分*********************** */
-	Function_IO_config(); 
-	//RedLightIOConfig();
 	
-	//各个定时中断
-	TIM2_Init();//1MS定时
-	TIM6_Init();//1MS定时
-	
-	TIM3_Init( TIM_Period1310);
-	TIM4_Init( TIM_Period1490);
-	TIM5_Init( TIM_Period1550);
-	NVIC_Configuration();
-	//串口通信
-	
-
-	//
-	ADC_Configuration();//dma mode
-	DAC_Configuration();
-	
-	printf("Power On\n");
-	TurnOnPower();
-	LCD_Initializtion();	
-	LCD_Clear(Black);		
-	Check1963();
-	CheckLCD();
-	//LCD_SetBacklight(0x70);
-	LCD_SetBacklight(0x80);
-	
-	FLASH_Configuration();
-	printf("Draw UI\n");
 	LCD_DrawMain();
+	LCD_SetBacklight(0xff);
+	LCD_SetBacklight(0xff);
+	LCD_SetBacklight(0xff);
+	
 
+	
 	powerDownDelayCnt=0;
+	//DebugLookAD();
 	g_batter_delay = 10001;	
 	
-//   	while(1)
-//   		UI_DebugMain();
-	//InputPanel(strout,50,0);
-	sprintf(strout,"res times %d",restarttimes);
-	//printf("%s\n",strout);
-
+	FLASH_Configuration();
+	
+	
+	
 	while(1)
 	{
- 		ProGet1963State();
- 		if(ProTick1963IsLive())
- 			UI_ProRedraw();
+		
 		
 		UI_ProRedLight_ShutdownTimer();//
 		UI_ProWavelength();
@@ -2407,10 +2112,10 @@ int main(void)
 		TurnOffPower();
 		ProChargerMonitor();
 		ProTimerShutdown();//定时关机
-		//if(Operating_Mode != OPM_270) {
-			AutoCtrlPower();
+		AutoCtrlPower();
+ 		IsHacker();
+
 		
- 		IsHacker();		
 	}//while结尾
 }
 
@@ -2422,9 +2127,9 @@ void DebugLookAD()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	int16_t ad = 200;
-	char strout[30];//,times = 0;
+	int8_t strout[30],times = 0;
 	static uint16_t flag = 0;
-	float vol;//scale;
+	float vol,scale;
 	
 	gl_key_init();
 	g_power.set = (uint32_t)(-10000);
@@ -2436,23 +2141,22 @@ void DebugLookAD()
  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
  	GPIO_Init(GPIOC, &GPIO_InitStructure);	
 	while(1) {
-		TurnOffPower();
-// 		if(gl_key_down(6)) {
-// 			//sprintf(strout,"key %d",times++);
-// 			sprintf(strout,"key %d",msgindex);
-// 			gl_text(125,0,strout,-1);
-// 		}
-// 		continue;
-// 		UI_ProMode();
-// 		UI_ProWavelength();
+		if(gl_key_down(6)) {
+			//sprintf(strout,"key %d",times++);
+			sprintf(strout,"key %d",msgindex);
+			gl_text(125,0,strout,-1);
+		}
+		continue;
+		UI_ProMode();
+		UI_ProWavelength();
 		
 		if(KeyPress(GPIOA,KEY_C)) {
-			ad-= 20;
+			ad-= 100;
 			g_power.set += 100;
 			flag = 1;
 		}
 		else if(KeyPress(GPIOA,KEY_Z)) {
-			ad+= 20;
+			ad+= 100;
 			g_power.set -= 100;
 			flag = 1;
 		}
@@ -2470,20 +2174,19 @@ void DebugLookAD()
 				ad = 0;
 			else if(ad < 0)
 				ad = 4095;
-			//DAC_SoftwareTriggerCmd(DAC_Channel_1,DISABLE);  
+			DAC_SoftwareTriggerCmd(DAC_Channel_1,DISABLE);  
 			DAC_SetChannel1Data(DAC_Align_12b_R, ad/*ad*/);
 			DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE);  			
 			
-			//DAC_SoftwareTriggerCmd(DAC_Channel_2,DISABLE);  
+			DAC_SoftwareTriggerCmd(DAC_Channel_2,DISABLE);  
 			DAC_SetChannel1Data(DAC_Align_12b_R, ad);
 			DAC_SoftwareTriggerCmd(DAC_Channel_2,ENABLE);  			
 			sprintf(strout,"debug set adc:%4.4d",ad);
-			//Ctrl_Power(&g_power);
+			Ctrl_Power(&g_power);
 			
 			gl_text(0,100-12,strout,20);
 		}
-		continue;
-		//AutoCtrlPower();
+		AutoCtrlPower();
 		UI_ProRedLight_ShutdownTimer();
 		if(g_ad_ms > 2000) {
 			
@@ -2503,12 +2206,12 @@ void DebugLookAD()
 			
 			vol = (float)GetAD(0)*0.00349+0.7;
 			sprintf(strout,"ad0 %0.3f",vol);
-			gl_text(0,200,(uint8_t*)strout,20);
+			gl_text(0,200,strout,20);
 			
 			vol = (float)GetAD(1)*0.000805;
 			//vol = (float)GetAD(1)*0.00349+0.7;
 			sprintf(strout,"ad1 %3.3f",vol);
-			gl_text(0,200+12,(uint8_t*)strout,20);
+			gl_text(0,200+12,strout,20);
 			ProChargerMonitor();
 		}
 		

@@ -1,0 +1,958 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"if",
+				"if	If Condition"
+			],
+			[
+				"printf",
+				"printf(const char *_Format, ...)	int"
+			],
+			[
+				"print",
+				"printf(const char *_Format, ...)	int"
+			],
+			[
+				"n",
+				"nandflash	struct"
+			],
+			[
+				"Wri",
+				"WriteFlash(long start, long end, char *)	void"
+			],
+			[
+				"inc",
+				"include"
+			],
+			[
+				"def",
+				"define"
+			],
+			[
+				"rGp",
+				"rGPBCON"
+			],
+			[
+				"rgp",
+				"rGPBON"
+			],
+			[
+				"d",
+				"def	#ifndef … #define … #endif"
+			],
+			[
+				"mod",
+				"moduleIndex"
+			],
+			[
+				"for",
+				"for	For Loop"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "USER/APP/stm32_chip.c",
+			"settings":
+			{
+				"buffer_size": 2739,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "#ifndef _STM32_FLASH_H_\n#define _STM32_FLASH_H_\n\n\n/*\n将整个Flash划分成3个分区\n---------------------------\n产品代码   0 ~    Flash - 2 Page\n---------------------------\n使用期限   1 Page\n---------------------------\n产品配置   1 Page   为了和以前老版本兼容\n---------------------------\n*/\n// 产品配置去\n#if defined (STM32F10X_HD) || defined (STM32F10X_HD_VL) || (STM32F10X_CL) || defined (STM32F10X_XL)\n\n#define FLASH_PAGE_SIZE    ((uint16_t)0x800)\n//#define FLASH_PAGE_PRODUCT ((u32)0x08020000)\n#define FLASH_PAGE_PRODUCT ((u32)0x0803F800)\n#define FLASH_PAGE_LICENCE ((u32) (FLASH_PAGE_PRODUCT - FLASH_PAGE_SIZE))\n#else\n#define FLASH_PAGE_SIZE    ((uint16_t)0x400)\n//#define FLASH_PAGE_PRODUCT ((u32)0x08020000)\n#define FLASH_PAGE_PRODUCT ((u32)0x0803F800)\n#endif\n\n\n#define FLASH_PAGE_LICENCE ((u32) (FLASH_PAGE_PRODUCT - FLASH_PAGE_SIZE))\n\nuint32_t WriteFlash(uint32_t addr,uint32_t *data,uint32_t len);\nuint32_t ReadFlash(uint32_t addr,uint32_t *data,uint32_t len);\nuint32_t CoverFlash(uint32_t addr,uint32_t addr2,uint32_t *data,uint32_t len);\nvoid UnProtectFlash();\nvoid ProtectFlash();\n#endif\n\n\n\n",
+			"file": "USER/APP/flash.h",
+			"file_size": 1137,
+			"file_write_time": 130879858781250000,
+			"settings":
+			{
+				"buffer_size": 1062,
+				"line_ending": "Windows",
+				"scratch": true
+			}
+		},
+		{
+			"file": "USER/APP/main.c",
+			"settings":
+			{
+				"buffer_size": 69459,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 360.0,
+		"last_filter": "conv",
+		"selected_items":
+		[
+			[
+				"conv",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"con ",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"package ",
+				"Preferences: Package Control Settings – Default"
+			],
+			[
+				"package",
+				"Preferences: Package Control Settings – Default"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"converto",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"cover",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"SYNTAX C",
+				"Set Syntax: C"
+			],
+			[
+				"conver",
+				"Convert Case: Swap Case"
+			],
+			[
+				"open",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"set sy",
+				"Set Syntax: C"
+			],
+			[
+				"",
+				"Set Syntax: C"
+			]
+		],
+		"width": 450.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"https://bitbucket.org/guillermooo/aaapackagedev",
+			"view.run_command(\"cmddir\")",
+			"view.run_command(\"cmdir\")",
+			"view.run_command(\"comdir\")",
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())",
+			"import urllib2,os; pf='Package Control.sublime-package'; ipp=sublime.installed_packages_path(); os.makedirs(ipp) if not os.path.exists(ipp) else None; urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler())); open(os.path.join(ipp,pf),'wb').write(urllib2.urlopen('http://sublime.wbond.net/'+pf.replace(' ','%20')).read()); print 'Please restart Sublime Text to finish installation'"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929"
+	],
+	"file_history":
+	[
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/GLCD/TS100_Draw.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/APP/main.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/APP/flash.c",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.4.0_手持稳定光源_20150929/USER/APP/flash.h",
+		"/D/Project/STM32/Project/TS100_手持稳定光源/TS100_VEx1.3.1_手持稳定光源_20140702/ST3.sublime-project",
+		"/D/Project/ARM9/unos/2440hardcode/int/interrupt.c",
+		"/D/Project/ARM9/unos/2440hardcode/int/main.c",
+		"/D/Project/ARM9/unos/boot/include/2440addr.h",
+		"/D/Project/ARM9/unos/HardwareCode/int/head.S",
+		"/D/Project/ARM9/unos/boot/src/start.S",
+		"/D/Project/ARM9/unos/boot/src/main.c",
+		"/D/Project/ARM9/unos/boot/release/download.dis",
+		"/D/Project/ARM9/unos/boot/config_app_file_list.mk",
+		"/D/Project/ARM9/unos/boot/src/init.c",
+		"/D/Project/ARM9/unos/2440hardcode/int/init.c",
+		"/D/Project/ARM9/unos/2440hardcode/int/2440addr.h",
+		"/D/Project/ARM9/unos/boot/gboot.lds",
+		"/D/Project/ARM9/unos/HardwareCode/int/main.c",
+		"/D/Project/ARM9/unos/HardwareCode/int/interrupt.c",
+		"/D/Project/ARM9/unos/HardwareCode/int/Makefile",
+		"/D/Project/ARM9/unos/HardwareCode/int/int_elf",
+		"/D/Project/ARM9/unos/HardwareCode/int/init.c",
+		"/C/Documents and Settings/Administrator/Application Data/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Documents and Settings/Administrator/Application Data/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/D/Project/ARM9/unos/HardwareCode/lcd_debug/head.S",
+		"/D/Project/ARM9/unos/TQ2440_Test/inc/2440slib.h",
+		"/D/Project/ARM9/unos/TQ2440_Test/src/2440lib.c",
+		"/D/Project/ARM9/unos/vector/main.c",
+		"/D/Project/ARM9/unos/vector/start.S",
+		"/D/Project/ARM9/unos/bootNor/src/main.c",
+		"/D/Project/ARM9/unos/bootNor/src/start.S",
+		"/D/Project/ARM9/unos/2440hardcode/int/Makefile",
+		"/D/Project/ARM9/unos/2440hardcode/mmu/init.c",
+		"/D/Project/ARM9/unos/2440hardcode/int/s3c24xx.h",
+		"/D/Project/ARM9/unos/2440hardcode/sdram/sdram.bin",
+		"/D/Project/ARM9/unos/bootNor/include/2440addr.h",
+		"/D/Project/ARM9/unos/bootNor/release/download.dis",
+		"/D/Project/ARM9/unos/TQ2440_Test/src/2440init.s",
+		"/D/Project/ARM9/unos/ucosii_linux/board/source/start.S",
+		"/D/Project/ARM9/unos/HardwareCode/leds/leds.c",
+		"/D/Project/ARM9/unos/HardwareCode/leds/crt0.S",
+		"/D/Project/ARM9/unos/HardwareCode/leds/leds.lds",
+		"/D/Project/ARM9/unos/cmain/start.s",
+		"/D/Project/ARM9/unos/bootNor/release/复件 download.dis",
+		"/D/Project/ARM9/unos/bootNor/gboot.lds",
+		"/D/Project/ARM9/unos/bootNor/release/download.elf",
+		"/D/Project/ARM9/unos/cmain/gboot.lds",
+		"/D/Project/ARM9/unos/bootNor/include/option.h",
+		"/D/Project/ARM9/unos/bootNor/Makefile",
+		"/C/Documents and Settings/Administrator/Application Data/Sublime Text 3/Packages/SublimeClang/SublimeClang.sublime-settings",
+		"/D/Project/ARM9/unos/bootNor/include/demo.h",
+		"/D/Library/RT-Thread 1.0.2/components/finsh/cmd.c",
+		"/D/Library/RT-Thread 1.0.2/components/finsh/finsh_var.c",
+		"/D/Library/RT-Thread 1.0.2/components/finsh/finsh_node.c",
+		"/D/Library/linuxlib/u-boot-1.1.6/lib_generic/vsprintf.c",
+		"/D/Library/linuxlib/u-boot-1.1.6/lib_generic/string.c",
+		"/C/Documents and Settings/Administrator/桌面/sdd.c",
+		"/D/Project/ARM9/devlesson/mydevled/test_mydevled.c",
+		"/D/Project/ARM9/unos/bootNor/config_app_file_list.mk",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/arch/arm/include/asm/irq.h",
+		"/D/Project/ARM9/devlesson/mydevtimer0/mydevtimer.c",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/include/linux/module.h",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/include/linux/atmioc.h",
+		"/D/Library/libnet/include/ifaddrlist.h",
+		"/C/Documents and Settings/Administrator/Application Data/Sublime Text 3/Packages/User/SublimeClang.sublime-settings",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/include/linux/atm_he.h",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/arch/arm/configs/s3c2410_defconfig",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/arch/arm/include/mach/irqs.h",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/arch/arm/include/asm/atomic.h",
+		"/D/Library/linuxlib/opt/EmbedSky/linux-2.6.30.4/include/linux/dst.h",
+		"/D/Project/ARM9/devlesson/devhello/hello.c",
+		"/D/Project/ARM9/unos/vector/AppMake.mk",
+		"/D/Project/ARM9/MakeTemplate/makeAppLib/config_app_file_list.mk",
+		"/D/Project/ARM9/unos/vector/Makefile",
+		"/D/Project/ARM9/unos/vector/config_app_file_list.mk",
+		"/D/Project/ARM9/MakeTemplate/makeAppLib/LibMake.mk",
+		"/D/Project/ARM9/MakeTemplate/makeAppLib/AppMake.mk",
+		"/D/Project/ARM9/unos/vector/1AppMake.mk",
+		"/D/Project/ARM9/MakeTemplate/makeAppLib/config_lib_file_list.mk",
+		"/J/makeAppLib/makeAppLib/AppMake.mk",
+		"/J/makeAppLib/makeAppLib/config_app_file_list.mk",
+		"/D/Project/ARM9/unos/vector/gboot.lds",
+		"/D/Project/ARM9/unos/vector/src/fun1.c",
+		"/D/Project/ARM9/unos/vector/gboot.s",
+		"/D/Project/ARM9/unos/bootNor/AppMake.mk",
+		"/D/Project/ARM9/unos/2440hardcode/int/head.S",
+		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/mach-s3c2440/irq.c",
+		"/C/Documents and Settings/Administrator/桌面/sdf.s",
+		"/D/Project/ARM9/unos/2440hardcode/int/option.h",
+		"/D/Project/ARM9/unos/2440hardcode/int/download.bin",
+		"/C/Documents and Settings/Administrator/桌面/NorFlash.txt",
+		"/C/Documents and Settings/Administrator/桌面/23.asm",
+		"/D/Project/ARM9/unos/mini2440_irq/boot_irq/main.c",
+		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/boot/bootp/init.S",
+		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/boot/bootp/kernel.S",
+		"/D/Library/linuxlib/linux-2.6.30.4/arch/arm/boot/bootp/initrd.S",
+		"/C/Documents and Settings/Administrator/Application Data/Sublime Text 3/Packages/SublimeCodeIntel/libs/SilverCity/LanguageInfo.py",
+		"/D/Project/ARM9/unos/2440hardcode/int/int.dis",
+		"/D/Project/ARM9/unos/mini2440_irq/boot_irq/interrupt.S",
+		"/D/Project/ARM9/unos/2440hardcode/int/int_elf",
+		"/D/Project/ARM9/unos/mini2440_irq/boot_irq/start.S",
+		"/D/Project/ARM9/unos/TQ2440_Test/src/keyscan.c",
+		"/D/Project/ARM9/unos/2440hardcode/int/init.c.bak",
+		"/D/Project/ARM9/unos/2440hardcode/int/s3c24xx.h.bak",
+		"/D/Project/ARM9/unos/2440hardcode/int/Makefile.bak",
+		"/D/Project/ARM9/unos/2440hardcode/int/interrupt.c.bak",
+		"/D/Project/ARM9/unos/2440hardcode/lcd/include/stdio.h",
+		"/D/Project/ARM9/unos/2440hardcode/lcd/sc/lcd视频例子.SearchResults",
+		"/D/Project/ARM9/ldd3_examples/Makefile",
+		"/D/Project/ARM9/study/cdTQ/TQ2440_CD/Linux资源/Linux平台开发工具包/EABI-4.3.3_EmbedSky_20100610/opt/EmbedSky/4.3.3/arm-none-linux-gnueabi/include/c++/4.3.3/tr1_impl/hashtable",
+		"/D/Project/ARM9/unos/2440hardcode/readme.txt",
+		"/D/Project/ARM9/s3c2440usart/2440init.d",
+		"/D/Project/ARM9/study/cdTQ/TQ2440_CD/Windows平台开发工具包/ADS1.2/ADS1.2/HTML/stdug/general/2-4.htm",
+		"/D/Project/ARM9/ldd3_examples/tty/Makefile",
+		"/D/Project/ARM9/ldd3_examples/snull/Makefile",
+		"/D/Project/ARM9/ldd3_examples/skull/Makefile",
+		"/D/Project/ARM9/ldd3_examples/simple/Makefile",
+		"/D/Project/ARM9/ldd3_examples/shortprint/Makefile",
+		"/D/Project/ARM9/ldd3_examples/short/Makefile",
+		"/D/Project/ARM9/ldd3_examples/scullv/Makefile",
+		"/D/Project/ARM9/ldd3_examples/scullp/Makefile",
+		"/D/Project/ARM9/ldd3_examples/sculld/Makefile",
+		"/D/Project/ARM9/ldd3_examples/scullc/Makefile",
+		"/D/Project/ARM9/ldd3_examples/scull/Makefile",
+		"/D/Project/ARM9/ldd3_examples/sbull/Makefile",
+		"/D/Project/ARM9/ldd3_examples/pci/Makefile",
+		"/D/Project/ARM9/ldd3_examples/misc-progs/Makefile",
+		"/D/Project/ARM9/ldd3_examples/misc-modules/Makefile"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"*.h,*.c"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"CheckLicence",
+			"2560",
+			"pdata",
+			"data",
+			"Get_ChipID",
+			"flash.h",
+			"FLASH_PAGE_START",
+			"FLASH_PAGE_SIZE",
+			"FLASH_PAGE_START",
+			"irq",
+			"HandleUndef",
+			" r",
+			"	r",
+			"\n	",
+			" rG",
+			"int.bin",
+			"Buzzer",
+			"194",
+			"set_stack",
+			"// ",
+			"disable_interrupt",
+			"	",
+			"boot_led",
+			"disable_interrupt",
+			"wr_if",
+			"cpsr",
+			"4a0",
+			"4a",
+			"InitTimerInterrupt",
+			"stack_setup",
+			"irq",
+			"reset",
+			"strsep",
+			"___strtok",
+			"strspn",
+			"strtok",
+			"args",
+			"buf",
+			"args",
+			"vsprintf",
+			"_start",
+			"arm",
+			".lds",
+			"copy_loop",
+			"    \n",
+			"INTOFFSET",
+			"()\n",
+			"INTOFFSET",
+			"IRQ_Handle1",
+			"eint0",
+			"interrupt",
+			"off",
+			"	",
+			"InitKeyInterrupt",
+			"Delay",
+			"delay",
+			"section",
+			"first",
+			"RESET",
+			"ClearMemory",
+			"font",
+			"clock",
+			"IsrWatchdog",
+			";\n",
+			"IsrWatchdog",
+			"stack_setup",
+			"UndefStack",
+			"cpsr",
+			"source",
+			"ddiv",
+			"_ddiv",
+			"__aeabi_ddiv",
+			". /",
+			"printf",
+			"	",
+			"rIISPSR",
+			"PCLK",
+			"UART_CLK",
+			"UART_BRD",
+			"Uart_Init",
+			"usart",
+			"enable_irq",
+			"HandleIRQ",
+			"IsrIRQ",
+			".gl",
+			"g_pageAddress",
+			"APP_ADDRESS",
+			"irq",
+			"_ISR_STARTADDRESS",
+			"HaltUndef",
+			"IsrWatchdog",
+			"WT_BASE",
+			"WTCON_Val",
+			"main",
+			"EmbedSky_conf",
+			"MAKE",
+			"EXPORT_SYMTAB",
+			"OSTaskCreate",
+			"Mem_PoolTbl",
+			"Mem_PoolHeap",
+			"	",
+			"fork(",
+			"DEVICE_NAME",
+			"mydevtimer",
+			"devicedev",
+			"timer",
+			"led",
+			"key",
+			"key0",
+			"key",
+			"mydevkey",
+			"timer0_init",
+			"mydevled0",
+			"mydevled",
+			"\"",
+			"led_",
+			"key_ioctl",
+			"led_",
+			"led",
+			"LED",
+			"led",
+			"LED",
+			"led",
+			"LED",
+			"led",
+			"LED",
+			"led",
+			"LED"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"        ",
+			"",
+			"	",
+			"",
+			"cdev_device",
+			"device",
+			"device\n",
+			"timer",
+			"timer0",
+			"key_",
+			" ",
+			"	",
+			"filp"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "USER/APP/stm32_chip.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2739,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2257,
+								2257
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content"
+							],
+							"in_converting": true,
+							"origin_encoding": "UTF-8",
+							"revert_to_scratch": true,
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1961.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "USER/APP/flash.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1062,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								222,
+								222
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"in_converting": true,
+							"origin_encoding": "GB2312",
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 108.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "USER/APP/main.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 69459,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								66804,
+								66816
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"origin_encoding": "UTF-8",
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 45125.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"output.clang":
+	{
+		"height": 100.0
+	},
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"output.find_results":
+	{
+		"height": 100.0
+	},
+	"pinned_build_system": "",
+	"project": "ST3.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"main.c",
+				"USER\\APP\\main.c"
+			],
+			[
+				"flash.h",
+				"USER\\APP\\flash.h"
+			],
+			[
+				"chip.c",
+				"USER\\APP\\stm32_chip.c"
+			],
+			[
+				"ts100.c",
+				"USER\\GLCD\\TS100_Draw.c"
+			],
+			[
+				"244",
+				"int\\2440addr.h"
+			],
+			[
+				"head",
+				"int\\head.S"
+			],
+			[
+				"makef",
+				"int\\Makefile"
+			],
+			[
+				"2440/int/ma",
+				"2440hardcode\\int\\Makefile"
+			],
+			[
+				"key/mydevkey.c",
+				"ARM9\\devlesson\\mydevkey\\mydevkey.c"
+			],
+			[
+				"key/test.m",
+				"ARM9\\devlesson\\mydevkey\\test.mk"
+			],
+			[
+				"key/makefile",
+				"ARM9\\devlesson\\mydevkey\\Makefile"
+			],
+			[
+				"scull.h",
+				"ARM9\\ldd3_examples\\scull\\scull.h"
+			],
+			[
+				"myled",
+				"ARM9\\devlesson\\mydevled\\mydevled.c"
+			],
+			[
+				"mydevled",
+				"ARM9\\devlesson\\mydevled\\mydevled.c"
+			],
+			[
+				"ts/main.c",
+				"TS100_VEx1.3.1_手持稳定光源_20140702\\USER\\APP\\main.c"
+			],
+			[
+				"make",
+				"ARM9\\devlesson\\mydevbuf\\Makefile"
+			],
+			[
+				"makefile",
+				"ARM9\\devlesson\\mydevbuf\\Makefile"
+			],
+			[
+				"mydev",
+				"ARM9\\devlesson\\mydevbuf\\mydevbuf.c"
+			],
+			[
+				"tmp.c",
+				"ARM9\\demo\\tmp.c"
+			],
+			[
+				"read",
+				"Readme.txt"
+			],
+			[
+				"tmp",
+				"D:\\Project\\ARM9\\demo\\tmp.c"
+			],
+			[
+				"memd",
+				"G:\\第4季-内核驱动的奥秘\\第14课-字符驱动编程模型\\范例代码\\memdev.c"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 182.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

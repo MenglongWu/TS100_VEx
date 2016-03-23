@@ -1,6 +1,6 @@
 /******************************************************************************
 *File:TS100_Draw
-æ¶²æ™¶å±ç»˜åˆ¶å†…å®¹
+Òº¾§ÆÁ»æÖÆÄÚÈİ
 *******************************************************************************/
 
 
@@ -18,27 +18,26 @@
 #include "lib\\base.h"
 //#include <PictureData.h>
 #include "..\\GLCD\\PictureData.h"
-#include "USER/GLCD/TS100_Draw.h"
 #include "flash.h"
 void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY, uint8_t * pic);
 
-/*********************************åŠŸèƒ½å‡½æ•°********************************************/
+/*********************************¹¦ÄÜº¯Êı********************************************/
 /******************************************************************************
 * Function Name  : LCD_Batter_Show	  BY Yu Jingxiong  2011.11.15		  ok
 * Description    : Draw A battery on LCD 
-* Input          : - x0: ç”µæ± å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: ç”µæ± å·¦ä¸Šè§’yåæ ‡
-- rank ï¼šç”µæ± ç­‰çº§çŠ¶æ€ 0çº¢ 1é»„ 2ç»¿ 3ç»¿  4å……ç”µçŠ¶æ€
+* Input          : - x0: µç³Ø×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: µç³Ø×óÉÏ½Çy×ø±ê
+- rank £ºµç³ØµÈ¼¶×´Ì¬ 0ºì 1»Æ 2ÂÌ 3ÂÌ  4³äµç×´Ì¬
 *******************************************************************************/
-#define LEVEL_POWER    0  //å¤–éƒ¨ä¾›ç”µ
-#define LEVEL_FULL     2  //å……æ»¡ç”µ
-#define LEVEL_CHARGE   4  //æ­£åœ¨å……ç”µ
-#define LEVEL_4        6  //ç”µæ± 4æ ¼
-#define LEVEL_3        7  //ç”µæ± 3æ ¼
-#define LEVEL_2        8  //ç”µæ± 2æ ¼
-#define LEVEL_1        9  //ç”µæ± 1æ ¼
-#define LEVEL_0        10  //ç”µæ± 0æ ¼
-#define LEVEL_SHUTDOWN 11 //ç”µæ± è‡ªåŠ¨å…³æœº
+#define LEVEL_POWER    0  //Íâ²¿¹©µç
+#define LEVEL_FULL     2  //³äÂúµç
+#define LEVEL_CHARGE   4  //ÕıÔÚ³äµç
+#define LEVEL_4        6  //µç³Ø4¸ñ
+#define LEVEL_3        7  //µç³Ø3¸ñ
+#define LEVEL_2        8  //µç³Ø2¸ñ
+#define LEVEL_1        9  //µç³Ø1¸ñ
+#define LEVEL_0        10  //µç³Ø0¸ñ
+#define LEVEL_SHUTDOWN 11 //µç³Ø×Ô¶¯¹Ø»ú
 void LCD_Batter_Show( uint16_t x0, uint16_t y0 ,uint16_t rank )			
 {
 // 	if( x0 > DISP_HOR_RESOLUTION || y0 > DISP_VER_RESOLUTION || x1 > DISP_HOR_RESOLUTION || y1 > DISP_VER_RESOLUTION  ) 
@@ -129,9 +128,9 @@ void LCD_RedLight_Show( uint16_t x0, uint16_t y0 ,uint8_t flag)
 /******************************************************************************
 * Function Name  : LCD_Wavelength_Selection	  BY Yu Jingxiong  2011.11.15	  ok
 * Description    : Draw Wavelength Selection on LCD 
-* Input          : - x0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’yåæ ‡
-- wave ï¼šæ³¢é•¿é€‰æ‹©ï¼Œ0 = 1310nm 1 = 1495nm 2 = 1550nm 	3 = çº¢å…‰
+* Input          : - x0: ÏÔÊ¾Ìõ×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: ÏÔÊ¾Ìõ×óÉÏ½Çy×ø±ê
+- wave £º²¨³¤Ñ¡Ôñ£¬0 = 1310nm 1 = 1495nm 2 = 1550nm 	3 = ºì¹â
 *******************************************************************************/
 void LCD_Wavelength_Selection( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor )
 {
@@ -183,57 +182,62 @@ void LCD_Wavelength_Selection( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t
 }
 void LCD_Wavelength_Selection_Ex( uint16_t x0, uint16_t y0 ,uint16_t wave ,uint16_t Color, uint16_t BkColor )
 {
+	switch(wave)
+	{					//White   Black   BkColor   Color  Color2    Red    Magenta   Cyan   Yellow 
+	case 0: 
+		//LCD_RunStop_Select( 130, 5, 1 );	   //x 130 y 5
+		break ;
+	case 1: 
+		Show_Matrix_zimo(x0, y0, Num_01,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+16, y0, Num_03,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+32, y0, Num_01,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+48, y0, Num_00,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+64, y0, Num_0n,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+80, y0, Num_0m,  2, 29, Color , BkColor);
+		break ;
+	case 2: 
+		Show_Matrix_zimo(x0, y0, Num_01,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+16, y0, Num_04,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+32, y0, Num_09,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+48, y0, Num_00,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+64, y0, Num_0n,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+80, y0, Num_0m,  2, 29, Color , BkColor);
+		break ; 
+	case 3: 
+		Show_Matrix_zimo(x0, y0, Num_01,  	 2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+16, y0, Num_05,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+32, y0, Num_05,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+48, y0, Num_00,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+64, y0, Num_0n,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+80, y0, Num_0m,  2, 29, Color , BkColor);
+		break ; 
+	default :			    
+		break ;			                          
+	} 		
 
-	uint8_t *waveCode[10] = {Num_00,Num_01,Num_02,Num_03,Num_04,Num_05,Num_06,Num_07,Num_08,Num_09};
-	uint8_t i;
-	//é…ç½®çš„ä¸‰ä¸ªæ³¢é•¿å…·ä½“æ•°å€¼
-	uint16_t *cfgwave[4] = {0,&g_adj_power._ch1wave,&g_adj_power._ch2wave,&g_adj_power._ch3wave};
-	uint16_t tmpwave;
-	uint8_t codeIndex;
-
-	//ä¸ºäº†å…¼å®¹å…¶ä»–éƒ¨åˆ†å‡½æ•°ï¼Œwaveåªèƒ½æ˜¯1ã€2ã€3
-	if(wave) {
-		tmpwave = *cfgwave[wave];
-	}
-	else {
-		return;
-	}	
-	for(i = 0;i < 4;++i) {					//æ˜¾ç¤ºå›ºå®š4ä¸ªæ³¢é•¿å­—æ¯ï¼Œæ¯ä¸ªå­—æ¯å¤§å°16x29
-		codeIndex = tmpwave % 10;
-		if(tmpwave) {						//ä»å­—æ¯æœ€ä½ä½å¼€å§‹æ˜¾ç¤º
-			Show_Matrix_zimo(x0+48-16*i, y0, waveCode[codeIndex],  2, 29, Color , BkColor);
-		}
-		else {
-			gl_clear(	x0+48-16*i,		y0,	//å­—æ¯ä¸è¶³4ä½ï¼Œå‰é¢ç”¨èƒŒæ™¯è‰²æ“¦é™¤
-						x0+48-16*i+16,y0+29,Black);	
-		}
-		tmpwave /= 10;
-	}
-	Show_Matrix_zimo(x0+64, y0, Num_0n,  2, 29, Color , BkColor);	//æ˜¾ç¤ºå•ä½nm
-	Show_Matrix_zimo(x0+80, y0, Num_0m,  2, 29, Color , BkColor);
 }
 
 
 /******************************************************************************
 * Function Name  : LCD_OperatMode_Selection	  BY Yu Jingxiong  2011.11.20	  ok
 * Description    : Draw OperatMode Selection on LCD 
-* Input          : - x0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’yåæ ‡
-- mode ï¼šæ³¢é•¿é€‰æ‹©ï¼Œ0 = CWã€ 1 = 270Hzã€2 = 1KHzã€3 = 2KHz  è¿ç»­å…‰/è„‰å†²å…‰é€‰æ‹©
+* Input          : - x0: ÏÔÊ¾Ìõ×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: ÏÔÊ¾Ìõ×óÉÏ½Çy×ø±ê
+- mode £º²¨³¤Ñ¡Ôñ£¬0 = CW¡¢ 1 = 270Hz¡¢2 = 1KHz¡¢3 = 2KHz  Á¬Ğø¹â/Âö³å¹âÑ¡Ôñ
 *******************************************************************************/
 void LCD_OperatMode_Selection( uint16_t x0, uint16_t y0 ,uint16_t mode ,uint16_t Color, uint16_t BkColor )
 { 
 	uint16_t x,y;
-	//å°å·å­—ä½“æ˜¾ç¤º 16* 29
+	//Ğ¡ºÅ×ÖÌåÏÔÊ¾ 16* 29
 	switch(mode)
 	{					//White   Black   BkColor   Blue  Color    Red    Magenta   Cyan   Yellow 
 	case 0: 
-		for( x=x0; x < x0+47; x++ )	//å³ä¾§è§¦æ‘¸æŒ‰é”®æ¡å®½
+		for( x=x0; x < x0+47; x++ )	//ÓÒ²à´¥Ãş°´¼üÌõ¿í
 			for( y=y0; y < y0+29; y++ )
 				LCD_SetPoint(x,y,BkColor);
 		Show_Matrix_zimo(x0+47, y0, Num_0C,  2, 29, Color , BkColor);
 		Show_Matrix_zimo(x0+63, y0, Num_0W,  2, 29, Color , BkColor);
-		for( x=x0+79; x < x0+111; x++ )	//å³ä¾§è§¦æ‘¸æŒ‰é”®æ¡å®½
+		for( x=x0+79; x < x0+111; x++ )	//ÓÒ²à´¥Ãş°´¼üÌõ¿í
 			for( y=y0; y < y0+29; y++ )
 				LCD_SetPoint(x,y,BkColor);
 		break ; 	
@@ -250,10 +254,7 @@ void LCD_OperatMode_Selection( uint16_t x0, uint16_t y0 ,uint16_t mode ,uint16_t
 		for( x=x0; x < x0+47; x++ )	
 			for( y=y0; y < y0+29; y++ )
 				LCD_SetPoint(x,y,BkColor);
-		Show_Matrix_zimo(x0+47, y0, Num_01,  2, 29, Color , BkColor);	//ç¡®ä¿KHzä½ç½®ä¸å˜
-		Show_Matrix_zimo(x0+63, y0, Num_0K,  2, 29, Color , BkColor);
-		Show_Matrix_zimo(x0+79, y0, Num_0H,  2, 29, Color , BkColor);
-		Show_Matrix_zimo(x0+95, y0, Num_0z,  2, 29, Color , BkColor);
+		Show_Matrix_zimo(x0+47, y0, Num_01,  2, 29, Color , BkColor);	//È·±£KHzÎ»ÖÃ²»±ä
 		break ; 
 	case 3: 
 		Show_Matrix_zimo(x0+47, y0, Num_02,  2, 29, Color , BkColor);
@@ -265,19 +266,6 @@ void LCD_OperatMode_Selection( uint16_t x0, uint16_t y0 ,uint16_t mode ,uint16_t
 	default :			    
 		break ;			                          
 	} 
-
-
-	if(Operating_Mode & 0x80) {
-		//æ·»åŠ OFFå…‰æºå›¾æ ‡
- 		for( x=x0; x < x0+130; x++ )	//å³ä¾§è§¦æ‘¸æŒ‰é”®æ¡å®½
- 			for( y=y0; y < y0+29; y++ )
- 				LCD_SetPoint(x,y,BkColor);
-		//gl_fill_rect(x0,y0,130,29);
-		Show_Matrix_zimo(x0+47, y0, Num_0O,  2, 29, Color , BkColor);
-		Show_Matrix_zimo(x0+63, y0, Num_0f,  2, 29, Color , BkColor);
-		Show_Matrix_zimo(x0+79, y0, Num_0f,  2, 29, Color , BkColor);
-	}
-
 }
 
 
@@ -285,9 +273,9 @@ void LCD_OperatMode_Selection( uint16_t x0, uint16_t y0 ,uint16_t mode ,uint16_t
 /******************************************************************************
 * Function Name  : LCD_Timing_Display	  BY Yu Jingxiong  2011.11.15	  ok
 * Description    : Draw Wavelength Selection on LCD 
-* Input          : - x0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’yåæ ‡
-- on_off ï¼šå®šæ—¶å™¨çŠ¶æ€ï¼Œ0 å€’è®¡æ—¶å…³é—­çŠ¶æ€ OFF,  5min  ï¼Œ10min  ï¼Œ15min  ï¼Œ30min  ï¼Œ60min
+* Input          : - x0: ÏÔÊ¾Ìõ×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: ÏÔÊ¾Ìõ×óÉÏ½Çy×ø±ê
+- on_off £º¶¨Ê±Æ÷×´Ì¬£¬0 µ¹¼ÆÊ±¹Ø±Õ×´Ì¬ OFF,  5min  £¬10min  £¬15min  £¬30min  £¬60min
 *******************************************************************************/
 void LCD_Timing_Display( uint16_t x0, uint16_t y0 ,uint16_t on_off )
 {
@@ -350,37 +338,37 @@ void LCD_Timing_Display( uint16_t x0, uint16_t y0 ,uint16_t on_off )
 /***************************************************************************************************/
 /******************************************************************************
 * Function Name  : Show_Matrix_zimo
-* Description    : åœ¨æŒ‡å®šåº§æ ‡æ˜¾ç¤ºå­—æ¨¡æå–è½¯ä»¶æå–çš„å­—æ¨¡æ•°æ®		  OK
-* Input          : - Xpos: èµ·å§‹è¡Œåº§æ ‡
-*                  - Ypos: èµ·å§‹åˆ—åº§æ ‡ 
-*				   - Buffer: ä¿å­˜å­—æ¨¡æ•°æ®çš„æ•°ç»„åœ°å€ã€‚ã€‚ã€‚
-*				   - Wide_char,  å­—æ¨¡å®½åº¦ï¼Œä»¥å­—èŠ‚è®¡ç®—ï¼Œåƒç´ å®½åº¦ = Wide_char * 8
-*				   - High     ï¼Œ å­—æ¨¡é«˜åº¦ï¼Œä»¥åƒç´ ç‚¹è®¡ç®—
-*				   - charColor: å­—ç¬¦é¢œè‰²   
-*				   - bkColor: èƒŒæ™¯é¢œè‰² 
+* Description    : ÔÚÖ¸¶¨×ù±êÏÔÊ¾×ÖÄ£ÌáÈ¡Èí¼şÌáÈ¡µÄ×ÖÄ£Êı¾İ		  OK
+* Input          : - Xpos: ÆğÊ¼ĞĞ×ù±ê
+*                  - Ypos: ÆğÊ¼ÁĞ×ù±ê 
+*				   - Buffer: ±£´æ×ÖÄ£Êı¾İµÄÊı×éµØÖ·¡£¡£¡£
+*				   - Wide_char,  ×ÖÄ£¿í¶È£¬ÒÔ×Ö½Ú¼ÆËã£¬ÏñËØ¿í¶È = Wide_char * 8
+*				   - High     £¬ ×ÖÄ£¸ß¶È£¬ÒÔÏñËØµã¼ÆËã
+*				   - charColor: ×Ö·ûÑÕÉ«   
+*				   - bkColor: ±³¾°ÑÕÉ« 
 *******************************************************************************/
 void Show_Matrix_zimo(uint16_t Xpos, uint16_t Ypos, uint8_t *Buffer, uint16_t Wide_char, uint16_t High, uint16_t charColor, uint16_t bkColor)
 {
 	uint16_t  x_char ,x;
-	uint16_t  Temp_y;  //ä¸´æ—¶ Yåæ ‡
-	uint8_t  /* Temp_Buffer[1000], */tmp_char;	  //æ³¨æ„ï¼šæœ€å¤§æ˜¾ç¤ºå­—ä½“çš„å­—èŠ‚æ•°ç›®ä¸º1000
+	uint16_t  Temp_y;  //ÁÙÊ± Y×ø±ê
+	uint8_t  /* Temp_Buffer[1000], */tmp_char;	  //×¢Òâ£º×î´óÏÔÊ¾×ÖÌåµÄ×Ö½ÚÊıÄ¿Îª1000
 
 	//memcpy( Temp_Buffer, Buffer, Wide_char*High);
 
-	for( Temp_y = Ypos; Temp_y< Ypos+High-1 ; Temp_y++)		//yåæ ‡é€’å¢
+	for( Temp_y = Ypos; Temp_y< Ypos+High-1 ; Temp_y++)		//y×ø±êµİÔö
 	{
-		for( x_char=0; x_char<Wide_char; x_char++ )	 //xåæ ‡å­—ç¬¦è®¡æ•°å¢é‡
+		for( x_char=0; x_char<Wide_char; x_char++ )	 //x×ø±ê×Ö·û¼ÆÊıÔöÁ¿
 		{
 			tmp_char = Buffer[x_char + (Temp_y - Ypos)*Wide_char];
 			for( x=0; x<8; x++ )
 			{
 				if( (tmp_char >> 7 - x) & 0x01 == 0x01 )
 				{
-					LCD_SetPoint( ( Xpos + x_char * 8 + x ), Temp_y, charColor );  /* å­—ç¬¦é¢œè‰² */
+					LCD_SetPoint( ( Xpos + x_char * 8 + x ), Temp_y, charColor );  /* ×Ö·ûÑÕÉ« */
 				}
 				else
 				{
-					LCD_SetPoint( ( Xpos + x_char * 8 + x ), Temp_y, bkColor );  /* èƒŒæ™¯é¢œè‰² */
+					LCD_SetPoint( ( Xpos + x_char * 8 + x ), Temp_y, bkColor );  /* ±³¾°ÑÕÉ« */
 				}
 			}
 		}
@@ -391,12 +379,12 @@ void Show_Matrix_zimo(uint16_t Xpos, uint16_t Ypos, uint8_t *Buffer, uint16_t Wi
 /******************************************************************************
 * Function Name  : LCD_Power_Control_Selection	  BY Yu Jingxiong  2011.11.21	  ok
 * Description    : Draw Power Control on LCD 
-* Input          : - x0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’yåæ ‡
-*                  - Current_Power: æ˜¾ç¤ºåŠŸç‡å€¼
+* Input          : - x0: ÏÔÊ¾Ìõ×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: ÏÔÊ¾Ìõ×óÉÏ½Çy×ø±ê
+*                  - Current_Power: ÏÔÊ¾¹¦ÂÊÖµ
 
-change ï¼šæ³¢é•¿é€‰æ‹©ï¼Œ0 = decreaseã€ 1 = 	increase  
-æ“ä½œæ–¹å¼ï¼šä»¥ 1dbm é€’å¢æˆ–é€’å‡ï¼Œå˜åŒ–èŒƒå›´æ˜¯ï¼š-30dbmåˆ°3dbmï¼Œå…±34ä¸ªç­‰çº§
+change £º²¨³¤Ñ¡Ôñ£¬0 = decrease¡¢ 1 = 	increase  
+²Ù×÷·½Ê½£ºÒÔ 1dbm µİÔö»òµİ¼õ£¬±ä»¯·¶Î§ÊÇ£º-30dbmµ½3dbm£¬¹²34¸öµÈ¼¶
 *******************************************************************************/
 // void LCD_Power_Control_Selection( uint16_t x0, uint16_t y0 ,int16_t Current_Power ,uint16_t CharColor, uint16_t BkColor )
 // { 
@@ -419,8 +407,6 @@ void LCD_Power_Control_Selection_Ex( uint16_t x0, uint16_t y0 ,int16_t Current_P
 	Show_Matrix_zimo(x0+62, y0, code[digit],  4,56, CharColor , BkColor);
 
 	LCD_FLSAH_DrawPicture(x0+98,y0+13,x0+98+63-1,y0+13+33-1,(uint8_t*)gImage_dbm);	
-
-
 	//Show_Matrix_zimo(x0+98, y0, Num_big_d,  4,56, CharColor , BkColor);
  	//Show_Matrix_zimo(x0+130, y0, Num_big_b,  4,56, CharColor , BkColor);
  	//Show_Matrix_zimo(x0+162, y0, Num_big_m,  4,56, CharColor , BkColor);
@@ -429,11 +415,11 @@ void LCD_Power_Control_Selection_Ex( uint16_t x0, uint16_t y0 ,int16_t Current_P
 /******************************************************************************
 * Function Name  : LCD_Menu_Select	  BY Yu Jingxiong  2011.11.21	  ok
 * Description    : Draw menu selection on LCD 
-* Input          : - x0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’yåæ ‡
-*                  - menu: å½“å‰èœå•é€‰é¡¹
+* Input          : - x0: ÏÔÊ¾Ìõ×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: ÏÔÊ¾Ìõ×óÉÏ½Çy×ø±ê
+*                  - menu: µ±Ç°²Ëµ¥Ñ¡Ïî
 
-ã€Šmenuã€‹	 0 menu  1æ³¢é•¿   2æ¨¡å¼   3åŠŸç‡   4å®šæ—¶å™¨   
+¡¶menu¡·	 0 menu  1²¨³¤   2Ä£Ê½   3¹¦ÂÊ   4¶¨Ê±Æ÷   
 *******************************************************************************/
 void LCD_Menu_Select( uint16_t menu )	   //x 279 y 36
 { 
@@ -442,15 +428,15 @@ void LCD_Menu_Select( uint16_t menu )	   //x 279 y 36
 /******************************************************************************
 * Function Name  : LCD_Menu_Select	  BY Yu Jingxiong  2011.11.24	  ok
 * Description    : Draw menu selection on LCD 
-* Input          : - x0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’Xåæ ‡   æ³¨æ„ä¿è¯è¾“å…¥çš„å³ä¸‹è§’å€¼å¤§äºå·¦ä¸Šè§’å€¼
-*                  - y0: æ˜¾ç¤ºæ¡å·¦ä¸Šè§’yåæ ‡ 
+* Input          : - x0: ÏÔÊ¾Ìõ×óÉÏ½ÇX×ø±ê   ×¢Òâ±£Ö¤ÊäÈëµÄÓÒÏÂ½ÇÖµ´óÓÚ×óÉÏ½ÇÖµ
+*                  - y0: ÏÔÊ¾Ìõ×óÉÏ½Çy×ø±ê 
 *******************************************************************************/
 // void LCD_RunStop_Select(uint16_t x0,uint16_t y0,uint16_t RunStop )	   //x 140 y 36
 // { 
 // }
 
 
-/*****************æ•°å­—æ˜¾ç¤ºå‡½æ•°å°è£… 2011.12.05*****************************/
+/*****************Êı×ÖÏÔÊ¾º¯Êı·â×° 2011.12.05*****************************/
 /*************************************************************************/
 void GUI_Text_Show_Number(uint16_t x, uint16_t y, uint8_t number, uint16_t Color, uint16_t bkColor )
 {
@@ -461,20 +447,20 @@ END FILE
 *********************************************************************************************************/
 
 
-//ç‰‡ä¸ŠFLASHå›¾ç‰‡æ˜¾ç¤ºå‡½æ•°
+//Æ¬ÉÏFLASHÍ¼Æ¬ÏÔÊ¾º¯Êı
 
 
-//åŸºæœ¬å‡½æ•°
+//»ù±¾º¯Êı
 /*********************************************************************
 * Function Name  : LCD_FLSAH_DrawPicture
-* Description    : è¯»å–FLASHä¸­çš„å›¾ç‰‡æ•°æ®è¿›è¡Œæ˜¾ç¤ºæ“çºµ
-* Input          : - StartX: Xèµ·ç‚¹
-*                  - StartY: Yèµ·ç‚¹ 
-*				   - EndX: Xç»ˆç‚¹
-*				   - EndY: Yç»ˆç‚¹   
-*				   - pic: æ•°æ®ç»„æŒ‡é’ˆå¼ºåˆ¶è½¬æ¢ç»“æœ
+* Description    : ¶ÁÈ¡FLASHÖĞµÄÍ¼Æ¬Êı¾İ½øĞĞÏÔÊ¾²Ù×İ
+* Input          : - StartX: XÆğµã
+*                  - StartY: YÆğµã 
+*				   - EndX: XÖÕµã
+*				   - EndY: YÖÕµã   
+*				   - pic: Êı¾İ×éÖ¸ÕëÇ¿ÖÆ×ª»»½á¹û
 * By yujingxiong    2012.04.26 
-example  ï¼šLCD_FLSAH_DrawPicture( 0, 0, 31, 59, (uint8_t *)&Glink32_60 );
+example  £ºLCD_FLSAH_DrawPicture( 0, 0, 31, 59, (uint8_t *)&Glink32_60 );
 const unsigned char Glink32_60[3840]
 *********************************************************************/
 void LCD_FLSAH_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY, uint8_t * pic)
@@ -542,7 +528,7 @@ void UI_DebugMain()
 		25,38,   67,38,   105,38, 158,25,
 								  158,38};
 	int8_t *caption[] = {"ADC","DAC","dBm","Adjust","Mode","Laser","Auto","Produce","Exit"};
-
+	
 	int8_t enableAuto = 0;
 	int16_t oldpen,oldbrush,oldbk,oldfont;	
 	int32_t index = 0,oldindex = 0,i;
@@ -566,7 +552,6 @@ void UI_DebugMain()
 	Wavelength_Selection_state = 1;
 _Redraw:;
 	gl_clear(0,0,320,240,COL_White);
-	gl_text(0,224-12,RELEASE_DATE,-1);
 	gl_text(0,224,TARGET_NAME,-1);
 	
 	for(i = 0;i < 9;++i) {
@@ -608,13 +593,13 @@ _Redraw:;
 	laser = Wavelength_Selection_state;
 	switch(laser) {
 	case 1:
-		snprintf(strout,5,"%d", g_adj_power._ch1wave);
+		sprintf(strout,"1310");
 		break;
 	case 2:
-		snprintf(strout,5,"%d", g_adj_power._ch2wave);;
+		sprintf(strout,"1490");
 		break;
 	case 3:
-		snprintf(strout,5,"%d", g_adj_power._ch3wave);
+		sprintf(strout,"1550");
 		break;
 	case 4:
 		sprintf(strout,"650 ");
@@ -674,7 +659,7 @@ _Redraw:;
 					g_power.adc = val[index];
 				}
 				else if(index == 1) {
-					DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)(val[index]));    //  ï¼ˆdacData/4096ï¼‰*3.3== OUT
+					DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)(val[index]));    //  £¨dacData/4096£©*3.3== OUT
 					DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE); 
 					g_power.dac = val[index];
 				}
@@ -694,7 +679,7 @@ _Redraw:;
 					g_power.adc = val[index];
 				}
 				else if(index == 1) {
-					DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)(val[index]));    //  ï¼ˆdacData/4096ï¼‰*3.3== OUT
+					DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)(val[index]));    //  £¨dacData/4096£©*3.3== OUT
 					DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE);  
 					g_power.dac = val[index];
 				}
@@ -739,7 +724,7 @@ _Redraw:;
 			
 			
 			if(btnClk) {
-				if(index == 0) {//è®¾ç½®ADC
+				if(index == 0) {//ÉèÖÃADC
 					*strout = '\0';
 					if(InputPanel(strout,5,&strlen)) {
 						val[index] = atof_(strout);
@@ -747,21 +732,20 @@ _Redraw:;
 					g_power.adc = val[index];
 					
 				}
-				else if(index == 1) {//è®¾ç½®DAC
+				else if(index == 1) {//ÉèÖÃDAC
 					*strout = '\0';
 					if(InputPanel(strout,5,&strlen)) {
 						val[index] = atoi(strout);
 					}
 					g_power.dac = val[index];
-					DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)(val[index]));    //  ï¼ˆdacData/4096ï¼‰*3.3== OUT
+					DAC_SetChannel1Data(DAC_Align_12b_R, (uint16_t)(val[index]));    //  £¨dacData/4096£©*3.3== OUT
 					DAC_SoftwareTriggerCmd(DAC_Channel_1,ENABLE);  
 				}
-				else if(index == 2) {//åå°
+				else if(index == 2) {//ºóÌ¨
 					*strout = '\0';
 					if(InputPanel(strout,7,&strlen)) {
 						dbm = atof_(strout);
 					}
-					g_power.lastset = g_power.set;
 					g_power.set = (int32_t)(dbm*1000);
 					Ctrl_Power(&g_power);
 				}
@@ -810,7 +794,7 @@ _Redraw:;
 				break;
 			}
 			else if(btnClk && index == 8) {
-				//todo:å†™å…¥FLASH
+				//todo:Ğ´ÈëFLASH
 				btnClk = 0;
 			}
 			
@@ -832,23 +816,21 @@ _End:;
 	gl_ui_setbkcolor(oldbk);
 }
 
-//äº§å“é…ç½®
+//²úÆ·ÅäÖÃ
 void UI_ProductConfig()
 {
-	POINT stloc[] = {//é™æ€æ–‡æœ¬ä½ç½®
-		4,2,     4,14,    4,26,//   4,38,  4,50,    4,62,     
-		66,14,   66,26,   66,38,  66,50,    66,62,
-		157,14, 157,26, 157,38, 157,50,  157,62};
-	POINT loc[] = {//æ¸¸æ ‡ä½ç½®
-		34,2,    
-		4,38,    4,50,    4,62,
-		34,26,   34,38,  34,50,    34,62,     //Logo /*66 14*/
+	POINT stloc[] = {
+		4,2,     4,14,    4,26,   4,38,  4,50,    4,62,     
+				 66,14,   66,26,   66,38,  66,50,    66,62,
+		156,50,  156,62};
+	POINT loc[] = {
+		34,2,    34,26,   34,38,  34,50,    34,62,     //Logo /*66 14*/
 		104,26,   104,38,  104,50,    104,62,
-		157,14, 157,26, 157,38, 157,50,  157,62};
-	int8_t *caption[] = {//é™æ€æ–‡æœ¬å†…å®¹
-		"SN","Laser","650",//"1310","1490","1550",
+		156,50,  156,62};
+	int8_t *caption[] = {
+		"SN","Laser","650","1310","1490","1550",
 		"LOGO","Addr","Color","High","Width",
-		"---","Lock", "---", "Save","Exit"};
+		"Save","Exit"};
 	struct adj_power_flash tmpFlash;
 	
 	
@@ -875,71 +857,56 @@ void UI_ProductConfig()
 _Redraw:;
 	gl_clear(0,0,320,240,COL_White);
 	
-	//é™æ€æ–‡æœ¬
- 	for(i = 0;i < sizeof(caption) / sizeof(int8_t*);++i) {
- 		gl_text(stloc[i].x,stloc[i].y,caption[i],-1);
- 	}
-// 	for(i = 0;i < 3;++i) {
-// 		gl_text(stloc[i].x,stloc[i].y,caption[i],-1);
-// 	}
+	//¾²Ì¬ÎÄ±¾
+	for(i = 0;i < 13;++i) {
+		gl_text(stloc[i].x,stloc[i].y,caption[i],-1);
+	}
 
 	//sn
 	gl_text(loc[0].x,loc[0].y,tmpFlash.sn,-1);
 	
 	//Laser
-	sprintf(strout,"%d",tmpFlash._ch1wave);
-	gl_text(loc[1].x,loc[1].y,strout,-1);
-	sprintf(strout,"%d",tmpFlash._ch2wave);
-	gl_text(loc[2].x,loc[2].y,strout,-1);
-	sprintf(strout,"%d",tmpFlash._ch3wave);
-	gl_text(loc[3].x,loc[3].y,strout,-1);
-	
-	
-	
 	if(!tmpFlash._650_en) {
+		gl_text(loc[1].x,loc[1].y,"off",-1);
+	}
+	else {
+		gl_text(loc[1].x,loc[1].y,"on ",-1);
+	}
+	if(!tmpFlash._1310_en) {
+		gl_text(loc[2].x,loc[2].y,"off",-1);
+	}
+	else {
+		gl_text(loc[2].x,loc[2].y,"on ",-1);
+	}
+	if(!tmpFlash._1490_en) {
+		gl_text(loc[3].x,loc[3].y,"off",-1);
+	}
+	else {
+		gl_text(loc[3].x,loc[3].y,"on ",-1);
+	}
+	if(!tmpFlash._1550_en) {
 		gl_text(loc[4].x,loc[4].y,"off",-1);
 	}
 	else {
 		gl_text(loc[4].x,loc[4].y,"on ",-1);
 	}
 	
-	
-	if(!tmpFlash._1310_en) {
-		gl_text(loc[5].x,loc[5].y,"off",-1);
-	}
-	else {
-		gl_text(loc[5].x,loc[5].y,"on ",-1);
-	}
-	if(!tmpFlash._1490_en) {
-		gl_text(loc[6].x,loc[6].y,"off",-1);
-	}
-	else {
-		gl_text(loc[6].x,loc[6].y,"on ",-1);
-	}
-	if(!tmpFlash._1550_en) {
-		gl_text(loc[7].x,loc[7].y,"off",-1);
-	}
-	else {
-		gl_text(loc[7].x,loc[7].y,"on ",-1);
-	}
-	
 	//Logo
 	gl_text(66,14,"LOGO",-1);
 	sprintf(strout,"0x%X",tmpFlash._logo_addr);
-	gl_text(loc[8].x,loc[8].y,strout,-1);
+	gl_text(loc[5].x,loc[5].y,strout,-1);
 
 	sprintf(strout,"0x%X",tmpFlash._logo_backcolor);
-	gl_text(loc[9].x,loc[9].y,strout,-1);
+	gl_text(loc[6].x,loc[6].y,strout,-1);
 	
 	sprintf(strout,"%d",tmpFlash._logo_h);
-	gl_text(loc[10].x,loc[10].y,strout,-1);
+	gl_text(loc[7].x,loc[7].y,strout,-1);
 
 	sprintf(strout,"%d",tmpFlash._logo_w);
-	gl_text(loc[11].x,loc[11].y,strout,-1);
+	gl_text(loc[8].x,loc[8].y,strout,-1);
 
 	flag = 1;
 	while(1) {
-		//ç§»åŠ¨æ¸¸æ ‡
 		if(KeyPress(KEY_PORT_A,KEY_A)) {
 			oldindex = index;
 			index--;
@@ -960,18 +927,14 @@ _Redraw:;
 			DrawFocus(loc[index].x,loc[index].y,COL_Black);
 			//goto _Redraw;
 		}
-		
-		
-		//æŒ‰ä¸‹ç¡®å®šé”®
 		else if(KeyPress(KEY_PORT_Z,KEY_Z)) {
 			flag = 1;
 			btnClk = 1;
 		}
-		
-		//
 		if(flag) {
 			
-
+		
+			
 			if(btnClk) {
 				switch(index) {
 				case 0://sn
@@ -984,132 +947,94 @@ _Redraw:;
 					gl_text(loc[0].x,loc[0].y,"                             ",-1);
 					gl_text(loc[0].x,loc[0].y,tmpFlash.sn,-1);
 					break;
-				case 1://_ch1wave
-					strout[0] = '\0';					
-					if(InputPanel(strout,25,&strlen)) {
-						tmpFlash._ch1wave = atoi(strout);
-					}
-					gl_text(loc[1].x,loc[1].y,"    ",-1);
-					gl_text(loc[1].x,loc[1].y,strout,-1);
-					break;
-				case 2://_ch2wave
-					strout[0] = '\0';					
-					if(InputPanel(strout,25,&strlen)) {
-						tmpFlash._ch2wave = atoi(strout);
-					}
-					gl_text(loc[2].x,loc[2].y,"    ",-1);
-					gl_text(loc[2].x,loc[2].y,strout,-1);
-					break;
-				case 3://_ch3wave
-					strout[0] = '\0';					
-					if(InputPanel(strout,25,&strlen)) {
-						tmpFlash._ch3wave = atoi(strout);
-					}
-					gl_text(loc[3].x,loc[3].y,"    ",-1);
-					gl_text(loc[3].x,loc[3].y,strout,-1);
-					break;
-					
-					
-				case 4://650
+				case 1://650
 					if(tmpFlash._650_en) {
+						gl_text(loc[1].x,loc[1].y,"off",-1);
+					}
+					else {
+						gl_text(loc[1].x,loc[1].y,"on ",-1);
+					}
+					tmpFlash._650_en = !tmpFlash._650_en;
+					break;
+				case 2://1310
+					if(tmpFlash._1310_en) {
+						gl_text(loc[2].x,loc[2].y,"off",-1);
+					}
+					else {
+						gl_text(loc[2].x,loc[2].y,"on ",-1);
+					}
+					tmpFlash._1310_en = !tmpFlash._1310_en;
+					break;
+				case 3://1490
+					if(tmpFlash._1490_en) {
+						gl_text(loc[3].x,loc[3].y,"off",-1);
+					}
+					else {
+						gl_text(loc[3].x,loc[3].y,"on ",-1);
+					}
+					tmpFlash._1490_en = !tmpFlash._1490_en;
+					break;
+				case 4://1550
+					if(tmpFlash._1550_en) {
 						gl_text(loc[4].x,loc[4].y,"off",-1);
 					}
 					else {
 						gl_text(loc[4].x,loc[4].y,"on ",-1);
 					}
-					tmpFlash._650_en = !tmpFlash._650_en;
-					break;
-				case 5://1310
-					if(tmpFlash._1310_en) {
-						gl_text(loc[5].x,loc[5].y,"off",-1);
-					}
-					else {
-						gl_text(loc[5].x,loc[5].y,"on ",-1);
-					}
-					tmpFlash._1310_en = !tmpFlash._1310_en;
-					break;
-				case 6://1490
-					if(tmpFlash._1490_en) {
-						gl_text(loc[6].x,loc[6].y,"off",-1);
-					}
-					else {
-						gl_text(loc[6].x,loc[6].y,"on ",-1);
-					}
-					tmpFlash._1490_en = !tmpFlash._1490_en;
-					break;
-				case 7://1550
-					if(tmpFlash._1550_en) {
-						gl_text(loc[7].x,loc[7].y,"off",-1);
-					}
-					else {
-						gl_text(loc[7].x,loc[7].y,"on ",-1);
-					}
 					tmpFlash._1550_en = !tmpFlash._1550_en;
 					break;
-					
-					
-					
-					
-				case 8://Logo Addr
+				case 5://Logo Addr
 					strout[0] = '\0';					
 					if(InputPanel(strout,9,&strlen)) {
 						tmpFlash._logo_addr = atof_(strout);
 					}
-					gl_text(loc[8].x,loc[8].y,"         ",-1);
+					gl_text(loc[5].x,loc[5].y,"         ",-1);
 					sprintf(strout,"0x%X",tmpFlash._logo_addr);
-					gl_text(loc[8].x,loc[8].y,strout,-1);
+					gl_text(loc[5].x,loc[5].y,strout,-1);
 					break;
-				case 9://Logo black color
+				case 6://Logo black color
 					strout[0] = '\0';					
 					if(InputPanel(strout,8,&strlen)) {
 						tmpFlash._logo_backcolor = atof_(strout);
 					}
-					gl_text(loc[9].x,loc[9].y,"      ",-1);
+					gl_text(loc[6].x,loc[6].y,"      ",-1);
 					sprintf(strout,"0x%X",tmpFlash._logo_backcolor);
-					gl_text(loc[9].x,loc[9].y,strout,-1);
+					gl_text(loc[6].x,loc[6].y,strout,-1);
 					break;
-				case 10://Logo high
+				case 7://Logo high
 					strout[0] = '\0';					
 					if(InputPanel(strout,4,&strlen)) {
 						tmpFlash._logo_h = atof_(strout);
 					}
-					gl_text(loc[10].x,loc[10].y,"    ",-1);
+					gl_text(loc[7].x,loc[7].y,"    ",-1);
 					sprintf(strout,"%d",tmpFlash._logo_h);
-					gl_text(loc[10].x,loc[10].y,strout,-1);
+					gl_text(loc[7].x,loc[7].y,strout,-1);
 					break;
-				case 11://Logo width
+				case 8://Logo width
 						strout[0] = '\0';					
 					if(InputPanel(strout,4,&strlen)) {
 						tmpFlash._logo_w = atof_(strout);
 					}
-					gl_text(loc[11].x,loc[11].y,"    ",-1);
+					gl_text(loc[8].x,loc[8].y,"    ",-1);
 					sprintf(strout,"%d",tmpFlash._logo_w);
-					gl_text(loc[11].x,loc[11].y,strout,-1);
+					gl_text(loc[8].x,loc[8].y,strout,-1);
 					break;
 				
-				case 13:
-					gl_text(loc[13].x,loc[13].y,"Unlock...",-1);
-					Delay_ms(1000);
-					UnProtectFlash();
-					break;
-				case 15://Save
+				
+				case 9://Save
 					g_adj_power = tmpFlash;
-					g_adj_power.flag = 0xaabbccdd;
-					WriteFlash(FLASH_PAGE_PRODUCT,
+					WriteFlash(FLASH_PAGE_START,
 						(uint32_t*)&(g_adj_power),
 						sizeof(struct adj_power_flash));
-					gl_text(loc[15].x,loc[15].y,"Save...",-1);
+					gl_text(loc[9].x,loc[9].y,"Save...",-1);
 					Delay_ms(1000);
-					gl_text(loc[15].x,loc[15].y,"       ",-1);
-					gl_text(loc[15].x,loc[15].y,"Save",-1);
+					gl_text(loc[9].x,loc[9].y,"       ",-1);
+					gl_text(loc[9].x,loc[9].y,"Save",-1);
 					break;
-				case 16://Exit
+				case 10://Exit
 					goto _End;
 					break;
 				}
-				flag = 0;
-				btnClk = 0;
-				goto _Redraw;
 			}
 			
 			
@@ -1130,49 +1055,8 @@ _End:;
 	gl_ui_setbrushcolor(oldbrush);
 	gl_ui_setbkcolor(oldbk);
 }
-
-/*
-* Function: ç»˜åˆ¶ç•Œé¢ç„¦ç‚¹
-* Parameters:
-x,yåæ ‡ï¼Œcolorï¼šRGB16(R,G,B)é¢œè‰²
-*/
-void DrawFocus(int16_t x,int16_t y,uint32_t color)
-{
-	uint32_t brush,pen;
-	static uint16_t last_x = -1, last_y;
-
-	if (last_x == -1) {
-		goto _DrawNew;
-	}
-	if (x == -1) {
-		last_x = -1;
-		last_y = -1;
-		return ;
-	}
-	brush = gl_ui_setbrushcolor(COL_White);
-	pen = gl_ui_setpencolor(COL_White);
-	gl_fill_rect(last_x-3,last_y,3,12);
-	
-
-_DrawNew:;
-	gl_ui_setbrushcolor(color);
-	gl_ui_setpencolor(color);
-	gl_fill_rect(x-3,y,3,12);
-	gl_ui_setbrushcolor(brush);
-	gl_ui_setpencolor(pen);
-	
-	last_x = x;
-	last_y = y;
-}
-void UI_LicenceConfig()
-{
-	
-}
-
-
-
-//æ³¨æ„å…¶å¯¹åº”å£°æ˜å¤´æ–‡ä»¶åŒ…å«åœ¨main.cæ–‡ä»¶ä¸­
-//mainæ–‡ä»¶ä¸­åŒ…å«å›¾åƒæ•°æ®å¤´æ–‡ä»¶ TEMP.h 
+//×¢ÒâÆä¶ÔÓ¦ÉùÃ÷Í·ÎÄ¼ş°üº¬ÔÚmain.cÎÄ¼şÖĞ
+//mainÎÄ¼şÖĞ°üº¬Í¼ÏñÊı¾İÍ·ÎÄ¼ş TEMP.h 
 //LCD_FLSAH_DrawPicture( 0, 0, 319, 239, (uint8_t *)&PIC_TEMP );
 
 uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen)
@@ -1294,7 +1178,7 @@ uint32_t InputPanel(int8_t *str,uint32_t len,uint32_t *outLen)
 			
 			
 			if(btnClk) {
-				if(strIndex+1 < len &&//ç¼“å­˜å®¹é‡å¿…é¡»å¤Ÿå¤§
+				if(strIndex+1 < len &&//»º´æÈİÁ¿±ØĞë¹»´ó
 					idMatrix[index] <= 9 || idMatrix[index] == 11 || idMatrix[index] == 15) {
 					//*(str+strIndex) = *addStr[index];
 					//*(str+strIndex) = addStr[index];

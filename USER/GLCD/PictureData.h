@@ -36,9 +36,6 @@ extern uint8_t	Num_0m[58] ;
 extern uint8_t	Num_0C[58] ;
 extern uint8_t	Num_0W[58] ;
 
-extern uint8_t	Num_0O[58] ;
-extern uint8_t	Num_0f[58] ;
-
 
 
 //logo 243x57

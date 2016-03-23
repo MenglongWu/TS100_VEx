@@ -1,58 +1,46 @@
-
-/**
- ******************************************************************************
-* @file    gl_ui.c
-* @author  MenglongWu
-* @version V1.0
-* @date    2012-10-17
-* @brief   ä½œè€…ï¼šå´æ¢¦é¾™\n
-åº•å±‚GUIæ¥å£å…·å¤‡å¯ç§»æ¤æ€§ï¼Œå®ç°æœ€åŸºæœ¬çš„ç»˜ç‚¹åŠŸèƒ½ï¼Œä¸å¸¦ç¼“å­˜ï¼Œæ›´å¤šåŠŸèƒ½æœ‰å¾…å®Œå–„
- ******************************************************************************
- * @attention
- *
- * ATTENTION
-*
-* <h2><center>&copy; COPYRIGHT </center></h2>
-******************************************************************************
+/*
+* File: gl_ui.c
+* Brief:ÏÔÊ¾Æ÷»æÍ¼Ó¦ÓÃ½Ó¿Ú
+*	Date			Author			Note
+	2012-10-17		MenglongWu		»ù±¾½Ó¿ÚÊµÏÖ£¬ºóÆÚÔÙµ÷Õû
 */
-
 #include "gl_type.h"
 #include "gl_ui_config.h"
 #include "gl_ui.h"
 
 
 #pragma diag_suppress 550
-//å†…éƒ¨å…¨å±€å˜é‡
+//ÄÚ²¿È«¾Ö±äÁ¿
 static void (*_setpoint)(unsigned short x, unsigned short y,uint32_t  color);
-static unsigned short _fcolor = 0x0000;		//å­—ä½“é¢œè‰²
-static unsigned short _bkcolor = 0xffff;	//èƒŒæ™¯é¢œè‰²
-//static unsigned short _alpha = 100;		//é€æ˜åº¦
-static unsigned char  _bkmode = TRANSPARENT;//èƒŒæ™¯å¡«å……æ¨¡å¼
-static unsigned short _pencolor = 0x0000;	//ç¬”é¢œè‰²
-static unsigned short _brushcolor = 0x0000;		//ç”»åˆ·é¢œè‰²
-static unsigned char *_zm_ascii[128] = {0};		//å­—åº“
-static struct gl_ui_arraylib _zm_lib;		//ä½œåºŸäº†
+static unsigned short _fcolor = 0x0000;		//×ÖÌåÑÕÉ«
+static unsigned short _bkcolor = 0xffff;	//±³¾°ÑÕÉ«
+//static unsigned short _alpha = 100;		//Í¸Ã÷¶È
+static unsigned char  _bkmode = TRANSPARENT;//±³¾°Ìî³äÄ£Ê½
+static unsigned short _pencolor = 0x0000;	//±ÊÑÕÉ«
+static unsigned short _brushcolor = 0x0000;		//»­Ë¢ÑÕÉ«
+unsigned char *_zm_ascii[128] = {0};		//×Ö¿â
+static struct gl_ui_arraylib _zm_lib;		//×÷·ÏÁË
 
-/**
-* @brief	è®¾ç½®ç»˜ç‚¹å‡½
-* @param	setpoint å›è°ƒå‡½æ•°
-*		å›è°ƒå‡½æ•°ï¼Œéœ€è¦åº•å±‚ç¡¬ä»¶æ¥å£ç¬¦åˆå›è°ƒå‡½æ•°çš„å‚æ•°ä¼ é€’è§„åˆ™ã€‚
-*		ç”±äºä»¥å‰å†™çš„å‡½æ•°æ¥å£ä¸ä¸€å®šæ˜¯æŒ‰ç…§æ­¤è§„åˆ™ç¼–å†™çš„ï¼Œ
-*		å½“ä½¿ç”¨å®GL_UI_OLD_DEVçš„æ—¶å€™ï¼Œå°±ç”¨GL_SETPOINTä»£æ›¿å›è°ƒå‡½æ•°ã€‚
-* @retval\n	NULL
-* @remarks
+/*
+* Function: ÉèÖÃ»æµãº¯
+* Parameters:
+	»Øµ÷º¯Êı£¬ĞèÒªµ×²ãÓ²¼ş½Ó¿Ú·ûºÏ»Øµ÷º¯ÊıµÄ²ÎÊı´«µİ¹æÔò¡£
+	ÓÉÓÚÒÔÇ°Ğ´µÄº¯Êı½Ó¿Ú²»Ò»¶¨ÊÇ°´ÕÕ´Ë¹æÔò±àĞ´µÄ£¬
+	µ±Ê¹ÓÃºêGL_UI_OLD_DEVµÄÊ±ºò£¬¾ÍÓÃGL_SETPOINT´úÌæ»Øµ÷º¯Êı
+* Return:
+* Remarks:
 */
 void gl_ui_hook(
 	void (*setpoint)(unsigned short x, unsigned short y,uint32_t  color))
 {
 	_setpoint = setpoint;
 }
-
-/**
-* @brief	è®¾ç½®èƒŒæ™¯å¡«å……æ¨¡å¼
-* @param	bkmode å¯ä»¥æ˜¯TRANSPARENTæˆ–BACKFILL
-* @retval\n	ä¸Šä¸€æ¬¡çš„å¡«å……æ¨¡å¼
-* @remarks
+/*
+* Function: ÉèÖÃ±³¾°Ìî³äÄ£Ê½
+* Parameters:
+	bkmode¿ÉÒÔÊÇTRANSPARENT»òBACKFILL
+* Return:ÉÏÒ»´ÎµÄÌî³äÄ£Ê½
+* Remarks:
 */
 uint32_t gl_ui_setbkmode(uint32_t bkmode)
 {
@@ -61,12 +49,12 @@ uint32_t gl_ui_setbkmode(uint32_t bkmode)
 	return old;
 }
 
-
-/**
-* @brief	è®¾ç½®æ–‡å­—é¢œè‰²
-* @param	color æ ¹æ®è®¾å¤‡é€‰æ‹©RGB()æˆ–RGB16()
-* @retval\n	ä¸Šä¸€æ¬¡çš„è®¾ç½®å€¼
-* @remarks
+/*
+* Function: ÉèÖÃÎÄ×ÖÑÕÉ«
+* Parameters:
+	¸ù¾İÉè±¸Ñ¡ÔñRGB()»òRGB16()
+* Return:ÉÏÒ»´ÎµÄÉèÖÃÖµ
+* Remarks:
 */
 uint32_t gl_ui_setfontcolor(uint32_t  color)
 {
@@ -74,12 +62,12 @@ uint32_t gl_ui_setfontcolor(uint32_t  color)
 	_fcolor = color;
 	return old;
 }
-
-/**
-* @brief	è®¾ç½®èƒŒæ™¯è‰²
-* @param	color æ ¹æ®è®¾å¤‡é€‰æ‹©RGB()æˆ–RGB16()
-* @retval\n	ä¸Šä¸€æ¬¡çš„è®¾ç½®å€¼
-* @remarks
+/*
+* Function: ÉèÖÃ±³¾°É«
+* Parameters:
+	¸ù¾İÉè±¸Ñ¡ÔñRGB()»òRGB16()
+* Return:ÉÏÒ»´ÎµÄÉèÖÃÖµ
+* Remarks:
 */
 uint32_t gl_ui_setbkcolor(uint32_t  color)
 {
@@ -88,12 +76,12 @@ uint32_t gl_ui_setbkcolor(uint32_t  color)
 	return old;
 }
 
-
-/**
-* @brief	è®¾ç½®ç”»ç¬”é¢œè‰²
-* @param	color æ ¹æ®è®¾å¤‡é€‰æ‹©RGB()æˆ–RGB16()
-* @retval\n	ä¸Šä¸€æ¬¡çš„è®¾ç½®å€¼
-* @remarks
+/*
+* Function: ÉèÖÃ»­±ÊÑÕÉ«
+* Parameters:
+	¸ù¾İÉè±¸Ñ¡ÔñRGB()»òRGB16()
+* Return:ÉÏÒ»´ÎµÄÉèÖÃÖµ
+* Remarks:
 */
 uint32_t gl_ui_setpencolor(uint32_t  color)
 {
@@ -102,11 +90,12 @@ uint32_t gl_ui_setpencolor(uint32_t  color)
 	return old;
 }
 
-/**
-* @brief	è®¾ç½®ç”»åˆ·é¢œè‰²
-* @param	color æ ¹æ®è®¾å¤‡é€‰æ‹©RGB()æˆ–RGB16()
-* @retval\n	ä¸Šä¸€æ¬¡çš„è®¾ç½®å€¼
-* @remarks
+/*
+* Function: ÉèÖÃ»­Ë¢ÑÕÉ«
+* Parameters:
+	¸ù¾İÉè±¸Ñ¡ÔñRGB()»òRGB16()
+* Return:ÉÏÒ»´ÎµÄÉèÖÃÖµ
+* Remarks:
 */
 uint32_t gl_ui_setbrushcolor(uint32_t  color)
 {
@@ -115,15 +104,14 @@ uint32_t gl_ui_setbrushcolor(uint32_t  color)
 	return old;
 }
 
-
-/**
-* @brief	è®¾ç½®å­—åº“
-* @param	lib æŸ¥é˜…ç›¸åº”çš„p_zm_ascii_xxx
-* @param	w æŸ¥é˜…ç›¸åº”çš„ZM_xxx_W
-* @param	h æŸ¥é˜…ç›¸åº”çš„ZM_xxx_H
-* @param	lib æŸ¥é˜…ç›¸åº”çš„p_zm_step_xxx
-* @retval\n	NULL
-* @remarks
+/*
+* Function: ÉèÖÃÎÄ×ÖÑÕÉ«
+* Parameters:
+	lib:²éÔÄÏàÓ¦µÄp_zm_ascii_xxx
+	w,h:²éÔÄÏàÓ¦µÄZM_xxx_W,ZM_xxx_H
+	lib:²éÔÄÏàÓ¦µÄp_zm_step_xxx
+* Return:
+* Remarks:
 */
 unsigned char gl_ui_setlib(unsigned char *lib[128],uint16_t w,uint16_t h,uint8_t *step)
 //struct gl_ui_arraylib gl_ui_setlib(struct gl_ui_arraylib *lib)
@@ -150,15 +138,15 @@ unsigned char gl_ui_setlib(unsigned char *lib[128],uint16_t w,uint16_t h,uint8_t
 	return 0;
 	
 }
-
-/**
-* @brief	åŸºæœ¬ç»˜ç‚¹å‡½æ•°
-* @param	x ç»˜åˆ¶çš„ä½ç½®x
-* @param	y ç»˜åˆ¶çš„ä½ç½®y
-* @param	color ç»˜ç‚¹é¢œè‰²,å¯¹äºåªæœ‰é»‘ç™½çš„æ˜¾ç¤ºå™¨ï¼Œé¢œè‰²åªèƒ½æ˜¯-1ï¼ˆç™½è‰²ï¼‰å’Œ0ï¼ˆé»‘è‰²ï¼‰
-			ç›¸åº”çš„gl_ui_setfontcol,gl_ui_setbkcolorç­‰å‡½æ•°çš„colorä¹Ÿæ˜¯è¿™æ ·çš„è®¾å®š
-* @retval\n	NULL
-* @remarks\n åº”ç”¨å±‚æ°¸è¿œä¸ä¼šç›´æ¥è®¿é—®æ­¤å‡½æ•°ï¼Œåº•å±‚è°ƒç”¨
+/*
+* Function: »ù±¾»æµãº¯Êı
+* Parameters:
+	x,y:»æÖÆµÄÎ»ÖÃ
+	color:»æµãÑÕÉ«£¬¶ÔÓÚÖ»ÓĞºÚ°×µÄÏÔÊ¾Æ÷£¬ÑÕÉ«Ö»ÄÜÊÇ-1£¨°×É«£©ºÍ0£¨ºÚÉ«£©
+	ÏàÓ¦µÄgl_ui_setfontcol,gl_ui_setbkcolorµÈº¯ÊıµÄcolorÒ²ÊÇÕâÑùµÄÉè¶¨
+* Return:
+* Remarks:
+	Ó¦ÓÃ²ãÓÀÔ¶²»»áÖ±½Ó·ÃÎÊ´Ëº¯Êı£¬µ×²ãµ÷ÓÃ
 */
 void gl_setpoint(unsigned short x, unsigned short y,uint32_t  color)
 {
@@ -168,12 +156,11 @@ void gl_setpoint(unsigned short x, unsigned short y,uint32_t  color)
 	_setpoint(x,y,color);
 #endif
 }
-
-/**
-* @brief	ç»˜åˆ¶æ°´å¹³çº¿
-* @param	x1 æ°´å¹³çº¿èµ·ç‚¹xåæ ‡
-* @param	x2 æ°´å¹³çº¿ç»ˆç‚¹xåæ ‡
-* @param	y æ°´å¹³çº¿yåæ ‡
+/*
+* Function: »æÖÆË®Æ½Ïß
+* Parameters:
+* Return:
+* Remarks:
 */
 void gl_horizon_line(uint16_t x1,uint16_t x2,uint16_t y)
 {
@@ -186,18 +173,10 @@ void gl_horizon_line(uint16_t x1,uint16_t x2,uint16_t y)
 }
 
 /*
-* Function: 
+* Function: »æÖÆ´¹Ö±Ïß
 * Parameters:
 * Return:
 * Remarks:
-*/
-/**
-* @brief	ç»˜åˆ¶å‚ç›´çº¿
-* @param	x æ°´å¹³çº¿xåæ ‡
-* @param	y1 æ°´å¹³çº¿èµ·ç‚¹yåæ ‡
-* @param	y2 æ°´å¹³çº¿ç»ˆç‚¹yåæ ‡
-* @retval\n	NULL
-* @remarks
 */
 void gl_vertical_line(uint16_t x,uint16_t y1,uint16_t y2)
 {
@@ -209,17 +188,13 @@ void gl_vertical_line(uint16_t x,uint16_t y1,uint16_t y2)
  		gl_setpoint(x,i,_pencolor);
 }
 
-
-/**
-* @brief	ç»˜åˆ¶ç‚¹é˜µ
-* @param	buf ç‚¹é˜µç¼“å­˜
-* @param	px ç‚¹é˜µéœ€è¦ç»˜åˆ¶çš„èµ·ç‚¹åæ ‡x
-* @param	py ç‚¹é˜µéœ€è¦ç»˜åˆ¶çš„èµ·ç‚¹åæ ‡y
-* @param	w ç‚¹é˜µå®½åº¦
-* @param	h ç‚¹é˜µé«˜åº¦
-* @retval\n	NULL
-* @remarks\n çŸ©é˜µç‚¹åªèƒ½æ˜¯0å’Œ1ï¼Œ1å¤„ä½¿ç”¨_pencolorç»˜åˆ¶ï¼ŒèƒŒæ™¯è‰²ç”¨æ ¹æ®é€æ˜åº¦æƒ…å†µä¸ç»˜åˆ¶
-			æˆ–ä½¿ç”¨èƒŒæ™¯ç”»åˆ·å¡«å……ï¼ŒèƒŒæ™¯æ¨¡å¼é€šè¿‡è°ƒç”¨gl_ui_setbkmodeè®¾ç½®
+/*
+* Function: »æÖÆ¾ØÕóµã
+* Parameters:
+* Return:
+* Remarks:
+	¾ØÕóµãÖ»ÄÜÊÇ0ºÍ1£¬1´¦Ê¹ÓÃ_pencolor»æÖÆ£¬±³¾°É«ÓÃ¸ù¾İÍ¸Ã÷¶ÈÇé¿ö²»»æÖÆ
+	»òÊ¹ÓÃ±³¾°»­Ë¢Ìî³ä
 */
 void gl_picture(uint8_t *buf,uint16_t px,uint16_t py,uint16_t w,uint16_t h)
 {
@@ -287,18 +262,14 @@ void gl_picture(uint8_t *buf,uint16_t px,uint16_t py,uint16_t w,uint16_t h)
 	}
 }
 
-
-/**
-* @brief	è¾“å‡ºasciiæ–‡å­—
-* @param	x æ–‡å­—åœ¨å±å¹•è¾“å‡ºåæ ‡x
-* @param	y æ–‡å­—åœ¨å±å¹•è¾“å‡ºåæ ‡y
-* @param	str æ–‡å­—å†…å®¹
-* @param	num ä»stré‡Œæ˜¾ç¤ºå¤šå°‘ä¸ªbyteï¼Œå¦‚æœnumç­‰äº-1ï¼Œå°†åœ¨æ£€æµ‹åˆ°stré‡Œå­—ç¬¦ä¸º'\0'æ—¶
-*			åœæ­¢ï¼Œæ‰€ä»¥strå­—ç¬¦ä¸²å¿…é¡»ä»¥'\0'ç»“æŸï¼Œå¦åˆ™å°†å¯¼è‡´ä¸å¯é¢„è§åæœ
-* @retval\n	NULL
-* @remarks\n åœ¨æ‰ç”¨æ­¤å‡½æ•°å‰å¿…é¡»å…ˆè°ƒç”¨gl_ui_setlibè®¾ç½®å­—åº“ã€‚
-	ä¸ºäº†ç²¾ç®€ä»£ç å­˜å‚¨é‡ï¼Œasciiå­—åº“ä¹Ÿä¸æ˜¯æ¯ä¸ªéƒ½å†™åœ¨zimo_xxx.cé‡Œçš„ï¼Œ
-	æ ¹æ®æƒ…å†µè‡ªå·±åˆ å‡zimo_xxx.cçš„å†…å®¹ï¼Œå…·ä½“æ–¹æ³•çœ‹æä¾›çš„æ‰‹å†Œ
+/*
+* Function: Êä³öasciiÎÄ×Ö
+* Parameters:
+* Return:
+* Remarks:
+	ÔÚµôÓÃ´Ëº¯ÊıÇ°±ØĞëÏÈµ÷ÓÃgl_ui_setlibÉèÖÃ×Ö¿â¡£
+	ÎªÁË¾«¼ò´úÂë´æ´¢Á¿£¬ascii×Ö¿âÒ²²»ÊÇÃ¿¸ö¶¼Ğ´ÔÚzimo_xxx.cÀïµÄ£¬
+	¸ù¾İÇé¿ö×Ô¼ºÉ¾¼õzimo_xxx.cµÄÄÚÈİ£¬¾ßÌå·½·¨¿´Ìá¹©µÄÊÖ²á
 */
 void gl_text(uint16_t x,uint16_t y,uint8_t *str,uint16_t num)
 {
@@ -318,16 +289,12 @@ void gl_text(uint16_t x,uint16_t y,uint8_t *str,uint16_t num)
 	gl_ui_setpencolor(old );
 }
 
-
-/**
-* @brief	ç»˜åˆ¶ä¸€ä¸ªæœ‰å¡«å……è‰²çš„çŸ©å½¢
-* @param	x çŸ©å½¢åæ ‡x
-* @param	y çŸ©å½¢åæ ‡y
-* @param	w çŸ©å½¢å®½åº¦
-* @param	h çŸ©å½¢é«˜åº¦
-* @retval\n	NULL
-* @remarks\n çº¿æ¡è‰²æ˜¯_pencolorï¼Œç”¨gl_ui_setpencolorè®¾ç½®ï¼Œ
-*			å¡«å……è‰²æ˜¯_brushcolorï¼Œç”¨gl_ui_setbrushcolorè®¾ç½®
+/*
+* Function: »æÖÆÒ»¸öÓĞÌî³äÉ«µÄ¾ØĞÎ
+* Parameters:
+* Return:
+* Remarks:
+	ÏßÌõÉ«ÊÇ_pencolorÌî³äÉ«ÊÇ_brushcolor
 */
 void gl_fill_rect(
 	uint16_t x,uint16_t y,
@@ -355,13 +322,12 @@ void gl_fill_rect(
 		}
 	}
 }
-
-/**
-* @brief	ç»˜åˆ¶ä¸€ä¸ªç©ºå¿ƒçŸ©å½¢
-* @param	x çŸ©å½¢åæ ‡x
-* @param	y çŸ©å½¢åæ ‡y
-* @param	w çŸ©å½¢å®½åº¦
-* @param	h çŸ©å½¢é«˜åº¦
+/*
+* Function: »æÖÆÒ»¸ö¿ÕĞÄ¾ØĞÎ
+* Parameters:
+* Return:
+* Remarks:
+	ÏßÌõÉ«ÊÇ_pencolor
 */
 void gl_rect(
 	uint16_t x,uint16_t y,
@@ -374,13 +340,11 @@ void gl_rect(
 }
 
 
-/**
-* @brief	ç”¨ç‰¹å®šé¢œè‰²æ¸…é™¤æŸåŒºåŸŸ
-* @param	x1 æ¸…é™¤èµ·ç‚¹åæ ‡x
-* @param	y1 æ¸…é™¤èµ·ç‚¹åæ ‡y
-* @param	x2 æ¸…é™¤ç»ˆç‚¹åæ ‡x
-* @param	y2 æ¸…é™¤ç»ˆç‚¹åæ ‡y
-* @param	color æ¸…é™¤åç”¨æŒ‡å®šé¢œè‰²å¡«å……
+/*
+* Function:ÓÃÌØ¶¨ÑÕÉ«Çå³ıÄ³ÇøÓò
+* Parameters:
+* Return:
+* Remarks:
 */
 void gl_clear(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint32_t color)
 {
@@ -393,15 +357,11 @@ void gl_clear(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint32_t color)
 		LCD_WriteData(color);
 }
 
-
-/**
-* @brief	è®¾ç½®æ¶²æ™¶å±å†…å­˜è‡ªåŠ åŒºåŸŸ
-* @param	x1 å†…å­˜è‡ªåŠ åŒºåŸŸèµ·ç‚¹åæ ‡x
-* @param	y1 å†…å­˜è‡ªåŠ åŒºåŸŸèµ·ç‚¹åæ ‡y
-* @param	x2 å†…å­˜è‡ªåŠ åŒºåŸŸç»ˆç‚¹åæ ‡x
-* @param	y2å†…å­˜è‡ªåŠ åŒºåŸŸç»ˆç‚¹åæ ‡y
-* @retval\n	NULL
-* @remarks\n è¯¥å‡½æ•°æä¾›ç»™å…·å¤‡å†…å­˜è‡ªåŠ åŠŸèƒ½çš„LCDå±ï¼Œéœ€è¦æœ‰é’ˆå¯¹çš„ç§»æ¤
+/*
+* Function:ÉèÖÃÒº¾§ÆÁÄÚ´æ×Ô¼ÓÇøÓò
+* Parameters:
+* Return:
+* Remarks:
 */
 void gl_setarea(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
 {
@@ -409,15 +369,6 @@ void gl_setarea(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
 	LCD_WriteCommand(CMD_WR_MEMSTART);
 }
 
-/**
-* @brief	æ˜¾ç¤ºä¸€å‰¯å›¾ç‰‡
-* @param	StartX å›¾ç‰‡èµ·ç‚¹åæ ‡x
-* @param	StartY å›¾ç‰‡èµ·ç‚¹åæ ‡y
-* @param	EndX   å›¾ç‰‡ç»ˆç‚¹åæ ‡x
-* @param	EndY   å›¾ç‰‡ç»ˆç‚¹åæ ‡y
-* @param	pic    å›¾ç‰‡å†…å®¹
-* remark\n è¯¥å‡½æ•°åªæ”¯æŒ640x320ä¸€ä¸‹åˆ†è¾¨ç‡çš„å›¾ç‰‡æ˜¾ç¤ºï¼Œå¹¶ä¸”å›¾ç‰‡æ¯åƒç´ ç‚¹å ç”¨ä½16bit
-*/
 void gl_bmp(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY, uint8_t * pic)
 {
 	uint16_t i;
