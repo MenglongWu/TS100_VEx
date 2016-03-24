@@ -37,6 +37,8 @@ struct ctrl_param//需要控制的参数
 	int32_t temp;
 };
 
+// flash 校准部分，里面的参数有冗余，经过几次修改寓意已经不同了，还有些没用的
+// 使用该结构的代码主要位于Ctrl_Power()
 struct adj_power_flash
 {
 	uint32_t flag;//标志，当其为0xAABBCCDD时候表示下面的数据有效，否则下面数据清零
